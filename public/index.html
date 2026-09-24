@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MINYAWE-LINK | ELMINYAWE</title>
+<style>
+body{background:#0a0a0f;color:#fff;font-family:system-ui;text-align:center;margin:0;padding:20px}
+.box{max-width:520px;margin:40px auto;background:#15151f;padding:30px;border-radius:16px;border:1px solid #2a2a3a}
+h1{color:#a78bfa;margin:0}h1 span{color:#fff}
+#drop{border:2px dashed #7c3aed;border-radius:12px;padding:40px 20px;margin:20px 0;cursor:pointer}
+#drop:hover{background:#1e1e2e}
+button{background:#7c3aed;color:#fff;border:0;padding:12px 28px;border-radius:10px;font-size:16px;cursor:pointer}
+select{background:#222;padding:8px;border-radius:8px;color:#fff;margin:10px}
+#result{background:#0f0f17;padding:15px;border-radius:10px;margin-top:15px;word-break:break-all;display:none}
+a{color:#a78bfa}footer{margin-top:30px;color:#666;font-size:13px}
+</style></head>
+<body>
+<div class="box">
+<h1>MINYAWE-<span>LINK</span></h1>
+<p>ارفع صورة او ملف وخد لينك مباشر</p>
+<div id="drop" onclick="document.getElementById('f').click()">دوس هنا او اسحب الملف هنا 📤<input type="file" id="f" hidden></div>
+<select id="exp"><option value="1h">يتمسح بعد ساعة</option><option value="24h" selected>يتمسح بعد 24 ساعة</option><option value="7d">يتمسح بعد 7 ايام</option><option value="never">ميتمسحش</option></select><br><br>
+<button onclick="up()">رفع 🚀</button>
+<div id="result"></div>
+</div>
+<footer>Made with ❤️ by <b>ELMINYAWE</b> | MINYAWE-LINK v1.0</footer>
+<script>
+const fi=document.getElementById('f'),drop=document.getElementById('drop');
+['dragover','drop'].forEach(e=>drop.addEventListener(e,e=>{e.preventDefault();if(e.dataTransfer?.files[0]){fi.files=e.dataTransfer.files;drop.innerText='📁 '+fi.files[0].name}}));
+fi.onchange=()=>drop.innerText='📁 '+fi.files[0].name;
+async function up(){
+ if(!fi.files[0])return alert('اختار ملف الاول');
+ const fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',document.getElementById('exp').value);
+ document.getElementById('result').style.display='block';document.getElementById('result').innerText='جاري الرفع... ⏳';
+ const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
+ if(j.url){document.getElementById('result').innerHTML=`✅ تم!<br><a href="${j.url}" target="_blank">${j.url}</a><br><br><button onclick="navigator.clipboard.writeText('${j.url}')">نسخ اللينك 📋</button><br><br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${j.url}">`;}
+ else document.getElementById('result').innerText='❌ '+j.error;
+}
+</script></body></html>

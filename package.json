@@ -1,0 +1,13 @@
+{
+  "name": "minyawe-link",
+  "version": "1.0.0",
+  "description": "MINYAWE-LINK by ELMINYAWE - tempfile & img to link",
+  "main": "server.js",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
