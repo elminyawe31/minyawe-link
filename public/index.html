@@ -1,38 +1,152 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MINYAWE-LINK | ELMINYAWE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body{background:#0a0a0f;color:#fff;font-family:system-ui;text-align:center;margin:0;padding:20px}
-.box{max-width:520px;margin:40px auto;background:#15151f;padding:30px;border-radius:16px;border:1px solid #2a2a3a}
-h1{color:#a78bfa;margin:0}h1 span{color:#fff}
-#drop{border:2px dashed #7c3aed;border-radius:12px;padding:40px 20px;margin:20px 0;cursor:pointer}
-#drop:hover{background:#1e1e2e}
-button{background:#7c3aed;color:#fff;border:0;padding:12px 28px;border-radius:10px;font-size:16px;cursor:pointer}
-select{background:#222;padding:8px;border-radius:8px;color:#fff;margin:10px}
-#result{background:#0f0f17;padding:15px;border-radius:10px;margin-top:15px;word-break:break-all;display:none}
-a{color:#a78bfa}footer{margin-top:30px;color:#666;font-size:13px}
-</style></head>
-<body>
-<div class="box">
-<h1>MINYAWE-<span>LINK</span></h1>
-<p>ارفع صورة او ملف وخد لينك مباشر</p>
-<div id="drop" onclick="document.getElementById('f').click()">دوس هنا او اسحب الملف هنا 📤<input type="file" id="f" hidden></div>
-<select id="exp"><option value="1h">يتمسح بعد ساعة</option><option value="24h" selected>يتمسح بعد 24 ساعة</option><option value="7d">يتمسح بعد 7 ايام</option><option value="never">ميتمسحش</option></select><br><br>
-<button onclick="up()">رفع 🚀</button>
-<div id="result"></div>
-</div>
-<footer>Made with ❤️ by <b>ELMINYAWE</b> | MINYAWE-LINK v1.0</footer>
-<script>
-const fi=document.getElementById('f'),drop=document.getElementById('drop');
-['dragover','drop'].forEach(e=>drop.addEventListener(e,e=>{e.preventDefault();if(e.dataTransfer?.files[0]){fi.files=e.dataTransfer.files;drop.innerText='📁 '+fi.files[0].name}}));
-fi.onchange=()=>drop.innerText='📁 '+fi.files[0].name;
-async function up(){
- if(!fi.files[0])return alert('اختار ملف الاول');
- const fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',document.getElementById('exp').value);
- document.getElementById('result').style.display='block';document.getElementById('result').innerText='جاري الرفع... ⏳';
- const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
- if(j.url){document.getElementById('result').innerHTML=`✅ تم!<br><a href="${j.url}" target="_blank">${j.url}</a><br><br><button onclick="navigator.clipboard.writeText('${j.url}')">نسخ اللينك 📋</button><br><br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${j.url}">`;}
- else document.getElementById('result').innerText='❌ '+j.error;
+:root{
+  --color-void-canvas:#010314; --color-obsidian-surface:#171825; --color-slate-layer:#2a2b3a;
+  --color-carbon-border:#343543; --color-ash-text:#5e6077; --color-fog-text:#9fa2b9;
+  --color-mist-text:#babcd2; --color-lunar-white:#dfe1f4; --color-frost-white:#ececfb;
+  --color-pure-white:#ffffff; --color-ultraviolet-key:#b88cff; --color-deep-iris:#6633ee;
+  --color-amethyst-glow:#8e64ff; --color-shadow-iris:#2e2a4c; --color-plum-depth:#1f1d3a;
+  --font-display:'Inter Tight','Roobert',system-ui,sans-serif;
+  --font-inter:'Inter',system-ui,sans-serif;
+  --font-mono:'Roboto Mono',monospace;
 }
-</script></body></html>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-void-canvas);color:var(--color-lunar-white);font-family:var(--font-inter);min-height:100vh}
+/* violet beam */
+.beam{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:500px;pointer-events:none;
+  background:radial-gradient(50% 60% at 50% 0%,rgba(102,51,238,.45),rgba(184,140,255,.12) 55%,transparent 75%);filter:blur(10px)}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;position:relative}
+/* floating pill nav */
+.nav{background:var(--color-obsidian-surface);border-radius:19.2px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:rgba(255,255,255,.1) 0 1px 0 0 inset,rgba(0,0,0,.25) 0 8px 16px -4px;border:1px solid var(--color-carbon-border);
+  position:sticky;top:16px;z-index:10;backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;letter-spacing:-.02em}
+.logo .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--color-deep-iris),var(--color-ultraviolet-key));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-mono);font-size:15px}
+.logo small{font-family:var(--font-mono);font-size:10px;color:var(--color-fog-text);letter-spacing:.3em}
+.links{display:flex;gap:13px;font-size:13px;font-weight:500}
+.links a{color:var(--color-lunar-white);text-decoration:none;opacity:.8}.links a:hover{color:var(--color-ultraviolet-key);opacity:1}
+.cta{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer}
+/* hero */
+.hero{text-align:center;padding:64px 0 30px}
+.eyebrow{display:inline-block;background:var(--color-slate-layer);border-radius:8px;padding:6px 10px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--color-frost-white);
+  box-shadow:rgba(0,0,0,.12) 0 0 0 1px inset}
+.hero h1{font-family:var(--font-display);font-size:56px;line-height:1.13;letter-spacing:-1.4px;margin:20px 0 10px;color:var(--color-frost-white)}
+.hero h1 .vio{color:var(--color-ultraviolet-key)}
+.hero p{color:var(--color-fog-text);font-size:16px;line-height:1.94;margin:0}
+.hero .mono{font-family:var(--font-mono);font-size:12px;color:var(--color-ash-text);margin-top:12px}
+/* main card */
+.vault{background:var(--color-slate-layer);border-radius:16px;padding:24px;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(190,167,255,.24) 0 0 0 1.5px inset;
+  max-width:640px;margin:0 auto}
+.drop{border:1px dashed var(--color-ultraviolet-key);border-radius:12px;padding:44px 20px;text-align:center;cursor:pointer;background:rgba(102,51,238,.06)}
+.drop:hover{background:rgba(102,51,238,.14)}
+.drop .big{font-size:15px;color:var(--color-frost-white)}
+.drop .sub{font-size:12px;color:var(--color-fog-text);margin-top:6px;font-family:var(--font-mono)}
+.row{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.pill{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
+  border-radius:9999px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--font-inter)}
+.pill.on{background:var(--color-pure-white);color:#010314;border-color:#fff}
+.upload-btn{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:10px 28px;font-size:14px;font-weight:500;cursor:pointer;width:100%}
+.upload-btn:disabled{opacity:.5}
+select,input[type=file]{display:none}
+.result{display:none;background:#0f0f1a;border:1px solid var(--color-carbon-border);border-radius:12px;padding:16px;margin-top:16px;word-break:break-all}
+.result a{color:var(--color-ultraviolet-key);font-family:var(--font-mono);font-size:13px}
+.meta{font-family:var(--font-mono);font-size:11px;color:var(--color-fog-text);margin-top:8px}
+.preview img,.preview video{max-width:100%;border-radius:12px;margin-top:12px}
+.preview audio{width:100%;margin-top:12px}
+.copy{background:var(--color-deep-iris);color:#fff;border:0;border-radius:9999px;padding:8px 18px;font-size:13px;cursor:pointer;margin-top:10px}
+/* features */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;max-width:1000px;margin:40px auto 0}
+.card{background:var(--color-slate-layer);border-radius:16px;padding:24px;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(190,167,255,.24) 0 0 0 1px inset}
+.card .ico{font-size:22px;color:var(--color-ultraviolet-key)}
+.card h3{font-family:var(--font-display);font-size:18px;color:var(--color-frost-white);margin:10px 0 6px;letter-spacing:-.18px}
+.card p{font-size:14px;color:var(--color-fog-text);line-height:1.76;margin:0}
+footer{text-align:center;color:var(--color-ash-text);font-size:12px;margin-top:48px;font-family:var(--font-mono)}
+footer b{color:var(--color-ultraviolet-key)}
+@media(max-width:640px){.hero h1{font-size:36px}.links{display:none}}
+</style>
+</head>
+<body>
+<div class="beam"></div>
+<div class="wrap">
+  <nav class="nav">
+    <div class="logo"><div class="mark">M</div><div>MINYAWE-LINK<br><small>BY ELMINYAWE</small></div></div>
+    <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="/health" target="_blank">الحالة</a></div>
+    <button class="cta" onclick="document.getElementById('f').click()">+ رفع ملف</button>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">Direct • Fast • Free</span>
+    <h1>MINYAWE<span class="vio">-LINK</span></h1>
+    <p>ارفع صورة، أغنية، فيديو أو أي ملف وخد لينك مباشر يشتغل في أي حتة</p>
+    <div class="mono" id="cfg">checking vault…</div>
+  </section>
+
+  <section class="vault" id="up">
+    <div class="drop" id="drop" onclick="document.getElementById('f').click()">
+      <div class="big" id="dlabel">📤 دوس هنا أو اسحب الملف هنا</div>
+      <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — direct link, no protection</div>
+    </div>
+    <input type="file" id="f">
+    <div class="row" id="exps">
+      <button class="pill" data-v="1h">⏳ ساعة</button>
+      <button class="pill on" data-v="24h">🕐 24 ساعة</button>
+      <button class="pill" data-v="7d">📅 7 أيام</button>
+      <button class="pill" data-v="30d">🗓️ شهر</button>
+      <button class="pill" data-v="never">♾️ دائم</button>
+    </div>
+    <button class="upload-btn" id="btn" onclick="up()">رفع 🚀</button>
+    <div class="result" id="result"></div>
+  </section>
+
+  <section class="grid" id="feat">
+    <div class="card"><div class="ico">🔗</div><h3>لينك مباشر دايما</h3><p>inline + CORS مفتوح، يشتغل في المتصفح والمشغلات والديسكورد من غير صفحة حماية.</p></div>
+    <div class="card"><div class="ico">🎵</div><h3>أغاني وفيديو</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek، زي top4top بالظبط.</p></div>
+    <div class="card"><div class="ico">💾</div><h3>مساحة أكبر ببلاش</h3><p>local على Railway + وضع S3/R2/Storj لما تفعل المتغيرات — توصل 10GB و 25GB مجانا.</p></div>
+    <div class="card"><div class="ico">🧬</div><h3>بصمة ELMINYAWE</h3><p>هيدر X-Powered-By و API جاهز لـ ShareX وأي بوت.</p></div>
+  </section>
+
+  <footer>Made with 💜 by <b>ELMINYAWE</b> • MINYAWE-LINK V2 • Evervault style</footer>
+</div>
+
+<script>
+let exp='24h';
+document.querySelectorAll('#exps .pill').forEach(b=>b.onclick=e=>{e.stopPropagation();document.querySelectorAll('#exps .pill').forEach(x=>x.classList.remove('on'));b.classList.add('on');exp=b.dataset.v;});
+const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=document.getElementById('dlabel');
+fi.onchange=()=>{if(fi.files[0])dl.innerText='📁 '+fi.files[0].name+' ('+(fi.files[0].size/1048576).toFixed(2)+' MB)';};
+['dragover','drop'].forEach(e=>drop.addEventListener(e,e=>{e.preventDefault();if(e.dataTransfer?.files[0]){fi.files=e.dataTransfer.files;fi.onchange();}}));
+fetch('/api/config').then(r=>r.json()).then(j=>{document.getElementById('cfg').innerText=`VAULT READY :: max ${j.maxMB}MB :: storage ${j.storage} :: direct-link ON`;}).catch(()=>{});
+function fmt(s){if(!s)return'—';const d=new Date(s);return d.toLocaleString('ar-EG');}
+async function up(){
+  if(!fi.files[0])return alert('اختار ملف الأول');
+  const btn=document.getElementById('btn'),box=document.getElementById('result');
+  btn.disabled=true;btn.innerText='جاري الرفع… ⏳';box.style.display='block';box.innerHTML='uploading to vault…';
+  try{
+    const fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
+    const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
+    if(!r.ok)throw new Error(j.error||'upload failed');
+    const ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
+    let prev='';
+    if(['jpg','jpeg','png','gif','webp'].includes(ext))prev=`<div class="preview"><img src="${j.url}"></div>`;
+    else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.url}" controls></video></div>`;
+    else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.url}" controls></audio></div>`;
+    box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.url}" target="_blank">${j.url}</a>
+      <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'دائم'}</div>
+      ${prev}<br><button class="copy" onclick="navigator.clipboard.writeText('${j.url}')">📋 نسخ اللينك المباشر</button>
+      <br><br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.url)}">`;
+  }catch(e){box.innerHTML='❌ '+e.message;}
+  btn.disabled=false;btn.innerText='رفع 🚀';
+}
+</script>
+</body>
+</html>

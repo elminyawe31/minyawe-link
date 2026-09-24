@@ -1,11 +1,12 @@
 {
   "name": "minyawe-link",
-  "version": "1.0.0",
-  "description": "MINYAWE-LINK by ELMINYAWE - tempfile & img to link",
+  "version": "2.0.0",
+  "description": "MINYAWE-LINK V2 by ELMINYAWE - Evervault style, direct links, S3/R2 ready",
   "main": "server.js",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js" },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1"
