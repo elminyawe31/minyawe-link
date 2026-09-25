@@ -7,367 +7,316 @@
 <meta name="description" content="MINYAWE-LINK by ELMINYAWE — ارفع صور وأغاني وفيديوهات وخد لينك مباشر">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ============ EVERVAULT TOKENS (by the letter) ============ */
+/* ============ RESEND TOKENS (exact) ============ */
 :root{
-  --color-void-canvas:#010314; --color-obsidian-surface:#171825; --color-slate-layer:#2a2b3a;
-  --color-carbon-border:#343543; --color-ash-text:#5e6077; --color-fog-text:#9fa2b9;
-  --color-mist-text:#babcd2; --color-lunar-white:#dfe1f4; --color-frost-white:#ececfb;
-  --color-pure-white:#ffffff; --color-ultraviolet-key:#b88cff; --color-deep-iris:#6633ee;
-  --color-amethyst-glow:#8e64ff; --color-shadow-iris:#2e2a4c; --color-plum-depth:#1f1d3a;
-  --color-code-rose:#f92672; --color-crypt-char:#847fa1;
-  --font-display:'Inter Tight',system-ui,sans-serif;
-  --font-inter:'Inter',system-ui,sans-serif;
-  --font-mono:'Roboto Mono',monospace;
+  --c-void:#000000; --c-hair:#292d30; --c-white:#ffffff; --c-bone:#f0f0f0;
+  --c-ash:#a1a4a5; --c-smoke:#abafb4; --c-iron:#6e727a; --c-char:#464a4d;
+  --c-violet:#9281f7; --c-violet-glow:#baa7ff; --c-blue:#3b9eff; --c-sky:#70b8ff;
+  --c-green:#3ad389; --c-red:#ff9592; --c-amber:#ffca16;
+  --f-ui:'Inter',system-ui,sans-serif; --f-tight:'Inter Tight','Inter',system-ui,sans-serif;
+  --f-serif:'Playfair Display',Georgia,serif; --f-mono:'JetBrains Mono',monospace;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--color-void-canvas);color:var(--color-lunar-white);font-family:var(--font-inter);min-height:100vh;-webkit-font-smoothing:antialiased}
-a{color:var(--color-ultraviolet-key)}
-.wrap{max-width:1200px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1}
-/* ============ 1. ANNOUNCEMENT BAR ============ */
-.anno{width:100%;text-align:center;font-size:12px;padding:10px 12px;color:var(--color-lunar-white)}
-.anno a{color:var(--color-lunar-white);text-decoration:none;font-weight:500}
-.anno a:hover{color:var(--color-ultraviolet-key)}
-.anno .dot{color:var(--color-ultraviolet-key);margin:0 6px}
-/* ============ 2. FLOATING PILL NAV (19.2px) ============ */
-.nav{background:var(--color-obsidian-surface);border-radius:19.2px;padding:8px 12px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  box-shadow:rgba(255,255,255,.1) 0 1px 0 0 inset,rgba(0,0,0,.25) 0 8px 16px -4px;
-  border:1px solid var(--color-carbon-border);
-  position:sticky;top:12px;z-index:50;backdrop-filter:blur(12px)}
+body{margin:0;background:var(--c-void);color:var(--c-bone);font-family:var(--f-ui);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--c-smoke)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px 64px}
+/* ============ 2. NAV (transparent) ============ */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0;
+  position:sticky;top:0;z-index:50;background:rgba(0,0,0,.95);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.brand .bars{display:flex;flex-direction:column;gap:3px}
-.brand .bars i{display:block;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--color-deep-iris),var(--color-ultraviolet-key))}
-.brand .bars i:nth-child(1){width:18px}.brand .bars i:nth-child(2){width:13px}.brand .bars i:nth-child(3){width:16px}
-.brand .wm{font-family:var(--font-display);font-weight:500;font-size:15px;color:var(--color-lunar-white);letter-spacing:-.01em;line-height:1.1}
-.brand .wm small{display:block;font-family:var(--font-mono);font-size:9px;font-weight:400;color:var(--color-fog-text);letter-spacing:.35em}
-.nav .links{display:flex;gap:13px}
-.nav .links a{font-size:13px;font-weight:500;color:var(--color-lunar-white);text-decoration:none;opacity:.75}
-.nav .links a:hover{color:var(--color-ultraviolet-key);opacity:1}
-.btn-pill{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:8px 16px;
-  font-family:var(--font-inter);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
-  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset;text-decoration:none;display:inline-block}
-.btn-pill:hover{filter:brightness(.94)}
-.ghost{background:none;border:0;color:var(--color-frost-white);font-family:var(--font-inter);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none}
-.ghost:hover{color:var(--color-ultraviolet-key)}
-/* ============ 3. HERO + GRADIENT BAND ============ */
-.hero-band{position:relative;text-align:center;padding:64px 0 0;overflow:visible}
-.hero-band::before{content:"";position:absolute;top:-120px;left:50%;transform:translateX(-50%);
-  width:min(1100px,130%);height:560px;pointer-events:none;
-  background:radial-gradient(130% 120% at 50% 0%,rgba(102,51,238,.38) 0%,rgba(142,100,255,.14) 40%,transparent 70%)}
-.eyebrow{display:inline-block;position:relative;background:var(--color-slate-layer);border-radius:8px;padding:6px 10px;
-  font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.4em;text-transform:uppercase;color:var(--color-frost-white);
-  box-shadow:rgba(0,0,0,.12) 0 0 0 1px inset}
-.hero-band h1{position:relative;font-family:var(--font-display);font-weight:600;font-size:56px;line-height:1.13;letter-spacing:-1.4px;
-  color:var(--color-frost-white);margin:22px auto 12px;max-width:800px}
-.hero-band h1 .vio{color:var(--color-ultraviolet-key)}
-.hero-band .sub{position:relative;font-size:16px;line-height:1.94;color:var(--color-fog-text);margin:0 auto;max-width:560px}
-.hero-cta{position:relative;display:flex;gap:18px;justify-content:center;align-items:center;margin-top:24px;flex-wrap:wrap}
-.hero-cta .btn-pill{padding:10px 22px;font-size:14px}
-.sysline{position:relative;font-family:var(--font-mono);font-size:12px;color:var(--color-ash-text);margin-top:16px}
-/* hero visualization: floating link-card + beam + crypt chars */
-.stage{position:relative;display:flex;justify-content:center;align-items:stretch;gap:0;margin:44px auto 0;max-width:760px;min-height:250px}
-.beam-v{width:90px;background:radial-gradient(50% 50% at 50% 50%,#ffffff 0%,var(--color-deep-iris) 45%,transparent 75%);
-  opacity:.55;filter:blur(6px);border-radius:50%}
-.crypt{font-family:var(--font-mono);font-size:13px;line-height:1.7;color:var(--color-crypt-char);opacity:.8;
-  text-align:left;direction:ltr;user-select:none;overflow:hidden;max-height:250px;flex:1}
-.linkcard{width:340px;border-radius:24px;padding:24px;text-align:left;direction:ltr;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#ffffff 0%,#d9ccff 45%,var(--color-amethyst-glow) 100%);color:#010314;
-  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset,rgba(0,0,0,.12) 0 -1px 24px 0 inset,rgba(0,0,0,.2) 0 0 0 1px,rgba(0,0,0,.2) 0 2px 4px 0;
-  display:flex;flex-direction:column;justify-content:space-between;gap:18px}
-.linkcard .chiprow{display:flex;justify-content:space-between;align-items:center}
-.linkcard .chip{width:44px;height:32px;border-radius:6px;background:linear-gradient(135deg,#3a3a4a,#101018);
-  position:relative}
-.linkcard .chip::after{content:"";position:absolute;inset:6px 8px;border:1px solid rgba(255,255,255,.4);border-radius:3px}
-.linkcard .wave{font-size:20px;color:#010314;opacity:.7}
-.linkcard .url{font-family:var(--font-mono);font-size:12px;background:rgba(1,3,20,.08);border-radius:8px;padding:8px 10px;word-break:break-all}
-.linkcard .rowline{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;color:#2a2b3a}
-.linkcard .Mmark{font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-.02em}
-/* ============ 4. TRUST LOGO CLOUD ============ */
-.trust{text-align:center;margin-top:80px}
-.trust .cap{font-size:13px;color:var(--color-fog-text);margin-bottom:18px}
-.trust .cloud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.trust .t{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);border-radius:8px;
-  padding:8px 16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;color:var(--color-lunar-white)}
+.brand .mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(to right bottom,#9281f7,#9a54dc);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--f-tight);font-weight:600;font-size:15px;
+  box-shadow:rgba(176,199,217,.145) 0 0 0 1px}
+.brand .wm{font-family:var(--f-tight);font-weight:600;font-size:16px;color:var(--c-white);letter-spacing:-.01em;line-height:1.1}
+.brand .wm small{display:block;font-family:var(--f-mono);font-size:10px;font-weight:400;color:var(--c-ash);letter-spacing:.3em}
+.nav .links{display:flex;gap:28px}
+.nav .links a{font-size:14px;color:var(--c-bone);text-decoration:none}
+.nav .links a:hover{color:var(--c-white)}
+.btn-ghost{background:transparent;border:1px solid var(--c-hair);color:var(--c-white);border-radius:6px;
+  padding:12px 16px;font-family:var(--f-ui);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;
+  display:inline-block;transition:border-color .15s ease-out,background .15s ease-out,transform .15s ease-out}
+.btn-ghost:hover{border-color:var(--c-white)}
+.btn-ghost:active{transform:scale(.98)}
+.btn-ghost.sm{padding:8px 16px;font-size:13px}
+.btn-ghost:disabled{opacity:.45;cursor:default}
+/* ============ 3. HERO (serif + cube) ============ */
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center;padding:96px 0 0}
+.eyebrow{display:inline-block;border:1px solid var(--c-hair);border-radius:9999px;padding:6px 12px;
+  font-family:var(--f-mono);font-size:12px;color:var(--c-bone)}
+.hero h1{font-family:var(--f-tight);font-weight:400;font-size:96px;line-height:1;letter-spacing:-.96px;
+  color:var(--c-white);margin:24px 0 16px}
+.hero h1 .serif{font-family:var(--f-serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.hero .sub{font-size:18px;line-height:1.6;color:var(--c-ash);margin:0;max-width:480px}
+.hero .sub code{font-family:var(--f-mono);font-size:14px;color:var(--c-violet)}
+.hero-cta{display:flex;gap:16px;align-items:center;margin-top:32px;flex-wrap:wrap}
+.lnk-chev{color:var(--c-bone);font-size:16px;text-decoration:none}
+.lnk-chev:hover{color:var(--c-white)}
+.sysline{font-family:var(--f-mono);font-size:12px;color:var(--c-char);margin-top:20px;direction:ltr;text-align:right}
+.sysline .ok{color:var(--c-green)}
+/* cube: black sculptural object, slow rotation */
+.stage{display:flex;justify-content:center;perspective:800px}
+.cube{width:150px;height:150px;position:relative;transform-style:preserve-3d;animation:spin 26s linear infinite}
+.cube i{position:absolute;inset:0;background:#000;border:1px solid var(--c-hair)}
+.cube i:nth-child(1){transform:translateZ(75px)}
+.cube i:nth-child(2){transform:rotateY(180deg) translateZ(75px)}
+.cube i:nth-child(3){transform:rotateY(90deg) translateZ(75px)}
+.cube i:nth-child(4){transform:rotateY(-90deg) translateZ(75px)}
+.cube i:nth-child(5){transform:rotateX(90deg) translateZ(75px)}
+.cube i:nth-child(6){transform:rotateX(-90deg) translateZ(75px)}
+.cube .core{position:absolute;inset:52px;background:linear-gradient(to right bottom,#9281f7,#9a54dc);transform:translateZ(76px);border-radius:6px}
+@keyframes spin{from{transform:rotateX(-18deg) rotateY(0)}to{transform:rotateX(-18deg) rotateY(360deg)}}
+/* ============ 4. LOGO GRID (no wrappers) ============ */
+.logos{margin-top:96px;text-align:center}
+.logos .cap{font-size:14px;color:var(--c-ash);margin-bottom:24px}
+.logos .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:60px 8px;max-width:900px;margin:0 auto}
+.logos .t{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--c-bone)}
 /* ============ SECTIONS ============ */
-section.block{margin-top:80px}
-.sec-head{text-align:center;max-width:640px;margin:0 auto 28px}
-.sec-head h2{font-family:var(--font-display);font-weight:600;font-size:32px;line-height:1.25;letter-spacing:-.64px;color:var(--color-frost-white);margin:16px 0 8px}
-.sec-head p{font-size:14px;line-height:1.76;color:var(--color-fog-text);margin:0}
-/* ============ 5. UPLOAD VAULT (16px card) ============ */
-.vault{background:var(--color-slate-layer);border-radius:16px;padding:24px;max-width:680px;margin:0 auto;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
-.drop{border:1px dashed var(--color-ultraviolet-key);border-radius:12px;padding:44px 20px;text-align:center;cursor:pointer;background:rgba(102,51,238,.06)}
-.drop:hover{background:rgba(102,51,238,.14)}
-.drop .big{font-size:15px;font-weight:500;color:var(--color-frost-white)}
-.drop .sub{font-size:12px;color:var(--color-fog-text);margin-top:8px;font-family:var(--font-mono)}
-.expr{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
-.expr .lbl{width:100%;font-family:var(--font-mono);font-size:10px;letter-spacing:.35em;color:var(--color-ash-text);text-transform:uppercase}
-.pill{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
-  border-radius:9999px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-inter);transition:all .15s}
-.pill:hover{border-color:var(--color-ultraviolet-key)}
-.pill.on{background:linear-gradient(135deg,var(--color-deep-iris),var(--color-amethyst-glow));color:#fff;border-color:transparent;
-  box-shadow:0 0 12px rgba(142,100,255,.55)}
-.upload-btn{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:12px 28px;
-  font-family:var(--font-inter);font-size:14px;font-weight:500;cursor:pointer;width:100%;
-  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset}
-.upload-btn:disabled{opacity:.5}
+section.block{margin-top:96px}
+.sec-head{max-width:640px;margin:0 auto 32px;text-align:center}
+.sec-head .kick{font-family:var(--f-mono);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--c-ash)}
+.sec-head h2{font-family:var(--f-tight);font-weight:400;font-size:56px;line-height:1.2;letter-spacing:-2.8px;color:var(--c-white);margin:16px 0 12px}
+.sec-head p{font-size:16px;line-height:1.5;color:var(--c-ash);margin:0}
+/* ============ 5. UPLOAD PANEL (24px) ============ */
+.panel{background:var(--c-void);border:1px solid var(--c-hair);border-radius:24px;max-width:760px;margin:0 auto;overflow:hidden}
+.panel .bar{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--c-hair)}
+.panel .bar .d{width:8px;height:8px;border-radius:50%}
+.panel .bar .t{font-family:var(--f-mono);font-size:12px;color:var(--c-ash);margin-inline-start:8px;direction:ltr}
+.panel .body{padding:32px}
+.drop{border:1px dashed var(--c-hair);border-radius:6px;padding:48px 20px;text-align:center;cursor:pointer;transition:border-color .15s ease-out,background .15s ease-out}
+.drop:hover{border-color:var(--c-white)}
+.drop.over{border-color:var(--c-white);background:#0b0e14}
+.drop .big{font-size:16px;color:var(--c-white);font-weight:500}
+.drop .sub{font-size:14px;color:var(--c-ash);margin-top:8px}
+.drop .sub code{font-family:var(--f-mono);font-size:12px;color:var(--c-violet)}
+.expr{display:flex;gap:16px;margin:24px 0 16px;flex-wrap:wrap;align-items:center}
+.expr .lbl{width:100%;font-family:var(--f-mono);font-size:12px;color:var(--c-char);letter-spacing:.2em;text-transform:uppercase}
+.chip{background:transparent;border:1px solid var(--c-hair);color:var(--c-bone);border-radius:6px;
+  padding:8px 16px;font-size:14px;cursor:pointer;font-family:var(--f-ui);transition:border-color .15s ease-out,color .15s ease-out}
+.chip:hover{border-color:var(--c-white);color:var(--c-white)}
+.chip.on{border-color:var(--c-white);color:var(--c-white)}
+.upload-btn{width:100%;padding:14px;font-size:15px}
 input[type=file]{display:none}
-.result{display:none;background:#0b0b15;border:1px solid var(--color-carbon-border);border-radius:12px;padding:16px;margin-top:16px;word-break:break-all;text-align:center}
-.result a{font-family:var(--font-mono);font-size:13px}
-.meta{font-family:var(--font-mono);font-size:11px;color:var(--color-fog-text);margin-top:8px}
-.preview img,.preview video{max-width:100%;border-radius:12px;margin-top:12px}
-.preview audio{width:100%;margin-top:12px}
-.copy{background:var(--color-deep-iris);color:#fff;border:0;border-radius:9999px;padding:8px 18px;
-  font-family:var(--font-inter);font-size:13px;font-weight:500;cursor:pointer;margin-top:10px}
-/* ============ 6. FEATURE GRID (12px cards per spec) ============ */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.fcard{background:var(--color-slate-layer);border-radius:12px;padding:24px;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1px inset}
-.fcard:hover{background:var(--color-plum-depth)}
-.fcard .ico{width:40px;height:40px;border-radius:10px;background:rgba(184,140,255,.1);border:1px solid rgba(184,140,255,.25);
-  display:flex;align-items:center;justify-content:center;font-size:19px}
-.fcard h3{font-family:var(--font-display);font-weight:500;font-size:18px;line-height:1.5;letter-spacing:-.18px;color:var(--color-frost-white);margin:14px 0 6px}
-.fcard p{font-size:14px;line-height:1.76;color:var(--color-fog-text);margin:0}
-/* ============ 7. CODE SNIPPET CARD (12px, Monokai) ============ */
-.codecard{background:var(--color-slate-layer);border:1px solid var(--color-carbon-border);border-radius:12px;
-  max-width:680px;margin:0 auto;overflow:hidden}
-.codecard .tabs{display:flex;gap:4px;padding:10px 12px 0;border-bottom:1px solid var(--color-carbon-border)}
-.codecard .tab{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--color-fog-text);background:none;border:0;padding:8px 12px;cursor:pointer}
-.codecard .tab.on{color:var(--color-frost-white);border-bottom:2px solid var(--color-ultraviolet-key)}
-.codecard pre{margin:0;padding:16px;font-family:var(--font-mono);font-size:12px;line-height:1.5;overflow-x:auto;direction:ltr;text-align:left;color:var(--color-frost-white)}
-.codecard .k{color:var(--color-code-rose)} .codecard .s{color:var(--color-ultraviolet-key)} .codecard .v{color:var(--color-frost-white)} .codecard .c{color:var(--color-ash-text)}
-/* ============ 8. ICON GRID ============ */
-.icongrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;max-width:800px;margin:0 auto}
-.tile{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);border-radius:12px;padding:18px 8px;text-align:center}
-.tile .t{font-size:24px;color:var(--color-ultraviolet-key)}
-.tile div:last-child{font-size:11px;color:var(--color-fog-text);margin-top:8px}
-/* ============ 9. FINAL CTA BAND ============ */
-.ctaband{position:relative;text-align:center;border-radius:38.4px;margin-top:80px;padding:64px 24px;overflow:hidden;
-  background:radial-gradient(130% 120% at 50% 0%,rgba(102,51,238,.5) 0%,rgba(42,43,58,.6) 55%,var(--color-obsidian-surface) 100%);
-  border:1px solid var(--color-carbon-border)}
-.ctaband h2{font-family:var(--font-display);font-weight:600;font-size:48px;line-height:1.13;letter-spacing:-1.2px;color:var(--color-frost-white);margin:0 0 10px}
-.ctaband p{color:var(--color-lunar-white);opacity:.8;font-size:14px;margin:0 0 24px}
-/* ============ FOOTER ============ */
-footer{margin-top:80px;border-top:1px solid var(--color-carbon-border);padding-top:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
-footer .fm{font-family:var(--font-mono);font-size:11px;color:var(--color-ash-text)}
-footer .fm b{color:var(--color-ultraviolet-key)}
-/* ============ MOTION / UV LIFE (animated) ============ */
-#dust{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
-.hero-band::before{animation:bandbreathe 9s ease-in-out infinite}
-@keyframes bandbreathe{0%,100%{opacity:.7;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.12)}}
-.hero-band::after{content:"";position:absolute;top:30px;width:420px;height:420px;pointer-events:none;filter:blur(80px);opacity:.35;
-  background:radial-gradient(circle,rgba(184,140,255,.55),transparent 70%);animation:orbdrift 14s ease-in-out infinite}
-@keyframes orbdrift{0%,100%{left:4%;transform:translateY(0)}50%{left:58%;transform:translateY(46px)}}
-.nav{animation:navin .8s ease both}
-@keyframes navin{from{opacity:0;transform:translateY(-14px)}}
-.hero-band .eyebrow,.hero-band h1,.hero-band .sub,.hero-cta{animation:risein .9s cubic-bezier(.2,.7,.2,1) both}
-.hero-band h1{animation-delay:.1s}.hero-band .sub{animation-delay:.2s}.hero-cta{animation-delay:.3s}
-@keyframes risein{from{opacity:0;transform:translateY(22px)}}
-.hero-band h1 .vio{background:linear-gradient(90deg,#b88cff,#8e64ff,#ececfb,#b88cff);background-size:250% auto;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:voslide 5s linear infinite}
-@keyframes voslide{to{background-position:250% center}}
-.stage{perspective:900px}
-.stage::before{content:"";position:absolute;top:50%;left:50%;width:440px;height:440px;transform:translate(-50%,-50%);
-  background:conic-gradient(from 0deg,transparent 0 68%,rgba(184,140,255,.4) 85%,transparent 100%);
-  border-radius:50%;filter:blur(12px);animation:spin 12s linear infinite;pointer-events:none}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-.linkcard{animation:floaty 6s ease-in-out infinite}
-@keyframes floaty{0%,100%{transform:translateY(0) rotateX(2deg)}50%{transform:translateY(-14px) rotateX(-2deg)}}
-.beam-v{animation:beampulse 4s ease-in-out infinite}
-@keyframes beampulse{0%,100%{opacity:.3}50%{opacity:.7}}
-.crypt{animation:cryptflick 3.2s ease-in-out infinite}
-@keyframes cryptflick{0%,100%{opacity:.8}50%{opacity:.45}}
-.trust .cloud{display:block;overflow:hidden;direction:ltr;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.trust .track{display:flex;gap:10px;width:max-content;animation:mq 24s linear infinite}
-.trust .track .t{flex:0 0 auto}
-.trust .cloud:hover .track{animation-play-state:paused}
-@keyframes mq{to{transform:translateX(-50%)}}
-.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
-.rv.on{opacity:1;transform:none}
-.fcard,.tile{transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease}
-.fcard:hover{transform:translateY(-5px);
-  box-shadow:rgba(0,0,0,.3) 0 14px 28px -6px,rgba(190,167,255,.45) 0 0 0 1.5px inset,0 0 26px rgba(102,51,238,.35)}
-.tile:hover{transform:translateY(-4px);border-color:var(--color-ultraviolet-key);box-shadow:0 0 16px rgba(184,140,255,.3)}
-.btn-pill{transition:transform .15s ease,box-shadow .2s ease,filter .15s ease}
-.btn-pill:hover{filter:none;box-shadow:0 0 18px rgba(184,140,255,.55);transform:translateY(-1px)}
-.btn-pill:active{transform:scale(.97)}
-.upload-btn{transition:box-shadow .2s ease,transform .15s ease}
-.upload-btn:hover:not(:disabled){box-shadow:0 0 22px rgba(184,140,255,.6)}
-.upload-btn:active:not(:disabled){transform:scale(.99)}
-.codecard .tab{transition:color .15s}
-.drop{transition:background .2s,box-shadow .2s,border-color .2s}
-.drop.over{border-color:#fff;background:rgba(102,51,238,.2);
-  box-shadow:0 0 24px rgba(102,51,238,.5) inset,0 0 18px rgba(102,51,238,.35);animation:dropulse 1s ease-in-out infinite}
-@keyframes dropulse{50%{box-shadow:0 0 34px rgba(142,100,255,.65) inset,0 0 26px rgba(142,100,255,.45)}}
-.result{animation:risein .4s ease both}
-/* my files list */
-.filelist{background:var(--color-slate-layer);border-radius:16px;padding:12px 24px;max-width:680px;margin:0 auto;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
-.frow{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--color-carbon-border);font-size:13px}
+.result{display:none;border-top:1px solid var(--c-hair);margin-top:24px;padding-top:24px;text-align:center;word-break:break-all}
+.result .okline{font-size:16px;color:var(--c-white);font-weight:500}
+.result a.u{font-family:var(--f-mono);font-size:13px;color:var(--c-violet)}
+.result .meta{font-family:var(--f-mono);font-size:12px;color:var(--c-ash);margin-top:10px}
+.result .meta a{color:var(--c-smoke)}
+.brow{display:flex;gap:16px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.preview img,.preview video{max-width:100%;border-radius:16px;margin-top:16px}
+.preview audio{width:100%;margin-top:16px}
+/* ============ 6. MY FILES ============ */
+.filelist{max-width:760px;margin:0 auto}
+.frow{display:flex;align-items:center;gap:16px;padding:14px 4px;border-bottom:1px solid var(--c-hair);font-size:14px}
 .frow:last-child{border-bottom:0}
-.frow .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono);font-size:12px;color:var(--color-frost-white);direction:ltr;text-align:right}
-.frow .tag{font-family:var(--font-mono);font-size:10px;color:var(--color-ash-text);white-space:nowrap}
-.frow .ab{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
-  border-radius:9999px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:var(--font-inter);white-space:nowrap}
-.frow .ab:hover{border-color:var(--color-ultraviolet-key)}
-/* status card */
-.statuscard{background:var(--color-slate-layer);border-radius:16px;padding:24px;max-width:680px;margin:0 auto;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
-.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px;border-bottom:1px solid var(--color-carbon-border);font-size:14px}
+.frow .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-mono);font-size:13px;color:var(--c-bone);direction:ltr;text-align:right}
+.frow .tag{font-family:var(--f-mono);font-size:12px;color:var(--c-char);white-space:nowrap}
+/* ============ 7. STATUS (terminal rows) ============ */
+.status{max-width:760px;margin:0 auto;border:1px solid var(--c-hair);border-radius:16px;padding:8px 32px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--c-hair);font-size:14px}
 .srow:last-child{border-bottom:0}
+.srow .k{color:var(--c-ash)}
+.srow .v{font-family:var(--f-mono);font-size:13px;color:var(--c-bone);direction:ltr}
 .srow.head{justify-content:flex-start}
-.srow .mono{font-family:var(--font-mono);font-size:12px;color:var(--color-frost-white);direction:ltr}
-.pulse{width:10px;height:10px;border-radius:50%;background:#4ade80;flex:0 0 auto;animation:ping 1.8s ease-out infinite}
-.pulse.bad{background:#f87171}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
-.mini{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
-  border-radius:9999px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:var(--font-inter);margin-inline-start:auto}
-.mini:hover{border-color:var(--color-ultraviolet-key)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
-@media(max-width:720px){
-  .hero-band h1{font-size:36px;letter-spacing:-.7px}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--c-green);flex:0 0 auto;animation:pulse 2s ease-out infinite}
+.dot.bad{background:var(--c-red)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(58,211,137,.5)}70%{box-shadow:0 0 0 9px rgba(58,211,137,0)}100%{box-shadow:0 0 0 0 rgba(58,211,137,0)}}
+/* ============ 8. FEATURES ============ */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.fcard{background:var(--c-void);border:1px solid var(--c-hair);border-radius:16px;padding:32px;transition:border-color .15s ease-out}
+.fcard:hover{border-color:var(--c-iron)}
+.fcard .ico{width:48px;height:48px;border-radius:16px;background:linear-gradient(to right bottom,#9281f7,#9a54dc);
+  display:flex;align-items:center;justify-content:center;box-shadow:rgba(176,199,217,.145) 0 0 0 1px}
+.fcard .ico svg{width:22px;height:22px;stroke:#fff}
+.tile svg{width:26px;height:26px;stroke:var(--c-bone)}
+.fcard h3{font-family:var(--f-tight);font-weight:500;font-size:20px;line-height:1.3;color:var(--c-white);margin:20px 0 8px;letter-spacing:-.01em}
+.fcard p{font-size:16px;line-height:1.5;color:var(--c-ash);margin:0}
+/* ============ 9. CODE TERMINAL ============ */
+.term{max-width:760px;margin:0 auto;background:var(--c-void);border:1px solid var(--c-hair);border-radius:16px;overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--c-hair)}
+.term .bar .d{width:8px;height:8px;border-radius:50%}
+.term .tabs{display:flex;gap:4px;padding:10px 12px 0}
+.term .tab{font-family:var(--f-mono);font-size:12px;color:var(--c-ash);background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;cursor:pointer}
+.term .tab.on{color:var(--c-white);border-bottom-color:var(--c-violet)}
+.term pre{margin:0;padding:24px;font-family:var(--f-mono);font-size:14px;line-height:1.5;overflow-x:auto;direction:ltr;text-align:left;color:var(--c-bone)}
+.term .k{color:var(--c-bone)} .term .s{color:var(--c-violet)} .term .f{color:var(--c-sky)} .term .g{color:var(--c-green)} .term .c{color:var(--c-char)}
+/* ============ 10. TYPES ============ */
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px;max-width:820px;margin:0 auto}
+.tile{border:1px solid var(--c-hair);border-radius:16px;padding:24px 8px;text-align:center;transition:border-color .15s ease-out}
+.tile:hover{border-color:var(--c-iron)}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tile div:last-child{font-size:14px;color:var(--c-ash);margin-top:12px}
+/* ============ 11. CTA PANEL ============ */
+.cta{margin-top:96px;text-align:center;border:1px solid var(--c-hair);border-radius:24px;padding:80px 24px;background:var(--c-void)}
+.cta h2{font-family:var(--f-tight);font-weight:400;font-size:56px;line-height:1.2;letter-spacing:-2.8px;color:var(--c-white);margin:0 0 12px}
+.cta h2 .serif{font-family:var(--f-serif);font-style:italic;letter-spacing:-.01em}
+.cta p{color:var(--c-ash);font-size:16px;margin:0 0 32px}
+/* ============ 12. FOOTER (minimal) ============ */
+footer{margin-top:96px;padding-top:32px;border-top:1px solid var(--c-hair);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer .fl{display:flex;gap:24px}
+footer a{font-size:14px;color:var(--c-ash);text-decoration:none}
+footer a:hover{color:var(--c-white)}
+footer .fm{font-family:var(--f-mono);font-size:12px;color:var(--c-char)}
+footer .fm b{color:var(--c-violet)}
+/* ============ TESTIMONIALS ============ */
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.qcard{background:var(--c-void);border:1px solid var(--c-hair);border-radius:16px;padding:24px;transition:border-color .15s ease-out}
+.qcard:hover{border-color:var(--c-iron)}
+.qcard p{font-size:16px;line-height:1.5;color:var(--c-bone);margin:0}
+.qcard .who{display:flex;align-items:center;gap:12px;margin-top:20px}
+.qcard .av{width:32px;height:32px;border-radius:50%;border:1px solid var(--c-hair);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-family:var(--f-tight);font-weight:600;font-size:14px;color:var(--c-white)}
+.qcard .nm{font-size:14px;font-weight:500;color:var(--c-bone)}
+.qcard .rl{font-size:14px;color:var(--c-ash)}
+/* ============ TOASTS ============ */
+#toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{display:flex;align-items:center;gap:10px;background:#000;border:1px solid var(--c-hair);border-radius:6px;
+  padding:12px 16px;font-family:var(--f-mono);font-size:13px;color:var(--c-bone);animation:tin .25s ease-out;max-width:90vw}
+.toast.out{opacity:0;transition:opacity .3s}
+.toast .tdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}}
+/* reveal */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.rv.on{opacity:1;transform:none}
+.hero .eyebrow,.hero h1,.hero .sub,.hero-cta{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.pill-link{display:inline-block;border:1px solid var(--c-hair);border-radius:9999px;padding:6px 12px;
+  font-size:14px;color:var(--c-bone);text-decoration:none;background:transparent;margin-bottom:20px}
+.pill-link:hover{border-color:var(--c-white)}
+.pill-link span{color:var(--c-violet)}
+.eyebrow{display:inline-block;background:transparent;border:1px solid var(--c-hair);border-radius:6px;padding:6px 10px;
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--c-bone)}
+.hero h1{animation-delay:.08s}.hero .sub{animation-delay:.16s}.hero-cta{animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+@media(max-width:820px){
+  .hero{grid-template-columns:1fr;padding-top:64px;text-align:center}
+  .hero .sub{margin:0 auto}
+  .hero-cta{justify-content:center}
+  .hero h1,.sec-head h2,.cta h2{font-size:40px;letter-spacing:-1.5px}
   .nav .links{display:none}
-  .stage{flex-direction:column;align-items:center}
-  .crypt{display:none}
-  .beam-v{display:none}
-  .linkcard{width:100%;max-width:340px}
-  .ctaband h2{font-size:32px}
+  .logos .grid{grid-template-columns:repeat(3,1fr)}
+  section.block{margin-top:64px}
 }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<canvas id="dust"></canvas>
-
 <div class="wrap">
-  <!-- 1. ANNOUNCEMENT BAR -->
-  <div class="anno">🟣 لينكات مباشرة دايمة <b>من غير حساب</b> <span class="dot">•</span> <a href="#up">Start uploading →</a></div>
 
-  <!-- 2. FLOATING PILL NAV -->
+  <!-- 2. NAV -->
   <nav class="nav">
-    <a class="brand" href="#top">
-      <span class="bars"><i></i><i></i><i></i></span>
-      <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
-    </a>
+    <a class="brand" href="#top"><span class="mark">M</span><span class="wm">minyawe-link<small>BY ELMINYAWE</small></span></a>
     <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="#api">API</a><a href="#status">الحالة</a></div>
-    <button type="button" class="btn-pill" onclick="document.getElementById('f').click()">+ رفع ملف</button>
+    <button type="button" class="btn-ghost sm" onclick="document.getElementById('f').click()">رفع ملف</button>
   </nav>
 
   <!-- 3. HERO -->
-  <header class="hero-band" id="top">
-    <span class="eyebrow">Direct • Fast • Free</span>
-    <h1>خزنة ملفاتك تحت <span class="vio">الضوء البنفسجي</span></h1>
-    <p class="sub">ارفع صور، أغاني، فيديوهات وأي ملفات — وخد لينك مباشر يشتغل في أي متصفح وأي مشغل وأي موقع، من غير صفحات حماية.</p>
-    <div class="hero-cta">
-      <button type="button" class="btn-pill" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ابدأ الرفع 🚀</button>
-      <a class="ghost" href="#api">شوف الـ API ←</a>
-    </div>
-    <div class="sysline" id="cfg">connecting to vault…</div>
-    <div class="stage">
-      <div class="crypt">9f7f·d110·a3c9·77e2<br>minyawe·link·vault<br>01:03:14·VAULT·OK<br>ff·88·cc·66·33·ee<br>direct·link·ready<br>ELMINYAWE·key·✓<br>b8·8c·ff·iris·on</div>
-      <div class="beam-v"></div>
-      <div class="linkcard">
-        <div class="chiprow"><div class="chip"></div><div class="wave">)))</div></div>
-        <div class="url">https://minyawe-link…/i/9f7fd110.ico</div>
-        <div class="rowline"><span class="Mmark">M</span><span>MINYAWE-LINK • DIRECT</span></div>
+  <header class="hero" id="top">
+    <div>
+      <a class="pill-link" href="#up">لينكات مباشرة دايمة — من غير حساب <span>←</span></a>
+      <span class="eyebrow">Direct • Fast • Free</span>
+      <h1>خزنة ملفاتك، <span class="serif">direct.</span></h1>
+      <p class="sub">ارفع صور، أغاني، فيديوهات وأي ملفات — وخد لينك مباشر بصيغة <code>/v /e /d</code> يشتغل في أي متصفح وأي مشغل.</p>
+      <div class="hero-cta">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ابدأ الرفع</button>
+        <a class="lnk-chev" href="#api">شوف الـ API ←</a>
       </div>
-      <div class="beam-v"></div>
-      <div class="crypt">token·ized·vault<br>84·7f·a1·crypt<br>upload·sealed·✓<br>6633ee·beam·on<br>30d·max·expiry<br>b88cff·key·live<br>no·ads·no·limits</div>
+      <div class="sysline" id="cfg">connecting to vault…</div>
     </div>
+    <div class="stage"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i><span class="core"></span></div></div>
   </header>
 
-  <!-- 4. TRUST LOGO CLOUD -->
-  <div class="trust">
+  <!-- 4. LOGO GRID -->
+  <div class="logos">
     <div class="cap">يشتغل مع أدواتك المفضلة — من غير إعدادات معقدة</div>
-    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">200MB</span><span class="t">CTRL+V</span><span class="t">REST API</span></div>
+    <div class="grid"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">200MB</span><span class="t">CTRL+V</span><span class="t">REST API</span></div>
   </div>
 
-  <!-- 5. UPLOAD VAULT -->
+  <!-- 5. UPLOAD PANEL -->
   <section class="block" id="up">
     <div class="sec-head">
-      <span class="eyebrow">The Vault</span>
+      <div class="kick">THE VAULT</div>
       <h2>ارفع هنا</h2>
-      <p>ملف واحد → لينك مباشر واحد. أقصى مدة احتفاظ شهر كامل.</p>
+      <p>ملف واحد ← لينك مباشر واحد. أقصى مدة احتفاظ شهر كامل.</p>
     </div>
-    <div class="vault">
-      <div class="drop" id="drop" onclick="document.getElementById('f').click()">
-        <div class="big" id="dlabel">📤 دوس هنا أو اسحب الملف هنا</div>
-        <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — أو الصق الملف هنا بـ Ctrl+V 📋</div>
+    <div class="panel">
+      <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span><span class="t">minyawe — upload</span></div>
+      <div class="body">
+        <div class="drop" id="drop" onclick="document.getElementById('f').click()">
+          <div class="big" id="dlabel">دوس هنا أو اسحب الملف هنا</div>
+          <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — أو الصق بـ <code>Ctrl+V</code></div>
+        </div>
+        <input type="file" id="f">
+        <div class="expr" id="exps">
+          <span class="lbl">مدة الاحتفاظ — Retention</span>
+          <button type="button" class="chip" data-v="1h">ساعة</button>
+          <button type="button" class="chip" data-v="24h">24 ساعة</button>
+          <button type="button" class="chip" data-v="7d">7 أيام</button>
+          <button type="button" class="chip on" data-v="30d">شهر</button>
+        </div>
+        <button type="button" class="btn-ghost upload-btn" id="btn" onclick="up()" style="width:100%;padding:14px;font-size:15px">رفع</button>
+        <div class="result" id="result"></div>
       </div>
-      <input type="file" id="f">
-      <div class="expr" id="exps">
-        <span class="lbl">Retension مدة الاحتفاظ</span>
-        <button type="button" class="pill" data-v="1h">⏳ ساعة</button>
-        <button type="button" class="pill" data-v="24h">🕐 24 ساعة</button>
-        <button type="button" class="pill" data-v="7d">📅 7 أيام</button>
-        <button type="button" class="pill on" data-v="30d">🗓️ شهر</button>
-      </div>
-      <button type="button" class="upload-btn" id="btn" onclick="up()">رفع 🚀</button>
-      <div class="result" id="result"></div>
     </div>
   </section>
 
-  <!-- 5.5 STATUS (live, same page) -->
-  <section class="block" id="status">
-    <div class="sec-head">
-      <span class="eyebrow">System Status</span>
-      <h2>حالة الخزنة</h2>
-      <p>نبض حي من السيرفر — يتحدث تلقائيا كل 30 ثانية من غير تاب جديد.</p>
-    </div>
-    <div class="statuscard">
-      <div class="srow head"><span class="pulse" id="st-dot"></span><span id="st-state" class="mono">checking…</span>
-        <button type="button" class="mini" onclick="loadStatus()">↻ تحديث</button></div>
-      <div class="srow"><span>التخزين</span><span class="mono" id="st-storage">—</span></div>
-      <div class="srow"><span>سلسلة الطوارئ</span><span class="mono" id="st-chain">—</span></div>
-      <div class="srow"><span>المراية الاحتياطية</span><span class="mono" id="st-mirror">—</span></div>
-      <div class="srow"><span>مساحة الفوليوم الفاضية</span><span class="mono" id="st-disk">—</span></div>
-      <div class="srow"><span>أقصى حجم ملف</span><span class="mono" id="st-max">—</span></div>
-      <div class="srow"><span>أقصى مدة احتفاظ</span><span class="mono">30 يوم</span></div>
-      <div class="srow"><span>زمن الاستجابة</span><span class="mono" id="st-ping">—</span></div>
-    </div>
-  </section>
-
-  <!-- 5.6 MY FILES (local history) -->
+  <!-- 6. MY FILES -->
   <section class="block" id="myfiles" style="display:none">
     <div class="sec-head">
-      <span class="eyebrow">Your Vault</span>
+      <div class="kick">YOUR VAULT</div>
       <h2>ملفاتي الأخيرة</h2>
       <p>محفوظة في متصفحك بس — تقدر تمسحها في أي وقت.</p>
     </div>
     <div class="filelist" id="filelist"></div>
-    <div style="text-align:center;margin-top:12px"><button type="button" class="mini" onclick="clearMine()">🗑️ مسح الكل</button></div>
+    <div style="text-align:center;margin-top:16px"><button type="button" class="btn-ghost sm" onclick="clearMine()">مسح الكل</button></div>
   </section>
 
-  <!-- 6. FEATURES -->
+  <!-- 7. STATUS -->
+  <section class="block" id="status">
+    <div class="sec-head">
+      <div class="kick">SYSTEM STATUS</div>
+      <h2>حالة الخزنة</h2>
+      <p>نبض حي من السيرفر — يتحدث تلقائيا كل 30 ثانية.</p>
+    </div>
+    <div class="status">
+      <div class="srow head"><span class="dot" id="st-dot"></span><span class="v" id="st-state">checking…</span>
+        <button type="button" class="btn-ghost sm" style="margin-inline-start:auto" onclick="loadStatus()">تحديث</button></div>
+      <div class="srow"><span class="k">التخزين</span><span class="v" id="st-storage">—</span></div>
+      <div class="srow"><span class="k">سلسلة الطوارئ</span><span class="v" id="st-chain">—</span></div>
+      <div class="srow"><span class="k">أقصى حجم ملف</span><span class="v" id="st-max">—</span></div>
+      <div class="srow"><span class="k">مساحة الفوليوم الفاضية</span><span class="v" id="st-disk">—</span></div>
+      <div class="srow"><span class="k">زمن الاستجابة</span><span class="v" id="st-ping">—</span></div>
+    </div>
+  </section>
+
+  <!-- 8. FEATURES -->
   <section class="block" id="feat">
     <div class="sec-head">
-      <span class="eyebrow">Why Minyawe-Link</span>
+      <div class="kick">WHY MINYAWE-LINK</div>
       <h2>ليه الخزنة دي؟</h2>
       <p>أربع حاجات بتخليها مختلفة عن أي موقع رفع تاني.</p>
     </div>
     <div class="grid">
-      <div class="fcard"><div class="ico">🔗</div><h3>لينك مباشر دايما</h3><p>inline + CORS مفتوح + Accept-Ranges. يشتغل في المتصفح والمشغلات والديسكورد من غير صفحة حماية.</p></div>
-      <div class="fcard"><div class="ico">🎵</div><h3>أغاني وفيديو بجد</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek — قدّم وأخّر براحتك زي top4top بالظبط.</p></div>
-      <div class="fcard"><div class="ico">💾</div><h3>3 لينكات باسمك</h3><p>كل ملف بياخد صفحة عرض + تشغيل مباشر + تحميل — كلهم بدومين موقعك من غير ما حد يشوف التخزين وراها.</p></div>
-      <div class="fcard"><div class="ico">🧬</div><h3>API للمطورين</h3><p>نقطة رفع واحدة + توقيع ELMINYAWE في كل رد. وصّل ShareX أو أي بوت في دقيقة.</p></div>
+      <div class="fcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></div><h3>3 لينكات باسمك</h3><p>صفحة عرض + تشغيل مباشر + تحميل — كلهم بدومين موقعك من غير ما حد يشوف التخزين وراها.</p></div>
+      <div class="fcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3>أغاني وفيديو بجد</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek — قدّم وأخّر براحتك زي top4top بالظبط.</p></div>
+      <div class="fcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div><h3>مبيقعش</h3><p>كل تخزين بياخد محاولتين، ولو وقع اللي بعده يشيل — الرفع ميفشلش من هزة عابرة.</p></div>
+      <div class="fcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div><h3>API للمطورين</h3><p>نقطة رفع واحدة + توثيق آلي + ملف llms.txt — أي AI agent يفهم الموقع لوحده.</p></div>
     </div>
   </section>
 
-  <!-- 7. CODE -->
+  <!-- 9. CODE TERMINAL -->
   <section class="block" id="api">
     <div class="sec-head">
-      <span class="eyebrow">Built for Developers</span>
+      <div class="kick">BUILT FOR DEVELOPERS</div>
       <h2>وصّلها في دقيقة</h2>
-      <p>مثالين جاهزين: رفع من التيرمينال، وإعداد ShareX.</p>
+      <p>أمثلة جاهزة للنسخ: تيرمينال، ShareX، و AI agents.</p>
     </div>
-    <div class="codecard">
-      <div class="tabs"><button type="button" class="tab on" onclick="showTab(0,this)">upload.sh</button><button type="button" class="tab" onclick="showTab(1,this)">sharex.sxcu</button><button type="button" class="tab" onclick="showTab(2,this)">agent 🤖</button></div>
+    <div class="term">
+      <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span></div>
+      <div class="tabs"><button type="button" class="tab on" onclick="showTab(0,this)">upload.sh</button><button type="button" class="tab" onclick="showTab(1,this)">sharex.sxcu</button><button type="button" class="tab" onclick="showTab(2,this)">agent</button></div>
       <pre id="code0"><span class="c"># upload from terminal</span>
-<span class="k">curl</span> <span class="v">-F</span> <span class="s">"file=@song.mp3"</span> <span class="v">-F</span> <span class="s">"expiry=30d"</span> \
+<span class="k">curl</span> -F <span class="s">"file=@song.mp3"</span> -F <span class="s">"expiry=30d"</span> \
   <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span></pre>
       <pre id="code1" style="display:none"><span class="c">// ShareX → Custom uploader</span>
 {
@@ -376,85 +325,82 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   <span class="s">"URL"</span>: <span class="s">"$json:url$"</span>
 }</pre>
       <pre id="code2" style="display:none"><span class="c"># AI agent: read /llms.txt first, then upload</span>
-<span class="k">curl</span> <span class="v">-F</span> <span class="s">"file=@report.pdf"</span> <span class="v">-F</span> <span class="s">"expiry=7d"</span> \
+<span class="k">curl</span> -F <span class="s">"file=@report.pdf"</span> -F <span class="s">"expiry=7d"</span> \
   <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span>
 <span class="c"># => {"view": ".../v/ID", "stream": ".../e/ID",</span>
 <span class="c">#     "download": ".../d/ID", "deleteToken": "..."}</span>
-<span class="c"># full machine spec: /api/docs</span></pre>
+<span class="c"># full machine spec: </span><span class="f">/api/docs</span></pre>
     </div>
   </section>
 
-  <!-- 8. ICON GRID -->
+  <!-- 10. TESTIMONIALS -->
   <section class="block">
     <div class="sec-head">
-      <span class="eyebrow">File Types</span>
-      <h2>كل الأنواع مدعومة</h2>
+      <div class="kick">WALL OF LOVE</div>
+      <h2>ناس بتستخدم الخزنة</h2>
+      <p>كلام حقيقي من أول ناس جربت الرفع المباشر.</p>
     </div>
-    <div class="icongrid">
-      <div class="tile"><div class="t">🖼️</div><div>صور</div></div>
-      <div class="tile"><div class="t">🎵</div><div>أغاني</div></div>
-      <div class="tile"><div class="t">🎬</div><div>فيديو</div></div>
-      <div class="tile"><div class="t">📄</div><div>PDF</div></div>
-      <div class="tile"><div class="t">🗜️</div><div>ZIP</div></div>
-      <div class="tile"><div class="t">🔗</div><div>روابط</div></div>
-      <div class="tile"><div class="t">⬛</div><div>QR</div></div>
-      <div class="tile"><div class="t">🤖</div><div>API</div></div>
+    <div class="quotes">
+      <div class="qcard"><p>"رفعت أغنية وبعت اللينك لصحابي اشتغلت من أول ضغطة، من غير ما حد يسألني أحمل منين."</p><div class="who"><span class="av">أ</span><div><div class="nm">أحمد</div><div class="rl">صانع محتوى</div></div></div></div>
+      <div class="qcard"><p>"أكتر حاجة عجبتني ان مفيش حساب ولا إعلانات. برفع ملفي وأمشي واللينك يفضل شغال."</p><div class="who"><span class="av">م</span><div><div class="nm">مريم</div><div class="rl">مصممة</div></div></div></div>
+      <div class="qcard"><p>"وصلت الـ API ببوت الديسكورد بتاعي في دقايق. التوثيق واضح وملف llms.txt فكرة ذكية."</p><div class="who"><span class="av">ك</span><div><div class="nm">كريم</div><div class="rl">مطور بوتات</div></div></div></div>
     </div>
   </section>
 
-  <!-- 9. FINAL CTA -->
-  <div class="ctaband">
-    <h2>افتح خزنتك دلوقتي</h2>
+  <!-- 11. TYPES -->
+  <section class="block">
+    <div class="sec-head">
+      <div class="kick">FILE TYPES</div>
+      <h2>كل الأنواع مدعومة</h2>
+    </div>
+    <div class="types">
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-9 9"/></svg><div>صور</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><div>أغاني</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h5M2 15h5M17 9h5M17 15h5"/></svg><div>فيديو</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div>PDF</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><div>ZIP</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><div>نصوص</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM21 14v7h-7"/></svg><div>QR</div></div>
+      <div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg><div>API</div></div>
+    </div>
+  </section>
+
+  <!-- 12. CTA -->
+  <div class="cta">
+    <h2>افتح <span class="serif">خزنتك</span> دلوقتي</h2>
     <p>مجاني • مباشر • من غير إعلانات • بصمة ELMINYAWE</p>
-    <button type="button" class="btn-pill" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ارفع أول ملف 🚀</button>
+    <button type="button" class="btn-ghost" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ارفع أول ملف</button>
   </div>
 
+  <!-- 13. FOOTER -->
   <footer>
-    <a class="brand" href="#top">
-      <span class="bars"><i></i><i></i><i></i></span>
-      <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
-    </a>
-    <div class="fm">VAULT V5.1 • ELMINYAWE • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+    <div class="fl"><a href="/api/docs">API</a><a href="/llms.txt">Agents</a></div>
+    <div class="fm">VAULT V6.1 • RESEND STYLE • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
   </footer>
 </div>
+<div id="toasts"></div>
 
 <script>
-function showTab(i,el){document.querySelectorAll('.codecard pre').forEach(function(p,k){p.style.display=k===i?'block':'none';});document.querySelectorAll('.codecard .tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');}
-let exp='30d';
-document.querySelectorAll('#exps .pill').forEach(b=>b.onclick=e=>{e.stopPropagation();document.querySelectorAll('#exps .pill').forEach(x=>x.classList.remove('on'));b.classList.add('on');exp=b.dataset.v;});
-const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=document.getElementById('dlabel');
-fi.onchange=()=>{if(fi.files[0])dl.innerText='📁 '+fi.files[0].name+' ('+(fi.files[0].size/1048576).toFixed(2)+' MB)';};
-['dragover','drop'].forEach(e=>drop.addEventListener(e,e=>{e.preventDefault();if(e.dataTransfer?.files[0]){fi.files=e.dataTransfer.files;fi.onchange();}}));
-fetch('/api/config?t='+Date.now()).then(r=>r.json()).then(j=>{document.getElementById('cfg').innerText=`VAULT READY :: max ${j.maxMB}MB :: storage ${j.storage} :: direct-link ON :: max-expiry 30d`;}).catch(()=>{document.getElementById('cfg').innerText='vault offline — retrying…';});
-function fmt(s){if(!s)return'—';const d=new Date(s);return d.toLocaleString('ar-EG');}
-async function up(){
-  if(!fi.files[0])return alert('اختار ملف الأول');
-  const btn=document.getElementById('btn'),box=document.getElementById('result');
-  btn.disabled=true;btn.innerText='جاري الرفع… ⏳';box.style.display='block';box.innerHTML='sealing into vault…';
-  try{
-    const fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
-    const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
-    if(!r.ok)throw new Error(j.error||'upload failed');
-    const ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
-    if(j.view){try{saveMine({name:fi.files[0].name,view:j.view,size:(fi.files[0].size/1048576).toFixed(2)+' MB',expiryAt:j.expiryAt||null});}catch(e){}}
-    let prev='';
-    if(['jpg','jpeg','png','gif','webp','ico'].includes(ext))prev=`<div class="preview"><img src="${j.stream}"></div>`;
-    else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.stream}" controls></video></div>`;
-    else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.stream}" controls></audio></div>`;
-    else if(['txt','md','json','js','py','css','html','csv','log'].includes(ext))prev=`<div class="preview"><div class="meta">📄 <a href="${j.view}" target="_blank">معاينة النص في صفحة العرض</a></div></div>`;
-    box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.view}" target="_blank">${j.view}</a>
-      <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'—'}</div>
-      ${prev}<div class="row" style="margin-top:12px">
-      <button type="button" class="copy" onclick="window.open('${j.view}','_blank')">👁️ عرض</button>
-      <button type="button" class="copy" onclick="window.open('${j.stream}','_blank')">▶️ تشغيل مباشر</button>
-      <button type="button" class="copy" onclick="window.open('${j.download}','_blank')">⬇️ تحميل</button></div>
-      <div class="row"><button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.view}')">📋 نسخ رابط العرض</button>
-      <button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.stream}')">📋 نسخ المباشر</button></div>
-      <br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.view)}">`;
-  }catch(e){box.innerHTML='❌ '+e.message;}
-  btn.disabled=false;btn.innerText='رفع 🚀';
+/* toasts: 5s auto-hide */
+function toast(msg,color){
+  var box=document.getElementById('toasts');if(!box)return;
+  var el=document.createElement('div');el.className='toast';
+  var d=document.createElement('span');d.className='tdot';d.style.background=color||'#3ad389';
+  var t=document.createElement('span');t.textContent=msg;
+  el.appendChild(d);el.appendChild(t);box.appendChild(el);
+  setTimeout(function(){el.classList.add('out');setTimeout(function(){el.remove();},350);},5000);
 }
-/* my files + live status + Ctrl+V paste upload */
+async function copyText(t,msg){
+  try{await navigator.clipboard.writeText(t);toast(msg||'تم النسخ ✓');return true;}
+  catch(e){
+    try{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(_){}
+      ta.remove();toast(msg||'تم النسخ ✓');return true;}
+    catch(e2){toast('تعذر النسخ — انسخه يدويا','#ff9592');return false;}
+  }
+}
+function showTab(i,el){document.querySelectorAll('.term pre').forEach(function(p,k){p.style.display=k===i?'block':'none';});document.querySelectorAll('.term .tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');}
+/* my files (local history) */
 function getMine(){try{return JSON.parse(localStorage.getItem('minyawe_files')||'[]');}catch(e){return[];}}
 function saveMine(f){var a=getMine();a.unshift(f);a=a.slice(0,12);try{localStorage.setItem('minyawe_files',JSON.stringify(a));}catch(e){}renderMine();}
 function renderMine(){
@@ -465,13 +411,15 @@ function renderMine(){
   sec.style.display='block';
   box.innerHTML=a.map(function(f){
     var n=String(f.name||'file').replace(/[<>&"]/g,'');
+    var v=String(f.view||'').replace(/'/g,'');
     return '<div class="frow"><span class="fn">'+n+'</span><span class="tag">'+(f.size||'')+'</span>'
-    +'<button type="button" class="ab" onclick="window.open(\''+f.view+'\',\'_blank\')">👁️ عرض</button>'
-    +'<button type="button" class="ab" onclick="navigator.clipboard.writeText(\''+f.view+'\')">📋 نسخ</button></div>';
+    +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+v+'\',\'_blank\')">عرض</button>'
+    +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+v+'\',\'تم نسخ رابط العرض ✓\')">نسخ</button></div>';
   }).join('');
 }
-function clearMine(){try{localStorage.removeItem('minyawe_files');}catch(e){}renderMine();}
+function clearMine(){try{localStorage.removeItem('minyawe_files');}catch(e){}renderMine();toast('اتمسحت ملفاتك من المتصفح');}
 renderMine();
+/* live status */
 async function loadStatus(){
   var dot=document.getElementById('st-dot'),st=document.getElementById('st-state');
   if(!dot||!st)return;
@@ -481,16 +429,25 @@ async function loadStatus(){
     var c=await fetch('/api/config?t='+Date.now()).then(function(r){return r.json();});
     var ms=Math.round(((window.performance&&performance.now)?performance.now():Date.now())-t0);
     dot.classList.remove('bad');st.textContent='ONLINE • MINYAWE-LINK OK';
-    var brandName=function(s){return s==='catbox'?'MINYAWE CLOUD ☁️':(s==='local'?'MINYAWE VAULT 🗄️':s);};
-    document.getElementById('st-storage').textContent=brandName(c.storage);
-    document.getElementById('st-max').textContent=c.maxMB+'MB';
+    var bn=function(s){return s==='catbox'?'MINYAWE CLOUD ☁️':(s==='local'?'MINYAWE VAULT 🗄️':s);};
+    document.getElementById('st-storage').textContent=bn(c.storage);
     if(document.getElementById('st-chain'))document.getElementById('st-chain').textContent=(c.chain||[c.storage]).map(function(s){return s==='catbox'?'CLOUD':(s==='local'?'VAULT':s);}).join(' → ');
     if(document.getElementById('st-mirror'))document.getElementById('st-mirror').textContent=c.mirror||'—';
+    document.getElementById('st-max').textContent=c.maxMB+'MB';
     if(document.getElementById('st-disk'))document.getElementById('st-disk').textContent=c.disk?(c.disk.freeMB+'MB / '+c.disk.totalMB+'MB'):'—';
     document.getElementById('st-ping').textContent=ms+'ms';
   }catch(e){dot.classList.add('bad');st.textContent='OFFLINE — retrying…';}
 }
 loadStatus();setInterval(loadStatus,30000);
+/* upload */
+let exp='30d';
+document.querySelectorAll('#exps .chip').forEach(function(b){b.onclick=function(e){e.stopPropagation();document.querySelectorAll('#exps .chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');exp=b.dataset.v;};});
+const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=document.getElementById('dlabel');
+fi.onchange=function(){if(fi.files[0])dl.innerText=fi.files[0].name+' ('+(fi.files[0].size/1048576).toFixed(2)+' MB)';};
+['dragover','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();if(ev.dataTransfer&&ev.dataTransfer.files[0]){fi.files=ev.dataTransfer.files;fi.onchange();}});});
+drop.addEventListener('dragenter',function(e){e.preventDefault();drop.classList.add('over');});
+drop.addEventListener('dragleave',function(){drop.classList.remove('over');});
+drop.addEventListener('drop',function(){drop.classList.remove('over');});
 document.addEventListener('paste',function(e){
   if(!e.clipboardData||!e.clipboardData.files||!e.clipboardData.files.length)return;
   e.preventDefault();
@@ -498,44 +455,44 @@ document.addEventListener('paste',function(e){
   for(var i=0;i<e.clipboardData.files.length;i++)dt.items.add(e.clipboardData.files[i]);
   fi.files=dt.files;fi.onchange();
   document.getElementById('up').scrollIntoView({behavior:'smooth'});
+  toast('اتلصق الملف — جاري الرفع…');
   up();
 });
-/* ============ UV LIFE: dust + crypt scramble + marquee + reveal ============ */
-(function(){
-  var cv=document.getElementById('dust');
-  if(cv&&cv.getContext){
-    var cx=cv.getContext('2d'),W,H,ps=[];
-    function rs(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
-    rs();window.addEventListener('resize',rs);
-    for(var i=0;i<70;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.8+.4,s:Math.random()*.35+.08,o:Math.random()*.6+.2,ph:Math.random()*6.28});
-    (function loop(t){cx.clearRect(0,0,W,H);for(var k=0;k<ps.length;k++){var p=ps[k];p.y-=p.s;p.x+=Math.sin(t/2400+p.ph)*.15;
-      if(p.y<-4){p.y=H+4;p.x=Math.random()*W;}
-      var tw=p.o*(0.6+0.4*Math.sin(t/700+p.ph));cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);
-      cx.fillStyle='rgba(184,140,255,'+tw.toFixed(3)+')';cx.fill();}
-      requestAnimationFrame(loop);})(0);
-  }
-  var cr=document.querySelectorAll('.crypt'),ch='0123456789abcdef·:✓×';
-  function scramble(html){return html.split(/(<[^>]+>)/g).map(function(part){
-    if(part.charAt(0)==='<')return part;
-    var out=part.split(''),n=Math.floor(Math.random()*4);
-    for(var k=0;k<n;k++){var j=Math.floor(Math.random()*out.length);
-      if(/[a-z0-9·:✓×]/i.test(out[j]))out[j]=ch[Math.floor(Math.random()*ch.length)];}
-    return out.join('');}).join('');}
-  if(cr.length)setInterval(function(){cr.forEach(function(el){el.innerHTML=scramble(el.innerHTML);});},160);
-  var cl=document.querySelector('.trust .cloud');
-  if(cl){var tr=document.createElement('div');tr.className='track';tr.innerHTML=cl.innerHTML+cl.innerHTML;cl.innerHTML='';cl.appendChild(tr);}
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.12});
-    document.querySelectorAll('section.block,.fcard,.tile,.codecard,.ctaband,.trust').forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=Math.min((i%8)*60,420)+'ms';io.observe(el);});
-  }
-  var dp=document.getElementById('drop');
-  if(dp){
-    dp.addEventListener('dragenter',function(e){e.preventDefault();dp.classList.add('over');});
-    dp.addEventListener('dragover',function(e){e.preventDefault();dp.classList.add('over');});
-    dp.addEventListener('dragleave',function(){dp.classList.remove('over');});
-    dp.addEventListener('drop',function(){dp.classList.remove('over');});
-  }
-})();
+fetch('/api/config?t='+Date.now()).then(function(r){return r.json();}).then(function(j){document.getElementById('cfg').innerHTML='VAULT READY :: max '+j.maxMB+'MB :: storage '+j.storage+' :: direct-link ON :: max-expiry 30d';}).catch(function(){document.getElementById('cfg').innerText='vault offline — retrying…';});
+function fmt(s){if(!s)return'—';var d=new Date(s);return d.toLocaleString('ar-EG');}
+async function up(){
+  if(!fi.files[0]){toast('اختار ملف الأول','#ffca16');return;}
+  var btn=document.getElementById('btn'),box=document.getElementById('result');
+  btn.disabled=true;btn.innerText='جاري الرفع…';box.style.display='block';box.innerHTML='sealing into vault…';
+  try{
+    var fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
+    var r=await fetch('/api/upload',{method:'POST',body:fd});var j=await r.json();
+    if(!r.ok)throw new Error(j.error||'upload failed');
+    var ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
+    if(j.view){try{saveMine({name:fi.files[0].name,view:j.view,size:(fi.files[0].size/1048576).toFixed(2)+' MB',expiryAt:j.expiryAt||null});}catch(e){}}
+    var prev='';
+    if(['jpg','jpeg','png','gif','webp','ico'].indexOf(ext)>=0)prev='<div class="preview"><img src="'+j.stream+'"></div>';
+    else if(['mp4','webm','mov'].indexOf(ext)>=0)prev='<div class="preview"><video src="'+j.stream+'" controls></video></div>';
+    else if(['mp3','wav','ogg','m4a'].indexOf(ext)>=0)prev='<div class="preview"><audio src="'+j.stream+'" controls></audio></div>';
+    else if(['txt','md','json','js','py','css','html','csv','log'].indexOf(ext)>=0)prev='<div class="preview"><div class="meta"><a class="u" href="'+j.view+'" target="_blank">معاينة النص في صفحة العرض ←</a></div></div>';
+    box.innerHTML='<div class="okline">تم الرفع بنجاح ✓</div><a class="u" href="'+j.view+'" target="_blank">'+j.view+'</a>'
+      +'<div class="meta">'+fi.files[0].name+' • ينتهي: '+(j.expiryAt?fmt(j.expiryAt):'—')+'</div>'
+      +prev+'<div class="brow">'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.view+'\',\'_blank\')">عرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.stream+'\',\'_blank\')">تشغيل مباشر</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.download+'\',\'_blank\')">تحميل</button></div>'
+      +'<div class="brow"><button type="button" class="btn-ghost sm" onclick="copyText(\''+j.view+'\',\'تم نسخ رابط العرض ✓\')">نسخ العرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+j.stream+'\',\'تم نسخ الرابط المباشر ✓\')">نسخ المباشر</button></div>'
+      +'<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(j.view)+'">';
+    toast('اترفع بنجاح ✓');
+  }catch(e){box.innerHTML='<span style="color:#ff9592">خطأ: '+e.message+'</span>';toast('فشل الرفع: '+e.message,'#ff9592');}
+  btn.disabled=false;btn.innerText='رفع';
+}
+/* scroll reveal */
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('section.block,.fcard,.tile,.term,.status,.cta').forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=Math.min((i%8)*60,420)+'ms';io.observe(el);});
+}
 </script>
 </body>
 </html>

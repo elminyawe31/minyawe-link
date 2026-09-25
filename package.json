@@ -1,6 +1,6 @@
 {
   "name": "minyawe-link",
-  "version": "5.1.0",
+  "version": "6.1.0",
   "description": "MINYAWE-LINK V5 by ELMINYAWE - pure brand: catbox+local, branded view/stream/download links",
   "main": "server.js",
   "engines": { "node": ">=20" },

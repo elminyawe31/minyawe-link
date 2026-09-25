@@ -201,7 +201,7 @@ app.get('/api/docs', (req, res) => {
   res.json({
     name: 'MINYAWE-LINK',
     by: 'ELMINYAWE',
-    version: '5.1',
+    version: '6.1',
     base: b,
     auth: 'none',
     limits: { maxMB: MAX_MB, maxExpiryDays: 30, expiryValues: ['1h', '24h', '7d', '30d'], blockedExtensions: BLOCKED },
@@ -398,20 +398,24 @@ app.get('/v/:id', async (req, res) => {
   else player = `<div class="file">📁<div class="fn">${name}</div><div class="sz">${size}</div></div>`;
   res.send(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${name} | MINYAWE-LINK</title>
-<style>body{margin:0;background:#010314;color:#dfe1f4;font-family:system-ui;text-align:center;padding:24px 16px 60px}
-.wrap{max-width:640px;margin:0 auto}.logo{font-weight:600;letter-spacing:-.02em;color:#ececfb;text-decoration:none}
-.logo span{color:#b88cff}.card{background:#2a2b3a;border-radius:16px;padding:24px;margin-top:20px;box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(190,167,255,.24) 0 0 0 1.5px inset}
-img,video{max-width:100%;border-radius:12px}audio{width:100%;margin-top:12px}.fn{font-family:monospace;font-size:13px;word-break:break-all;margin:8px 0}
-pre.txt{direction:ltr;text-align:left;background:#0b0b15;border:1px solid #343543;border-radius:12px;padding:14px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;margin-top:12px}
-.sz{font-family:monospace;font-size:11px;color:#9fa2b9}.meta{font-family:monospace;font-size:11px;color:#9fa2b9;margin-top:10px}
-.btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
-a.btn{background:#fff;color:#010314;border-radius:9999px;padding:10px 22px;font-size:14px;font-weight:500;text-decoration:none}
-a.btn.ghost{background:transparent;color:#ececfb;border:1px solid #343543}
-footer{margin-top:28px;font-family:monospace;font-size:11px;color:#5e6077}footer b{color:#b88cff}</style></head>
+<style>body{margin:0;background:#000;color:#f0f0f0;font-family:Inter,system-ui,sans-serif;text-align:center;padding:24px 16px 60px}
+.wrap{max-width:640px;margin:0 auto}.logo{font-weight:600;color:#fff;text-decoration:none}
+.logo span{color:#9281f7}.card{background:#000;border:1px solid #292d30;border-radius:16px;padding:32px;margin-top:20px}
+img,video{max-width:100%;border-radius:16px}audio{width:100%;margin-top:12px}.fn{font-family:monospace;font-size:13px;word-break:break-all;margin:8px 0;color:#f0f0f0}
+pre.txt{direction:ltr;text-align:left;background:#000;border:1px solid #292d30;border-radius:16px;padding:24px;font-family:monospace;font-size:13px;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;margin-top:12px;color:#f0f0f0}
+.sz{font-family:monospace;font-size:12px;color:#a1a4a5}.meta{font-family:monospace;font-size:12px;color:#a1a4a5;margin-top:10px}
+.btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+a.btn{background:transparent;color:#fff;border:1px solid #292d30;border-radius:6px;padding:12px 16px;font-size:14px;font-weight:500;text-decoration:none}
+a.btn:hover{border-color:#fff}button.btn{background:transparent;color:#fff;border:1px solid #292d30;border-radius:6px;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+button.btn:hover{border-color:#fff}
+#tst{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#000;border:1px solid #292d30;border-radius:6px;padding:12px 16px;font-family:monospace;font-size:13px;color:#f0f0f0;display:none;z-index:99}
+footer{margin-top:28px;font-family:monospace;font-size:12px;color:#464a4d}footer b{color:#9281f7}</style></head>
 <body><div class="wrap"><a class="logo" href="/">MINYAWE<span>-LINK</span></a>
 <div class="card">${player}<div class="meta">${size} • ينتهي: ${meta.expiryAt ? new Date(meta.expiryAt).toLocaleString('ar-EG') : 'شهر كحد أقصى'}</div>
-<div class="btns"><a class="btn" href="${stream}" target="_blank">▶️ تشغيل مباشر</a><a class="btn ghost" href="${dl}">⬇️ تحميل</a><a class="btn ghost" href="#" onclick="navigator.clipboard.writeText('${dl}');return false">📋 نسخ</a></div></div>
-<footer>MADE WITH 💜 BY <b>ELMINYAWE</b></footer></div></body></html>`);
+<div class="btns"><a class="btn" href="${stream}" target="_blank">▶️ تشغيل مباشر</a><a class="btn" href="${dl}">⬇️ تحميل</a><button class="btn" onclick="cp('${dl}')">📋 نسخ</button></div></div>
+<div id="tst"></div>
+<footer>MADE WITH 💜 BY <b>ELMINYAWE</b></footer></div>
+<script>function cp(t){function ok(){var e=document.getElementById('tst');e.textContent='تم النسخ ✓';e.style.display='block';setTimeout(function(){e.style.display='none';},5000);}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){ok();});}else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(_){}a.remove();ok();}}</script></body></html>`);
 });
 
 app.delete('/api/:id', async (req, res) => {
@@ -428,7 +432,7 @@ app.use((err, req, res, next) => res.status(400).json({ error: err.message }));
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
-  console.log('  MINYAWE-LINK V5.1 by ELMINYAWE is READY');
+  console.log('  MINYAWE-LINK V6.1 by ELMINYAWE is READY');
   console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${DRIVER.toUpperCase()}`);
   console.log('==========================================');
 });
