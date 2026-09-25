@@ -19,7 +19,23 @@
   --f-serif:'Playfair Display',Georgia,serif; --f-mono:'JetBrains Mono',monospace;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.16) transparent}
+html.scrolling{scrollbar-color:rgba(255,255,255,.38) transparent}
+/* ===== macOS overlay scroller (NSScroller.Style.overlay): floating pill knob, transparent slot, fades when idle ===== */
+::-webkit-scrollbar{width:10px;height:10px;background:transparent}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background-color:rgba(255,255,255,.16);border-radius:99px;
+  border:3px solid transparent;background-clip:padding-box;min-height:44px;min-width:44px;
+  transition:background-color .3s,border-width .2s}
+html.scrolling::-webkit-scrollbar-thumb{background-color:rgba(255,255,255,.38)}
+::-webkit-scrollbar-thumb:hover{background-color:rgba(255,255,255,.55);border-width:2px}
+::-webkit-scrollbar-thumb:active{background-color:rgba(255,255,255,.7);border-width:2px}
+::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-button{display:none;width:0;height:0}
+/* slimmer knob inside code terminals */
+.term pre{scrollbar-width:thin}
+.term pre::-webkit-scrollbar{width:8px;height:8px}
+.term pre::-webkit-scrollbar-thumb{border-width:2px;min-height:30px;min-width:30px}
 body{margin:0;background:var(--c-void);color:var(--c-bone);font-family:var(--f-ui);min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:var(--c-smoke)}
 .wrap{max-width:1200px;margin:0 auto;padding:0 20px 64px;position:relative;z-index:1}
@@ -54,6 +70,8 @@ a{color:var(--c-smoke)}
 .hero .ev-visual::before{content:"";position:absolute;top:-140px;left:50%;transform:translateX(-50%);
   width:min(900px,130%);height:420px;pointer-events:none;
   background:radial-gradient(50% 60% at 50% 0%,rgba(255,255,255,.07),transparent 70%)}
+.ev-tilt{position:relative;z-index:1;transform-style:preserve-3d;transition:transform .3s ease-out;will-change:transform}
+.ev-tilt.live{transition:transform .07s linear}
 .ev-card{width:330px;border-radius:24px;padding:26px 24px;text-align:left;direction:ltr;position:relative;z-index:1;
   background:linear-gradient(135deg,#ffffff 0%,#dcdcdc 45%,#a9a9a9 100%);color:#0a0a0a;
   box-shadow:0 0 70px rgba(255,255,255,.10),0 24px 48px rgba(0,0,0,.55);
@@ -93,13 +111,14 @@ a{color:var(--c-smoke)}
   text-align:left;direction:ltr;user-select:none;overflow:hidden;max-height:250px;min-height:250px;flex:1;white-space:nowrap;position:relative;
   mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent)}
-.hexcol .hx-inner{display:inline-block;animation:hxScroll 20s linear infinite;will-change:transform}
-.hexcol:hover .hx-inner{animation-play-state:paused}
-@keyframes hxScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-.hx-line{display:block;transition:color .2s}
-.hx-line:hover{color:#fff}
-.hx-line b{color:#c9ced4;font-weight:500}
-.hx-line .g{color:#3ad389}
+.hexcol .hx-row{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.9em;
+  transition:color .2s,opacity .5s}
+.hexcol .hx-row:hover{color:#fff!important;opacity:1!important}
+.hexcol .hx-row.g{color:#3ad389}
+.hexcol .hx-row.b{color:#e8e8e8}
+.hexcol .hx-cursor{display:inline-block;width:.6em;color:#fff;animation:blink .8s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hexcol.fading .hx-row{opacity:0!important}
 #cursorGlow{position:fixed;width:520px;height:520px;left:0;top:0;pointer-events:none;z-index:0;
   background:radial-gradient(circle,rgba(255,255,255,.07),transparent 60%)}
 .btn-ghost.magnet{transition:transform .18s ease-out,border-color .15s}
@@ -214,6 +233,17 @@ input[type=file]{display:none}
 .term .tab.on{color:var(--c-white);border-bottom-color:var(--c-white)}
 .term pre{margin:0;padding:24px;font-family:var(--f-mono);font-size:14px;line-height:1.5;overflow-x:auto;direction:ltr;text-align:left;color:var(--c-bone)}
 .term .k{color:var(--c-white);font-weight:600} .term .s{color:var(--c-bone)} .term .f{color:var(--c-white);text-decoration:underline} .term .g{color:var(--c-green)} .term .c{color:var(--c-char)}
+.term .t{font-family:var(--f-mono);font-size:12px;color:var(--c-ash);margin-inline-start:8px;direction:ltr;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchip{font-family:var(--f-mono);font-size:11px;font-weight:600;border-radius:6px;padding:3px 9px;letter-spacing:.06em;flex:0 0 auto}
+.mchip.post{background:rgba(58,211,137,.14);color:#3ad389;border:1px solid rgba(58,211,137,.35)}
+.mchip.get{background:rgba(59,158,255,.12);color:#70b8ff;border:1px solid rgba(59,158,255,.35)}
+.mchip.del{background:rgba(255,149,146,.12);color:#ff9592;border:1px solid rgba(255,149,146,.35)}
+.docrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--c-hair)}
+.docrow:last-child{border-bottom:0}
+.docrow .p{font-family:var(--f-mono);font-size:12.5px;color:var(--c-white);direction:ltr;white-space:nowrap}
+.docrow .ds{font-size:12.5px;color:var(--c-ash)}
+.limitchips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;direction:ltr;justify-content:flex-end}
+.limitchips span{font-family:var(--f-mono);font-size:12px;color:var(--c-bone);border:1px solid var(--c-hair);border-radius:6px;padding:6px 12px}
 /* TYPES */
 .types{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px;max-width:820px;margin:0 auto}
 .tile{border:1px solid var(--c-hair);border-radius:16px;padding:24px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:border-color .15s ease-out}
@@ -301,12 +331,14 @@ footer .fm b{color:var(--c-white)}
       <div class="hero-band"></div>
       <a class="pill-link" data-tab-go="upload" style="cursor:pointer">لينكات مباشرة بامتدادها — من غير حساب <span>←</span></a>
       <div class="ev-visual" id="evVisual">
-        <div class="ev-card" id="evCard" title="حرّك الماوس عليها">
+        <div class="ev-tilt" id="evTilt">
+        <div class="ev-card" id="evCard" data-tab-go="upload" title="دوس للرفع — حرّك الماوس عليها">
           <div class="ev-glare" id="evGlare"></div>
           <div class="chiprow"><span class="echip"></span><span class="wave">)))</span></div>
           <div class="ebrand"><span class="emark">M</span>MINYAWE-LINK</div>
           <div class="enum">elminyawe-link <span class="dim">/v /e /d</span><br>direct-link <span class="dim">• mp3 • mp4</span></div>
           <div class="ehold"><span>ELMINYAWE</span><span class="exp">30d • 200MB</span></div>
+        </div>
         </div>
         <div class="beam-w"></div>
         <div class="hexcol" id="hex1"></div>
@@ -338,19 +370,6 @@ footer .fm b{color:var(--c-white)}
         <div class="bcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div><h3>مبيقعش</h3><p>محاولتين لكل تخزين + احتياطي دايما.</p></div>
         <div class="bcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div><h3>عداد وألبومات وأسماء</h3><p>مشاهدات لكل ملف، ألبومات، وروابط بأسماء تختارها.</p></div>
         <div class="bcard"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>API للمطورين</h3><p>توثيق آلي + ملف llms.txt لأي AI agent.</p></div>
-      </div>
-    </section>
-
-    <section class="block">
-      <div class="sec-head">
-        <div class="kick">WALL OF LOVE</div>
-        <h2>ناس بتستخدم الخزنة</h2>
-        <p>كلام حقيقي من أول ناس جربت الرفع المباشر.</p>
-      </div>
-      <div class="quotes">
-        <div class="qcard"><p>"رفعت أغنية وبعت اللينك لصحابي اشتغلت من أول ضغطة، من غير ما حد يسألني أحمل منين."</p><div class="who"><span class="av">أ</span><div><div class="nm">أحمد</div><div class="rl">صانع محتوى</div></div></div></div>
-        <div class="qcard"><p>"أكتر حاجة عجبتني ان مفيش حساب ولا إعلانات. برفع ملفي وأمشي واللينك يفضل شغال."</p><div class="who"><span class="av">م</span><div><div class="nm">مريم</div><div class="rl">مصممة</div></div></div></div>
-        <div class="qcard"><p>"وصلت الـ API ببوت الديسكورد بتاعي في دقايق. التوثيق واضح وملف llms.txt فكرة ذكية."</p><div class="who"><span class="av">ك</span><div><div class="nm">كريم</div><div class="rl">مطور بوتات</div></div></div></div>
       </div>
     </section>
 
@@ -455,19 +474,27 @@ footer .fm b{color:var(--c-white)}
         <div class="tabs"><button type="button" class="tab on" onclick="showCode(0,this)">upload.sh</button><button type="button" class="tab" onclick="showCode(1,this)">sharex.sxcu</button><button type="button" class="tab" onclick="showCode(2,this)">agent</button></div>
         <pre id="code0"><span class="c"># upload from terminal</span>
 <span class="k">curl</span> -F <span class="s">"file=@song.mp3"</span> -F <span class="s">"expiry=30d"</span> \
-  <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span></pre>
+  <span class="s">"<span class="dyn-origin"></span>/api/upload"</span></pre>
         <pre id="code1" style="display:none"><span class="c">// ShareX → Custom uploader</span>
 {
-  <span class="s">"RequestURL"</span>: <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span>,
+  <span class="s">"RequestURL"</span>: <span class="s">"<span class="dyn-origin"></span>/api/upload"</span>,
   <span class="s">"FileFormName"</span>: <span class="s">"file"</span>,
   <span class="s">"URL"</span>: <span class="s">"$json:url$"</span>
 }</pre>
         <pre id="code2" style="display:none"><span class="c"># AI agent: read /llms.txt first, then upload</span>
 <span class="k">curl</span> -F <span class="s">"file=@report.pdf"</span> -F <span class="s">"expiry=7d"</span> \
-  <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span>
+  <span class="s">"<span class="dyn-origin"></span>/api/upload"</span>
 <span class="c"># => {"view": ".../v/ID", "stream": ".../e/ID.mp3",</span>
 <span class="c">#     "download": ".../d/ID.mp3", "deleteToken": "..."}</span>
 <span class="c"># full machine spec: </span><span class="f">/api/docs</span></pre>
+      </div>
+      <div class="term" id="apiLive" style="margin-top:16px">
+        <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span><span class="t">live docs — من السيرفر مباشرة</span></div>
+        <div style="padding:20px 24px" id="docsBody"><div class="meta" style="font-family:var(--f-mono);font-size:12px;color:var(--c-ash)">جاري تحميل التوثيق من السيرفر…</div></div>
+      </div>
+      <div class="term" id="apiAgents" style="margin-top:16px">
+        <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span><span class="t">llms.txt — دليل الـ AI agents</span><button type="button" class="btn-ghost sm" style="margin-inline-start:auto;padding:4px 12px;font-size:12px" onclick="copyLlms()">نسخ</button></div>
+        <pre id="llmsBody" style="max-height:320px;overflow-y:auto"><span class="c">جاري تحميل llms.txt…</span></pre>
       </div>
     </section>
   </div>
@@ -494,7 +521,7 @@ footer .fm b{color:var(--c-white)}
 
   <!-- FOOTER -->
   <footer>
-    <div class="fl"><a href="/api/docs">API</a><a href="/llms.txt">Agents</a></div>
+    <div class="fl"><a data-tab-go="api" style="cursor:pointer">API</a><a data-tab-go="api" style="cursor:pointer">Agents</a></div>
     <div class="fm"><span class="dev-badge"><span class="dot-w"></span>Dev <b>ELMINYAWE</b></span><span class="only-me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ONLY ME</span></div>
   </footer>
 </div>
@@ -513,6 +540,7 @@ function showView(v){
   if(v==='stats')loadStats();
   if(v==='status')loadStatus();
   if(v==='files')renderMine();
+  if(v==='api')loadDocs();
 }
 document.querySelectorAll('[data-tab]').forEach(function(a){
   a.addEventListener('click',function(){showView(a.getAttribute('data-tab'));});
@@ -540,6 +568,40 @@ async function copyText(t,msg){
   }
 }
 function showCode(i,el){document.querySelectorAll('.term pre').forEach(function(p,k){p.style.display=k===i?'block':'none';});document.querySelectorAll('.term .tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');}
+/* live API docs + llms.txt merged inside the site (no raw pages needed) */
+var _docsLoaded=false;
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fillOrigins(){var o=location.origin;document.querySelectorAll('.dyn-origin').forEach(function(el){if(!el.textContent)el.textContent=o;});}
+async function loadDocs(){
+  fillOrigins();
+  if(_docsLoaded)return;_docsLoaded=true;
+  var box=document.getElementById('docsBody');
+  try{
+    var d=await fetch('/api/docs?t='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json();});
+    var mColor=function(m){m=String(m||'GET').toUpperCase();if(m==='POST')return 'post';if(m==='DELETE')return 'del';return 'get';};
+    var rows=(d.endpoints||[]).map(function(e){
+      var sub=e.desc||Object.keys(e.fields||{}).join(' • ');
+      return '<div class="docrow"><span class="mchip '+mColor(e.method)+'">'+escH(e.method)+'</span>'
+        +'<span class="p">'+escH(e.path)+'</span>'
+        +'<span class="ds">'+escH(sub)+'</span></div>';
+    }).join('');
+    var lim='<div class="limitchips"><span>max '+((d.limits&&d.limits.maxMB)||200)+'MB</span>'
+      +'<span>'+escH(((d.limits&&d.limits.expiryValues)||['1h','24h','7d','30d']).join(' • '))+'</span>'
+      +'<span>'+escH(((d.storage&&d.storage.chain)||[]).join(' → '))+'</span></div>';
+    if(box)box.innerHTML=rows+lim;
+  }catch(e){if(box)box.innerHTML='<div style="font-family:var(--f-mono);font-size:12px;color:#ff9592">تعذر تحميل التوثيق — السيرفر مش متاح</div>';}
+  var lb=document.getElementById('llmsBody');
+  try{
+    var t=await fetch('/llms.txt?t='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text();});
+    window._llmsRaw=t;
+    if(lb)lb.innerHTML=escH(t).split('\n').map(function(line){
+      if(/^# /.test(line))return '<span class="k">'+line+'</span>';
+      if(/^## /.test(line))return '<span class="g">'+line+'</span>';
+      return line||' ';
+    }).join('\n');
+  }catch(e){if(lb)lb.innerHTML='<span class="c">تعذر تحميل llms.txt — السيرفر مش متاح</span>';}
+}
+function copyLlms(){if(window._llmsRaw)copyText(window._llmsRaw,'تم نسخ llms.txt ✓');else toast('لسه بيتحمل…','#ffca16');}
 /* my files (local history) */
 function getMine(){try{return JSON.parse(localStorage.getItem('minyawe_files')||'[]');}catch(e){return[];}}
 function saveMine(f){var a=getMine();a.unshift(f);a=a.slice(0,12);try{localStorage.setItem('minyawe_files',JSON.stringify(a));}catch(e){}renderMine();}
@@ -570,10 +632,8 @@ async function loadStatus(){
     var bn=function(s){
       if(!s)return 'MINYAWE-VAULT';
       s=String(s).toLowerCase();
-      if(s.indexOf('catbox')>=0)return 'MINYAWE-VAULT';
-      if(s.indexOf('local')>=0)return 'MINYAWE VAULT';
-      if(s.indexOf('s3')>=0||s.indexOf('r2')>=0||s.indexOf('storj')>=0)return 'MINYAWE CLOUD';
-      return 'MINYAWE-VAULT';
+      if(s.indexOf('vault')>=0||s.indexOf('local')>=0)return 'MINYAWE VAULT';
+      return 'MINYAWE CLOUD';
     };
     document.getElementById('st-storage').textContent=bn(c.storage);
     if(document.getElementById('st-chain'))document.getElementById('st-chain').textContent=(c.chain||[c.storage]).map(function(s){return bn(s).replace('MINYAWE ','');}).join(' → ');
@@ -731,56 +791,92 @@ async function up(){
   }catch(e){box.innerHTML='<span style="color:#ff9592">خطأ: '+e.message+'</span>';toast('فشل الرفع: '+e.message,'#ff9592');}
   btn.disabled=false;btn.innerText='رفع';
 }
-/* project stream — words from the vault, scrolling alive + mouse reactive */
+/* vault motion: matrix typer + 3D tilt card + cursor glow (fixed: tilt on wrapper, not the animated card) */
 (function(){
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var lines=[
-    '<b>elminyawe-link</b> :: direct-link ON',
-    '<span class="g">/v</span> view • <span class="g">/e</span> stream.mp3 • <span class="g">/d</span> dl',
-    'minyawe-vault -- max 200MB -- 30d',
-    '<b>sharex</b> → api/upload ✓ discord ✓',
-    'stream <b>mp3 • mp4</b> with seek',
-    'album / qr-code / views / alias',
-    '<b>elminyawe-link</b> :: ctrl+v ✓ drag ✓',
-    'cors open • inline • no-signup',
-    '<span class="g">/e/</span>song.mp3 → plays all',
-    '<span class="g">/v/</span>photo.jpg → preview',
-    'retention 1h 24h 7d 30d ✓',
-    '<b>MINYAWE-LINK</b> by ELMINYAWE'
+  var PHRASES=[
+    {t:'elminyawe-link :: direct-link ON',c:''},
+    {t:'/v view • /e stream.mp3 • /d dl',c:'g'},
+    {t:'minyawe-vault -- 200MB -- 30d',c:''},
+    {t:'sharex → api/upload ✓ discord ✓',c:'b'},
+    {t:'stream mp3 • mp4 with seek',c:'g'},
+    {t:'album / qr / views / alias',c:''},
+    {t:'ctrl+v paste ✓ drag-drop ✓',c:'b'},
+    {t:'cors open • inline • no-signup',c:''},
+    {t:'/e/song.mp3 → plays everywhere',c:'g'},
+    {t:'/v/photo.jpg → preview + share',c:''},
+    {t:'retention 1h 24h 7d 30d ✓',c:'b'},
+    {t:'MINYAWE-LINK by ELMINYAWE',c:'g'}
   ];
-  var els=[document.getElementById('hex1'),document.getElementById('hex2')].filter(Boolean);
-  els.forEach(function(el,ci){
-    var html='<span class="hx-inner">';
-    for(var r=0;r<2;r++){ for(var i=0;i<lines.length;i++){
-      var li=(i+ci*4)%lines.length;
-      html+='<span class="hx-line">'+lines[li]+'</span>';
-    }}
-    html+='</span>';
-    el.innerHTML=html;
-  });
+  var ROWS=9, cols=[];
+  function buildCol(id,offset,speed){
+    var el=document.getElementById(id);if(!el)return null;
+    el.innerHTML='';
+    var rows=[];
+    for(var i=0;i<ROWS;i++){var d=document.createElement('div');d.className='hx-row';el.appendChild(d);rows.push(d);}
+    var st={el:el,rows:rows,r:0,c:0,pi:offset,phase:'type',waitUntil:0,boostUntil:0,speed:speed};
+    if(reduced){
+      for(var k=0;k<ROWS;k++){var ph=PHRASES[(offset+k)%PHRASES.length];rows[k].textContent=ph.t;rows[k].className='hx-row '+ph.c;rows[k].style.opacity=(0.35+0.6*(k/(ROWS-1))).toFixed(2);}
+      cols.push(st);return st;
+    }
+    setInterval(function(){tick(st);},speed);
+    cols.push(st);return st;
+  }
+  function tick(st){
+    if(document.hidden)return;
+    var now=Date.now();
+    if(now<st.waitUntil)return;
+    var fast=now<st.boostUntil;
+    if(st.phase==='type'){
+      var ph=PHRASES[st.pi%PHRASES.length];
+      var row=st.rows[st.r];
+      st.c+=fast?3:1;
+      var txt=ph.t.slice(0,st.c);
+      row.textContent=txt;
+      var cur=document.createElement('span');cur.className='hx-cursor';cur.textContent='▍';row.appendChild(cur);
+      row.className='hx-row '+ph.c;
+      for(var k=0;k<st.r;k++){st.rows[k].style.opacity=(0.3+0.62*(k/Math.max(1,ROWS-1))).toFixed(2);}
+      row.style.opacity='1';
+      if(st.c>=ph.t.length){st.r++;st.c=0;st.pi++;st.waitUntil=now+(fast?40:140);
+        if(st.r>=ROWS){st.phase='hold';st.waitUntil=now+1600;}}
+    }else if(st.phase==='hold'){
+      st.el.classList.add('fading');st.phase='fade';st.waitUntil=now+550;
+    }else if(st.phase==='fade'){
+      st.el.classList.remove('fading');
+      st.rows.forEach(function(x){x.textContent='';x.className='hx-row';x.style.opacity='';});
+      st.phase='type';st.r=0;st.c=0;st.pi+=2;st.waitUntil=now+350;
+    }
+  }
+  buildCol('hex1',0,36);
+  buildCol('hex2',5,46);
   if(reduced)return;
-  /* card 3D tilt + glare + shine */
-  var card=document.getElementById('evCard'),glare=document.getElementById('evGlare'),vis=document.getElementById('evVisual');
-  if(card&&vis){
-    var tx=-4,ty=0,rx=-4,ry=0,raf=null;
-    function loop(){rx+=(tx-rx)*.12;ry+=(ty-ry)*.12;
-      card.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg) rotate(-4deg) scale(1.03)';
-      raf=requestAnimationFrame(loop);}
+  /* card 3D tilt on the WRAPPER (the card itself has the float animation, so inline transform on it never shows) */
+  var tilt=document.getElementById('evTilt'),card=document.getElementById('evCard'),
+      glare=document.getElementById('evGlare'),vis=document.getElementById('evVisual');
+  if(tilt&&card&&vis){
+    var lastMove=0;
     vis.addEventListener('mousemove',function(e){
-      var b=card.getBoundingClientRect();
+      var b=tilt.getBoundingClientRect();
       var px=(e.clientX-b.left)/b.width-.5, py=(e.clientY-b.top)/b.height-.5;
-      ty=px*24; tx=-py*20-4;
-      if(glare){glare.style.setProperty('--gx',(px+.5)*100+'%');glare.style.setProperty('--gy',(py+.5)*100+'%');}
-      if(!raf)loop();
+      px=Math.max(-.65,Math.min(.65,px));py=Math.max(-.65,Math.min(.65,py));
+      tilt.classList.add('live');
+      tilt.style.transform='rotateY('+(px*26).toFixed(1)+'deg) rotateX('+(-py*22).toFixed(1)+'deg) scale(1.05)';
+      lastMove=Date.now();
+      var t=Date.now();cols.forEach(function(s){s.boostUntil=t+900;});
+      if(glare){glare.style.setProperty('--gx',((px+.5)*100).toFixed(1)+'%');glare.style.setProperty('--gy',((py+.5)*100).toFixed(1)+'%');}
     });
-    vis.addEventListener('mouseleave',function(){tx=-4;ty=0;
-      setTimeout(function(){if(raf){cancelAnimationFrame(raf);raf=null;card.style.transform='';}},700);});
+    vis.addEventListener('mouseleave',function(){tilt.classList.remove('live');tilt.style.transform='';});
     card.addEventListener('mouseenter',function(){card.classList.remove('shine');void card.offsetWidth;card.classList.add('shine');});
-    card.addEventListener('click',function(){showView('upload');});
-    /* parallax: wall shifts with mouse */
+    setInterval(function(){
+      if(document.hidden)return;
+      if(Date.now()-lastMove<4000)return;
+      var t=Date.now()/1000;
+      tilt.style.transform='rotateY('+(Math.sin(t*.6)*5).toFixed(2)+'deg) rotateX('+(Math.cos(t*.5)*4).toFixed(2)+'deg)';
+    },60);
+    /* wall parallax with mouse */
     document.addEventListener('mousemove',function(e){
       var cx=e.clientX/window.innerWidth-.5, cy=e.clientY/window.innerHeight-.5;
-      els.forEach(function(el){el.style.transform='translate('+cx*12+'px,'+cy*8+'px)';});
+      ['hex1','hex2'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.translate=cx*12+'px '+cy*8+'px';});
     });
   }
   /* cursor glow */
@@ -807,7 +903,16 @@ if('IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.1});
   document.querySelectorAll('.bcard,.tile,.term,.status,.cta,.qcard,.stat').forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=Math.min((i%8)*60,420)+'ms';io.observe(el);});
 }
+/* overlay scroller fade: visible while scrolling, ghosts when idle (macOS behavior) */
+(function(){
+  var t=null,root=document.documentElement;
+  function wake(){root.classList.add('scrolling');if(t)clearTimeout(t);t=setTimeout(function(){root.classList.remove('scrolling');},900);}
+  window.addEventListener('scroll',wake,{passive:true});
+  window.addEventListener('wheel',wake,{passive:true});
+  window.addEventListener('touchmove',wake,{passive:true});
+})();
 /* init route */
+fillOrigins();
 showView(((location.hash||'').replace('#/',''))||'home');
 </script>
 </body>

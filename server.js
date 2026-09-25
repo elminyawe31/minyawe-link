@@ -8,8 +8,59 @@ const { Readable } = require('stream');
 
 const app = express();
 app.set('trust proxy', 1); // مهم عشان Railway يطلع https صح
+app.disable('x-powered-by'); // منع بصمة Express الافتراضية (التعريف باسمك فقط عبر X-Powered-By: BRAND)
 app.use(cors({ origin: '*', exposedHeaders: ['X-Powered-By'] }));
 app.use(express.json());
+
+// ===== هيدرات أمان عامة (لا تكسر الهوتلينك: الميديا لا تتأثر بها) =====
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff', // منع تخمين المتصفح لنوع الملف
+    'Referrer-Policy': 'no-referrer',    // منع تسريب ?admin= لأي موقع خارجي
+    'X-Frame-Options': 'SAMEORIGIN'      // منع تضمين صفحاتك في مواقع غريبة (clickjacking)
+  });
+  next();
+});
+
+// ===== حد معدل بسيط ضد السبام (بدون مكتبات): 30 رفع لكل IP كل 10 دقايق =====
+const RL = new Map();
+const RL_MAX = parseInt(process.env.RATE_MAX || '30', 10);
+const RL_WIN = 10 * 60 * 1000;
+function rateLimit(req, res, next) {
+  try {
+    const fwd = req.get('x-forwarded-for') || '';
+    const ip = ((req.ip || fwd.split(',')[0] || 'unknown') + '').slice(0, 64);
+    const now = Date.now();
+    let rec = RL.get(ip);
+    if (!rec || now - rec.t > RL_WIN) rec = { n: 0, t: now };
+    rec.n++;
+    RL.set(ip, rec);
+    if (RL.size > 5000) { // تنظيف دوري عشان الذاكرة
+      for (const [k, v] of RL) { if (now - v.t > RL_WIN) RL.delete(k); if (RL.size < 4000) break; }
+    }
+    if (rec.n > RL_MAX) return res.status(429).json({ error: 'Too many uploads — try again in a few minutes' });
+    next();
+  } catch { next(); }
+}
+
+// ===== تحقق صارم من الهوست (منع Host header poisoning → روابط و SSRF مزيفة) =====
+function safeHost(h) {
+  h = String(h || '').split(',')[0].trim().toLowerCase();
+  if (!h || h.length > 253 || !/^[a-z0-9.-]+(?::\d+)?$/.test(h)) return '';
+  return h;
+}
+// ===== تحقق من توكن الأدمن (timing-safe + يدعم الهيدر بدل الكويري) =====
+function isAdminReq(req) {
+  const tok = process.env.ADMIN_TOKEN;
+  if (!tok) return false;
+  const got = String(req.get('x-admin-token') || req.query.admin || '');
+  try {
+    const a = Buffer.from(got), b = Buffer.from(tok);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  } catch { return false; }
+}
+// كلمات محجوزة لا تصلح كاسم مخصص (عشان متلخبطش الروابط)
+const RESERVED_SLUGS = new Set(['api', 'health', 'v', 'e', 'd', 'i', 'a', 'admin', 'config', 'docs', 'stats', 'llms.txt']);
 
 // ===== MINYAWE-LINK V2 | ELMINYAWE =====
 const PORT = process.env.PORT || 3000;
@@ -31,6 +82,14 @@ function availDrivers() {
 }
 const DRIVERS = availDrivers();
 const DRIVER = DRIVERS[0];
+
+// أسماء العرض العامة — البصمة بس (MINYAWE-*) من غير أسماء مخازن خارجية
+// المنطق الداخلي بيفضل شغال بأسماء الدرايفرات الحقيقية، العرض بس اللي متجمّل
+function dispDriver(d) {
+  d = String(d || '').toLowerCase();
+  if (d.includes('local') || d.includes('vault')) return 'MINYAWE-VAULT';
+  return 'MINYAWE-CLOUD';
+}
 
 // تخمين النوع الحقيقي من الامتداد — بعض المتصفحات بتبعت octet-stream
 // وده اللي بيخلي الأغنية تشتغل مش تتحمل، والمشغل يظهر صح في صفحة العرض
@@ -144,7 +203,7 @@ const BLOCKED = ['.exe', '.scr', '.com', '.bat', '.ps1', '.vbs', '.jar', '.msi',
 
 const upload = multer({
   storage: multer.memoryStorage(), // دايما في الرام، والحفظ على الديسك يدوي لو local كسب
-  limits: { fileSize: MAX_MB * 1024 * 1024 },
+  limits: { fileSize: MAX_MB * 1024 * 1024, files: 10, fields: 6, parts: 20, fieldNameSize: 100, fieldSize: 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if (BLOCKED.includes(ext)) return cb(new Error('File type blocked by MINYAWE'));
@@ -154,11 +213,26 @@ const upload = multer({
 
 function baseUrl(req) {
   const envBase = (process.env.BASE_URL || '').replace(/\/$/, '');
-  if (envBase) return envBase;
-  const proto = req.protocol === 'http' && req.get('x-forwarded-proto')
-    ? req.get('x-forwarded-proto').split(',')[0]
-    : req.protocol;
-  return `${proto}://${req.get('host')}`;
+  if (/^https?:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(envBase)) return envBase;
+  let proto = String(req.get('x-forwarded-proto') || '').split(',')[0].trim().toLowerCase();
+  if (proto !== 'http' && proto !== 'https') proto = req.protocol === 'https' ? 'https' : 'http';
+  const host = safeHost(req.get('host'));
+  if (!host) return `${proto}://localhost:${PORT}`; // هوست غريب/مسموم → fallback آمن
+  return `${proto}://${host}`;
+}
+
+// هل المحتوى نشط (ممكن يشغل JS)؟ → لازم sandbox
+function isActiveContent(ct) {
+  return /text\/html|image\/svg|application\/xhtml|text\/xml|application\/xml/i.test(String(ct || ''));
+}
+function localFilePath(meta) {
+  if (!meta || meta.driver === 'catbox') return null;
+  try {
+    const p = path.join(UPLOAD_DIR, String(meta.stored || ''));
+    if (!p.startsWith(UPLOAD_DIR + path.sep) && p !== UPLOAD_DIR) return null;
+    if (!fs.existsSync(p)) return null;
+    return p;
+  } catch { return null; }
 }
 
 
@@ -200,7 +274,7 @@ async function proxyFile(meta, req, res, disposition) {
       // لو التخزين بعت نوع عام (octet-stream) نخمن الصح من الامتداد — عشان الـ .md والـ .txt يتعرضوا مش يتحملوا
       const upstreamCT = r.headers.get('content-type') || '';
       const effCT = (!upstreamCT || upstreamCT.includes('octet-stream')) ? mimeOf(meta.original, meta.mimetype) : upstreamCT;
-      res.set({
+      const hdrs = {
         'Content-Type': effCT,
         'Content-Disposition': `${disposition}; filename*=UTF-8''${encodeURIComponent(meta.original)}`,
         'Accept-Ranges': 'bytes',
@@ -208,7 +282,10 @@ async function proxyFile(meta, req, res, disposition) {
         'Access-Control-Allow-Origin': '*',
         'Cross-Origin-Resource-Policy': 'cross-origin',
         'X-Powered-By': BRAND
-      });
+      };
+      // محتوى نشط (html/svg/xml) يتعرض inline → لازم sandbox عشان أي JS جواه ميتشتغلش على دومينك (stored XSS)
+      if (disposition === 'inline' && isActiveContent(effCT)) hdrs['Content-Security-Policy'] = 'sandbox';
+      res.set(hdrs);
       const cl = r.headers.get('content-length'); if (cl) res.set('Content-Length', cl);
       const cr = r.headers.get('content-range'); if (cr) res.set('Content-Range', cr);
       return Readable.fromWeb(r.body).pipe(res);
@@ -232,6 +309,9 @@ function cleanup() {
         changed = true;
       }
     }
+    for (const [aid, al] of Object.entries(db.albums || {})) { // سجلات الألبومات المنتهية (ملفاتها بتنتهي لوحدها)
+      if (al && al.expiryAt && now > al.expiryAt) { delete db.albums[aid]; changed = true; }
+    }
     if (changed) saveDB();
   })();
 }
@@ -253,9 +333,9 @@ app.get('/api/config', (req, res) => {
   brand: BRAND,
   maxMB: MAX_MB,
   maxExpiryDays: 30,
-  storage: DRIVER,
-  chain: DRIVERS, // ترتيب المحاولة لو التخزين الأساسي وقع
-  mirror: 'retry×2 per driver + local fallback',
+  storage: dispDriver(DRIVER),
+  chain: DRIVERS.map(dispDriver), // ترتيب المحاولة لو التخزين الأساسي وقع (أسماء عرض فقط)
+  mirror: 'retry×2 per driver + vault fallback',
   disk, // مساحة الفوليوم — عشان الموقع ميملاش ويموت فجأة
   direct: true,
   docs: `${baseUrl(req)}/api/docs`,
@@ -273,7 +353,7 @@ app.get('/api/docs', (req, res) => {
     base: b,
     auth: 'none',
     limits: { maxMB: MAX_MB, maxExpiryDays: 30, expiryValues: ['1h', '24h', '7d', '30d'], blockedExtensions: BLOCKED },
-    storage: { chain: DRIVERS, note: 'each driver gets 2 attempts (1.5s apart), then next driver; local disk is final fallback.' },
+    storage: { chain: DRIVERS.map(dispDriver), note: 'each driver gets 2 attempts (1.5s apart), then next driver; vault disk is final fallback.' },
     endpoints: [
       { method: 'POST', path: '/api/upload', fields: { file: 'binary (multipart field "file")', expiry: '1h|24h|7d|30d (default 24h)', alias: 'optional slug a-z0-9-_ (3-30)' }, returns: ['id', 'slug', 'url(raw storage)', 'short', 'view(page)', 'stream(direct play)', 'download(force download)', 'views', 'expiryAt', 'deleteToken'] },
       { method: 'POST', path: '/api/album', fields: { files: 'up to 10 binaries (multipart field "files")', expiry: 'same as upload' }, returns: ['id', 'url(/a/:id)', 'count', 'files[]'] },
@@ -301,7 +381,7 @@ app.get('/llms.txt', (req, res) => {
 `# MINYAWE-LINK by ELMINYAWE
 Direct file hosting: upload image/audio/video/any file, get permanent direct links.
 No auth. Max ${MAX_MB}MB per file. Expiry: 1h|24h|7d|30d (default 24h, max 30 days).
-Storage chain (tried in order): ${DRIVERS.join(' -> ')}.
+Storage chain (tried in order): ${DRIVERS.map(dispDriver).join(' -> ')}.
 
 ## Upload
 POST ${b}/api/upload (multipart: file=<binary>, expiry=30d, alias=my-song [optional, unique])
@@ -330,11 +410,16 @@ GET ${b}/api/stats => { files, totalViews, totalBytes, byKind, top[5] }
 // نواة الرفع المشتركة (ملف واحد) — ترجع {id, meta}
 async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias }, req) {
   original = fixName(original); // صلح العربي قبل أي حاجة
+  original = String(original).replace(/[\r\n\x00-\x1f\x7f]/g, '').slice(0, 180); // منع حقن هيدرات + أسماء عملاقة
   let slug = null;
   if (alias !== undefined && alias !== null && String(alias).trim() !== '') {
     const a = String(alias).trim();
     if (!SLUG_RE.test(a)) {
       const err = new Error('bad alias (3-30 chars: a-z 0-9 - _)');
+      err.code = 400; throw err;
+    }
+    if (RESERVED_SLUGS.has(a.toLowerCase())) {
+      const err = new Error('alias reserved');
       err.code = 400; throw err;
     }
     if (slugTaken(a)) {
@@ -361,7 +446,7 @@ async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias
           stored = directUrl; // ملحوظة: catbox مفيهوش مسح، اللينك بيفضل عايش والمسح بيشيله من عندنا بس
           driver = 'catbox';
         } else {
-          const ext = path.extname(original).toLowerCase();
+          const ext = path.extname(original).toLowerCase().replace(/[^a-z0-9.]/g, '').slice(0, 12); // whitelist ضد traversal
           stored = id + ext;
           fs.writeFileSync(path.join(UPLOAD_DIR, stored), buf);
           driver = 'local';
@@ -391,12 +476,15 @@ async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias
 }
 
 function apiErr(res, e) {
-  const code = (e && Number.isInteger(e.code)) ? e.code : 500;
-  res.status(code).json({ error: e.message || 'error' });
+  let code = (e && Number.isInteger(e.code)) ? e.code : 500;
+  let msg = (e && e.message) || 'error';
+  if (e && e.code === 'LIMIT_FILE_SIZE') { code = 413; msg = `File too large (max ${MAX_MB}MB)`; }
+  else if (code >= 500) { try { console.error('  [err]', String(msg).slice(0, 300)); } catch {} msg = 'server error — try again'; }
+  res.status(code).json({ error: msg });
 }
 
 // رفع — يقبل صور/أغاني/فيديو/ملفات ويرجع لينك مباشر (+ اسم مخصص اختياري)
-app.post('/api/upload', upload.single('file'), async (req, res) => {
+app.post('/api/upload', rateLimit, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file' });
     const expiryAt = parseExpiry(req.body.expiry || req.query.expiry || '24h');
@@ -417,7 +505,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 });
 
 // ألبوم — لحد 10 ملفات مع بعض في صفحة واحدة
-app.post('/api/album', upload.array('files', 10), async (req, res) => {
+app.post('/api/album', rateLimit, upload.array('files', 10), async (req, res) => {
   try {
     if (!req.files || !req.files.length) return res.status(400).json({ error: 'No files (max 10)' });
     const expiryAt = parseExpiry(req.body.expiry || req.query.expiry || '24h');
@@ -449,7 +537,8 @@ app.get('/api/stats', (req, res) => {
   });
   // الخصوصية: التفاصيل (أسماء/لينكات) للأدمن بس — أي حد تاني يشوف الأرقام الإجمالية بس
   // أي مستخدم يشوف ملفاته هو من متصفحه (ملفاتي الأخيرة)، وأي ملف يتفتح بالرابط بتاعه عادي
-  const isAdmin = process.env.ADMIN_TOKEN && req.query.admin === process.env.ADMIN_TOKEN;
+  // التوكن يتقبل في هيدر x-admin-token (الأفضل) أو كويري ?admin= — يقارن timing-safe
+  const isAdmin = isAdminReq(req);
   const top = live.map(([id, m]) => isAdmin
     ? { id, key: m.slug || id, name: m.original, views: m.views || 0, size: m.size, view: `${baseUrl(req)}/v/${m.slug || id}` }
     : { views: m.views || 0, size: m.size })
@@ -476,11 +565,17 @@ app.get('/i/:id', async (req, res) => {
   if (meta.driver === 'catbox' && meta.directUrl) {
     return res.redirect(302, meta.directUrl);
   }
-  const filePath = path.join(UPLOAD_DIR, meta.stored);
+  // ملف محلي → يتخدم مباشرة من الديسك (من غير self-proxy)
+  const filePath = localFilePath(meta);
+  if (!filePath) return res.status(410).send('Gone | MINYAWE-LINK');
+  const ct = mimeOf(meta.original, meta.mimetype);
   res.set('Content-Disposition', `inline; filename="${encodeURIComponent(meta.original)}"`);
-  res.type(mimeOf(meta.original, meta.mimetype));
+  res.type(ct);
+  if (isActiveContent(ct)) res.set('Content-Security-Policy', 'sandbox'); // html/svg inline = بدون JS
   res.sendFile(filePath);
 });
+
+// ▶️ التشغيل المباشر باسمك (يقبل /e/id.mp3 عشان المشغلات — والقديم من غير امتداد شغال)
 
 // ▶️ التشغيل المباشر باسمك (يقبل /e/id.mp3 عشان المشغلات — والقديم من غير امتداد شغال)
 app.get('/e/:file', async (req, res) => {
@@ -491,14 +586,17 @@ app.get('/e/:file', async (req, res) => {
   const rx = realExt(meta);
   if (ext && ext !== rx) return res.redirect(301, `/e/${meta.slug || id}.${rx}`);
   meta.views = (meta.views || 0) + 1; saveDB(); // عداد المشاهدات
-  if (meta.directUrl) return proxyFile(meta, req, res, 'inline');
-  const filePath = path.join(UPLOAD_DIR, meta.stored);
+  if (meta.driver !== 'local' && meta.directUrl) return proxyFile(meta, req, res, 'inline');
+  const filePath = localFilePath(meta);
+  if (!filePath) return res.status(410).send('Gone | MINYAWE-LINK');
+  const ct = mimeOf(meta.original, meta.mimetype);
   res.set({
     'X-Powered-By': BRAND, 'Access-Control-Allow-Origin': '*',
     'Cross-Origin-Resource-Policy': 'cross-origin', 'Accept-Ranges': 'bytes'
   });
   res.set('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(meta.original)}`);
-  res.type(mimeOf(meta.original, meta.mimetype));
+  res.type(ct);
+  if (isActiveContent(ct)) res.set('Content-Security-Policy', 'sandbox'); // html/svg inline = بدون JS
   res.sendFile(filePath);
 });
 
@@ -510,8 +608,10 @@ app.get('/d/:file', async (req, res) => {
   if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
   const rx = realExt(meta);
   if (ext && ext !== rx) return res.redirect(301, `/d/${meta.slug || id}.${rx}`);
-  if (meta.directUrl) return proxyFile(meta, req, res, 'attachment');
-  res.download(path.join(UPLOAD_DIR, meta.stored), meta.original);
+  if (meta.driver !== 'local' && meta.directUrl) return proxyFile(meta, req, res, 'attachment');
+  const dlPath = localFilePath(meta);
+  if (!dlPath) return res.status(410).send('Gone | MINYAWE-LINK');
+  res.download(dlPath, meta.original);
 });
 
 // 👁️ صفحة العرض باسمك (مشغل أنيق + كل اللينكات)
@@ -533,11 +633,12 @@ app.get('/v/:id', async (req, res) => {
     // معاينة النص: أول 30KB بس (Range) عشان الصفحة تفتح بسرعة حتى مع الملفات الكبيرة
     let snippet = '';
     try {
-      if (meta.directUrl) {
+      if (meta.driver !== 'local' && meta.directUrl) {
         const tr = await fetch(meta.directUrl, { headers: { Range: 'bytes=0-29999' } });
         if (tr.ok || tr.status === 206) snippet = (await tr.text()).slice(0, 30000);
       } else {
-        snippet = fs.readFileSync(path.join(UPLOAD_DIR, meta.stored), 'utf8').slice(0, 30000);
+        const lp = localFilePath(meta);
+        if (lp) snippet = fs.readFileSync(lp, 'utf8').slice(0, 30000);
       }
     } catch {}
     player = snippet
@@ -564,7 +665,7 @@ footer{margin-top:28px;font-family:monospace;font-size:12px;color:#464a4d}footer
 <div class="btns"><a class="btn" href="${stream}" target="_blank">تشغيل مباشر</a><a class="btn" href="${dl}">تحميل</a><button class="btn" onclick="cp('${dl}')">نسخ</button></div>
 <div class="btns"><a class="btn" href="https://wa.me/?text=${enc}" target="_blank">واتساب</a><a class="btn" href="https://t.me/share/url?url=${enc}" target="_blank">تيليجرام</a><a class="btn" href="https://twitter.com/intent/tweet?url=${enc}" target="_blank">X</a></div></div>
 <div id="tst"></div>
-<footer>MADE WITH 💜 BY <b>ELMINYAWE</b></footer></div>
+<footer>Dev <b>ELMINYAWE</b></footer></div>
 <script>function cp(t){function ok(){var e=document.getElementById('tst');e.textContent='تم النسخ ✓';e.style.display='block';setTimeout(function(){e.style.display='none';},5000);}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){ok();});}else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(_){}a.remove();ok();}}</script></body></html>`);
 });
 
@@ -572,7 +673,8 @@ app.delete('/api/:id', async (req, res) => {
   const found = findFile(req.params.id);
   if (!found) return res.status(404).json({ error: 'Not found' });
   const { id, meta } = found;
-  if (req.query.token !== meta.deleteToken && req.query.admin !== process.env.ADMIN_TOKEN)
+  // المسح إما بتوكن الحذف الخاص بالملف، أو بتوكن الأدمن (timing-safe، ويفضل عبر هيدر x-admin-token)
+  if (req.query.token !== meta.deleteToken && !isAdminReq(req))
     return res.status(403).json({ error: 'Forbidden' });
   if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
   delete db.files[id]; saveDB();
@@ -606,10 +708,15 @@ a.btn:hover{border-color:#fff}
 footer{margin-top:28px;font-family:monospace;font-size:12px;color:#464a4d}footer b{color:#fff}</style></head>
 <body><div class="wrap"><a class="logo" href="/">MINYAWE-LINK</a>
 <div class="card"><h2>ألبوم الملفات</h2><div class="cnt">${al.files.length} files • expires ${al.expiryAt ? new Date(al.expiryAt).toLocaleString('ar-EG') : '—'}</div>${rows || '<div class="cnt">لا توجد ملفات متاحة</div>'}</div>
-<footer>MADE WITH 💜 BY <b>ELMINYAWE</b></footer></div></body></html>`);
+<footer>Dev <b>ELMINYAWE</b></footer></div></body></html>`);
 });
 
-app.use((err, req, res, next) => res.status(400).json({ error: err.message }));
+app.use((err, req, res, next) => {
+  if (err && err.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: `File too large (max ${MAX_MB}MB)` });
+  if (err && /blocked/i.test(err.message || '')) return res.status(400).json({ error: err.message });
+  try { console.error('  [req-err]', String((err && err.message) || err).slice(0, 200)); } catch {}
+  res.status(400).json({ error: 'bad request' });
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
