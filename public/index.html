@@ -414,7 +414,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <span class="bars"><i></i><i></i><i></i></span>
       <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
     </a>
-    <div class="fm">VAULT V5 • ELMINYAWE • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+    <div class="fm">VAULT V5.1 • ELMINYAWE • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
   </footer>
 </div>
 
@@ -441,6 +441,7 @@ async function up(){
     if(['jpg','jpeg','png','gif','webp','ico'].includes(ext))prev=`<div class="preview"><img src="${j.stream}"></div>`;
     else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.stream}" controls></video></div>`;
     else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.stream}" controls></audio></div>`;
+    else if(['txt','md','json','js','py','css','html','csv','log'].includes(ext))prev=`<div class="preview"><div class="meta">📄 <a href="${j.view}" target="_blank">معاينة النص في صفحة العرض</a></div></div>`;
     box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.view}" target="_blank">${j.view}</a>
       <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'—'}</div>
       ${prev}<div class="row" style="margin-top:12px">

@@ -44,6 +44,8 @@ function kindOf(meta) {
   if (mt.startsWith('image/')) return 'image';
   if (mt.startsWith('video/')) return 'video';
   if (mt.startsWith('audio/')) return 'audio';
+  const e = path.extname(meta.original || '').toLowerCase();
+  if (mt.startsWith('text/') || mt === 'application/json' || ['.md', '.json', '.js', '.py', '.css', '.html', '.csv', '.log', '.xml', '.yml', '.yaml', '.sh', '.txt'].includes(e)) return 'text';
   return 'file';
 }
 
@@ -127,8 +129,11 @@ async function proxyFile(meta, req, res, disposition) {
       const r = await fetch(target, { headers });
       if (!r.ok && r.status !== 206) { lastStatus = r.status; continue; }
       res.status(r.status);
+      // لو التخزين بعت نوع عام (octet-stream) نخمن الصح من الامتداد — عشان الـ .md والـ .txt يتعرضوا مش يتحملوا
+      const upstreamCT = r.headers.get('content-type') || '';
+      const effCT = (!upstreamCT || upstreamCT.includes('octet-stream')) ? mimeOf(meta.original, meta.mimetype) : upstreamCT;
       res.set({
-        'Content-Type': r.headers.get('content-type') || meta.mimetype || 'application/octet-stream',
+        'Content-Type': effCT,
         'Content-Disposition': `${disposition}; filename*=UTF-8''${encodeURIComponent(meta.original)}`,
         'Accept-Ranges': 'bytes',
         'Cache-Control': 'public, max-age=86400',
@@ -196,7 +201,7 @@ app.get('/api/docs', (req, res) => {
   res.json({
     name: 'MINYAWE-LINK',
     by: 'ELMINYAWE',
-    version: '5.0',
+    version: '5.1',
     base: b,
     auth: 'none',
     limits: { maxMB: MAX_MB, maxExpiryDays: 30, expiryValues: ['1h', '24h', '7d', '30d'], blockedExtensions: BLOCKED },
@@ -375,6 +380,21 @@ app.get('/v/:id', async (req, res) => {
   if (kind === 'image') player = `<img src="${stream}" alt="${name}">`;
   else if (kind === 'video') player = `<video src="${stream}" controls playsinline></video>`;
   else if (kind === 'audio') player = `<div class="fn">${name}</div><audio src="${stream}" controls></audio>`;
+  else if (kind === 'text') {
+    // معاينة النص: أول 30KB بس (Range) عشان الصفحة تفتح بسرعة حتى مع الملفات الكبيرة
+    let snippet = '';
+    try {
+      if (meta.directUrl) {
+        const tr = await fetch(meta.directUrl, { headers: { Range: 'bytes=0-29999' } });
+        if (tr.ok || tr.status === 206) snippet = (await tr.text()).slice(0, 30000);
+      } else {
+        snippet = fs.readFileSync(path.join(UPLOAD_DIR, meta.stored), 'utf8').slice(0, 30000);
+      }
+    } catch {}
+    player = snippet
+      ? `<div class="fn">${name}</div><pre class="txt">${esc(snippet)}</pre>`
+      : `<div class="file">📁<div class="fn">${name}</div><div class="sz">${size}</div></div>`;
+  }
   else player = `<div class="file">📁<div class="fn">${name}</div><div class="sz">${size}</div></div>`;
   res.send(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${name} | MINYAWE-LINK</title>
@@ -382,6 +402,7 @@ app.get('/v/:id', async (req, res) => {
 .wrap{max-width:640px;margin:0 auto}.logo{font-weight:600;letter-spacing:-.02em;color:#ececfb;text-decoration:none}
 .logo span{color:#b88cff}.card{background:#2a2b3a;border-radius:16px;padding:24px;margin-top:20px;box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(190,167,255,.24) 0 0 0 1.5px inset}
 img,video{max-width:100%;border-radius:12px}audio{width:100%;margin-top:12px}.fn{font-family:monospace;font-size:13px;word-break:break-all;margin:8px 0}
+pre.txt{direction:ltr;text-align:left;background:#0b0b15;border:1px solid #343543;border-radius:12px;padding:14px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;margin-top:12px}
 .sz{font-family:monospace;font-size:11px;color:#9fa2b9}.meta{font-family:monospace;font-size:11px;color:#9fa2b9;margin-top:10px}
 .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 a.btn{background:#fff;color:#010314;border-radius:9999px;padding:10px 22px;font-size:14px;font-weight:500;text-decoration:none}
@@ -407,7 +428,7 @@ app.use((err, req, res, next) => res.status(400).json({ error: err.message }));
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
-  console.log('  MINYAWE-LINK V5 by ELMINYAWE is READY');
+  console.log('  MINYAWE-LINK V5.1 by ELMINYAWE is READY');
   console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${DRIVER.toUpperCase()}`);
   console.log('==========================================');
 });
