@@ -1,13 +1,11 @@
 {
   "name": "minyawe-link",
-  "version": "3.0.0",
-  "description": "MINYAWE-LINK V3 by ELMINYAWE - full Evervault landing, direct links, S3 ready",
+  "version": "5.0.0",
+  "description": "MINYAWE-LINK V5 by ELMINYAWE - pure brand: catbox+local, branded view/stream/download links",
   "main": "server.js",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js" },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.600.0",
-    "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1"

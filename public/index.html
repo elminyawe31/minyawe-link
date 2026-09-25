@@ -268,7 +268,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
     </div>
     <div class="sysline" id="cfg">connecting to vault…</div>
     <div class="stage">
-      <div class="crypt">9f7f·d110·a3c9·77e2<br>minyawe·link·vault<br>01:03:14·STORJ·OK<br>ff·88·cc·66·33·ee<br>direct·link·ready<br>ELMINYAWE·key·✓<br>b8·8c·ff·iris·on</div>
+      <div class="crypt">9f7f·d110·a3c9·77e2<br>minyawe·link·vault<br>01:03:14·VAULT·OK<br>ff·88·cc·66·33·ee<br>direct·link·ready<br>ELMINYAWE·key·✓<br>b8·8c·ff·iris·on</div>
       <div class="beam-v"></div>
       <div class="linkcard">
         <div class="chiprow"><div class="chip"></div><div class="wave">)))</div></div>
@@ -283,7 +283,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   <!-- 4. TRUST LOGO CLOUD -->
   <div class="trust">
     <div class="cap">يشتغل مع أدواتك المفضلة — من غير إعدادات معقدة</div>
-    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">CATBOX</span><span class="t">CTRL+V</span><span class="t">REST API</span></div>
+    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">200MB</span><span class="t">CTRL+V</span><span class="t">REST API</span></div>
   </div>
 
   <!-- 5. UPLOAD VAULT -->
@@ -322,6 +322,9 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <div class="srow head"><span class="pulse" id="st-dot"></span><span id="st-state" class="mono">checking…</span>
         <button type="button" class="mini" onclick="loadStatus()">↻ تحديث</button></div>
       <div class="srow"><span>التخزين</span><span class="mono" id="st-storage">—</span></div>
+      <div class="srow"><span>سلسلة الطوارئ</span><span class="mono" id="st-chain">—</span></div>
+      <div class="srow"><span>المراية الاحتياطية</span><span class="mono" id="st-mirror">—</span></div>
+      <div class="srow"><span>مساحة الفوليوم الفاضية</span><span class="mono" id="st-disk">—</span></div>
       <div class="srow"><span>أقصى حجم ملف</span><span class="mono" id="st-max">—</span></div>
       <div class="srow"><span>أقصى مدة احتفاظ</span><span class="mono">30 يوم</span></div>
       <div class="srow"><span>زمن الاستجابة</span><span class="mono" id="st-ping">—</span></div>
@@ -362,7 +365,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <p>مثالين جاهزين: رفع من التيرمينال، وإعداد ShareX.</p>
     </div>
     <div class="codecard">
-      <div class="tabs"><button type="button" class="tab on" onclick="showTab(0,this)">upload.sh</button><button type="button" class="tab" onclick="showTab(1,this)">sharex.sxcu</button></div>
+      <div class="tabs"><button type="button" class="tab on" onclick="showTab(0,this)">upload.sh</button><button type="button" class="tab" onclick="showTab(1,this)">sharex.sxcu</button><button type="button" class="tab" onclick="showTab(2,this)">agent 🤖</button></div>
       <pre id="code0"><span class="c"># upload from terminal</span>
 <span class="k">curl</span> <span class="v">-F</span> <span class="s">"file=@song.mp3"</span> <span class="v">-F</span> <span class="s">"expiry=30d"</span> \
   <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span></pre>
@@ -372,6 +375,12 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   <span class="s">"FileFormName"</span>: <span class="s">"file"</span>,
   <span class="s">"URL"</span>: <span class="s">"$json:url$"</span>
 }</pre>
+      <pre id="code2" style="display:none"><span class="c"># AI agent: read /llms.txt first, then upload</span>
+<span class="k">curl</span> <span class="v">-F</span> <span class="s">"file=@report.pdf"</span> <span class="v">-F</span> <span class="s">"expiry=7d"</span> \
+  <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span>
+<span class="c"># => {"view": ".../v/ID", "stream": ".../e/ID",</span>
+<span class="c">#     "download": ".../d/ID", "deleteToken": "..."}</span>
+<span class="c"># full machine spec: /api/docs</span></pre>
     </div>
   </section>
 
@@ -405,12 +414,12 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <span class="bars"><i></i><i></i><i></i></span>
       <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
     </a>
-    <div class="fm">VAULT V3.7 • ANIMATED UV • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+    <div class="fm">VAULT V5 • ELMINYAWE • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
   </footer>
 </div>
 
 <script>
-function showTab(i,el){document.getElementById('code0').style.display=i===0?'block':'none';document.getElementById('code1').style.display=i===1?'block':'none';document.querySelectorAll('.codecard .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');}
+function showTab(i,el){document.querySelectorAll('.codecard pre').forEach(function(p,k){p.style.display=k===i?'block':'none';});document.querySelectorAll('.codecard .tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');}
 let exp='30d';
 document.querySelectorAll('#exps .pill').forEach(b=>b.onclick=e=>{e.stopPropagation();document.querySelectorAll('#exps .pill').forEach(x=>x.classList.remove('on'));b.classList.add('on');exp=b.dataset.v;});
 const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=document.getElementById('dlabel');
@@ -440,7 +449,6 @@ async function up(){
       <button type="button" class="copy" onclick="window.open('${j.download}','_blank')">⬇️ تحميل</button></div>
       <div class="row"><button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.view}')">📋 نسخ رابط العرض</button>
       <button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.stream}')">📋 نسخ المباشر</button></div>
-      <div class="meta">raw: <a href="${j.url}" target="_blank">${j.url}</a></div>
       <br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.view)}">`;
   }catch(e){box.innerHTML='❌ '+e.message;}
   btn.disabled=false;btn.innerText='رفع 🚀';
@@ -472,8 +480,12 @@ async function loadStatus(){
     var c=await fetch('/api/config?t='+Date.now()).then(function(r){return r.json();});
     var ms=Math.round(((window.performance&&performance.now)?performance.now():Date.now())-t0);
     dot.classList.remove('bad');st.textContent='ONLINE • MINYAWE-LINK OK';
-    document.getElementById('st-storage').textContent=c.storage;
+    var brandName=function(s){return s==='catbox'?'MINYAWE CLOUD ☁️':(s==='local'?'MINYAWE VAULT 🗄️':s);};
+    document.getElementById('st-storage').textContent=brandName(c.storage);
     document.getElementById('st-max').textContent=c.maxMB+'MB';
+    if(document.getElementById('st-chain'))document.getElementById('st-chain').textContent=(c.chain||[c.storage]).map(function(s){return s==='catbox'?'CLOUD':(s==='local'?'VAULT':s);}).join(' → ');
+    if(document.getElementById('st-mirror'))document.getElementById('st-mirror').textContent=c.mirror||'—';
+    if(document.getElementById('st-disk'))document.getElementById('st-disk').textContent=c.disk?(c.disk.freeMB+'MB / '+c.disk.totalMB+'MB'):'—';
     document.getElementById('st-ping').textContent=ms+'ms';
   }catch(e){dot.classList.add('bad');st.textContent='OFFLINE — retrying…';}
 }
