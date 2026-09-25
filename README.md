@@ -26,7 +26,9 @@ DATA_DIR=/data
 ## الـ API
 | الطريقة | المسار | الوصف |
 |---|---|---|
-| POST | `/api/upload` | رفع (`file` + `expiry=1h\|24h\|7d\|30d`) |
+| POST | `/api/upload` | رفع (`file` + `expiry` + `alias` الاختياري) |
+| POST | `/api/album` | ألبوم لحد 10 ملفات (`files`) في صفحة `/a/:id` |
+| GET | `/api/stats` | لوحة الأرقام: ملفات/مشاهدات/مساحة/الأعلى |
 | GET | `/v/:id` | صفحة العرض |
 | GET | `/e/:id` | تشغيل مباشر (inline + Range) |
 | GET | `/d/:id` | تحميل مباشر (attachment) |

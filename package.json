@@ -1,7 +1,7 @@
 {
   "name": "minyawe-link",
-  "version": "6.1.0",
-  "description": "MINYAWE-LINK V5 by ELMINYAWE - pure brand: catbox+local, branded view/stream/download links",
+  "version": "6.3.0",
+  "description": "MINYAWE-LINK V6.3 by ELMINYAWE - tabs, bento, magic cube, ext links",
   "main": "server.js",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js" },
