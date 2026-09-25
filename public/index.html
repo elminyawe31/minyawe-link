@@ -57,9 +57,18 @@ a{color:var(--c-smoke)}
 .ev-card{width:330px;border-radius:24px;padding:26px 24px;text-align:left;direction:ltr;position:relative;z-index:1;
   background:linear-gradient(135deg,#ffffff 0%,#dcdcdc 45%,#a9a9a9 100%);color:#0a0a0a;
   box-shadow:0 0 70px rgba(255,255,255,.10),0 24px 48px rgba(0,0,0,.55);
-  display:flex;flex-direction:column;justify-content:space-between;gap:16px;
-  transform:rotate(-4deg);animation:cardfloat 7s ease-in-out infinite}
+  display:flex;flex-direction:column;justify-content:space-between;gap:16px;overflow:hidden;
+  transform:rotate(-4deg);animation:cardfloat 7s ease-in-out infinite;
+  transition:transform .18s ease-out,box-shadow .25s;cursor:pointer;transform-style:preserve-3d;perspective:900px}
 @keyframes cardfloat{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-4deg) translateY(-12px)}}
+.ev-card::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.8) 45%,transparent 60%);
+  transform:translateX(-120%)}
+.ev-card.shine::before{animation:evShine .9s ease}
+@keyframes evShine{to{transform:translateX(120%)}}
+.ev-glare{position:absolute;inset:-40%;z-index:4;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.55),transparent 55%)}
+.ev-card:hover .ev-glare{opacity:1}
 .ev-card .chiprow{display:flex;justify-content:space-between;align-items:center}
 .ev-card .echip{width:46px;height:34px;border-radius:7px;background:linear-gradient(135deg,#e8e8e8,#9a9a9a 60%,#c9c9c9);
   position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
@@ -67,15 +76,33 @@ a{color:var(--c-smoke)}
 .ev-card .wave{font-size:20px;color:#0a0a0a;opacity:.65;font-weight:600}
 .ev-card .ebrand{display:flex;align-items:center;gap:8px;font-family:var(--f-tight);font-weight:600;font-size:15px;letter-spacing:-.01em}
 .ev-card .emark{width:24px;height:24px;border-radius:6px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
-.ev-card .enum{font-family:var(--f-mono);font-size:14px;letter-spacing:.12em}
-.ev-card .ehold{font-family:var(--f-mono);font-size:11px;letter-spacing:.3em;color:#2a2a2a}
+.ev-card .enum{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;line-height:1.8}
+.ev-card .enum .dim{color:#555}
+.ev-card .ehold{font-family:var(--f-mono);font-size:11px;letter-spacing:.3em;color:#2a2a2a;display:flex;justify-content:space-between;align-items:center}
+.ev-card .ehold .exp{letter-spacing:.08em;font-size:10px}
 .beam-w{width:3px;min-height:230px;margin:0 26px;border-radius:2px;position:relative;z-index:1;
   background:linear-gradient(to bottom,transparent,#ffffff 30%,#ffffff 70%,transparent);
   box-shadow:0 0 18px rgba(255,255,255,.75),0 0 60px rgba(255,255,255,.25);
-  animation:beampulse 4s ease-in-out infinite}
+  animation:beampulse 4s ease-in-out infinite;overflow:visible}
+.beam-w::after{content:"";position:absolute;left:-2px;top:-20%;width:7px;height:26%;border-radius:99px;
+  background:linear-gradient(to bottom,transparent,#fff,transparent);filter:blur(1px);
+  animation:beamDrop 3.2s ease-in-out infinite}
+@keyframes beamDrop{0%{top:-20%}55%{top:90%}100%{top:90%;opacity:0}}
 @keyframes beampulse{0%,100%{opacity:.55}50%{opacity:1}}
-.hexcol{font-family:var(--f-mono);font-size:12px;line-height:1.75;color:#8a8f98;opacity:.85;
-  text-align:left;direction:ltr;user-select:none;overflow:hidden;max-height:240px;flex:1;white-space:pre}
+.hexcol{font-family:var(--f-mono);font-size:12px;line-height:1.9;color:#8a8f98;opacity:.9;
+  text-align:left;direction:ltr;user-select:none;overflow:hidden;max-height:250px;min-height:250px;flex:1;white-space:nowrap;position:relative;
+  mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent)}
+.hexcol .hx-inner{display:inline-block;animation:hxScroll 20s linear infinite;will-change:transform}
+.hexcol:hover .hx-inner{animation-play-state:paused}
+@keyframes hxScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.hx-line{display:block;transition:color .2s}
+.hx-line:hover{color:#fff}
+.hx-line b{color:#c9ced4;font-weight:500}
+.hx-line .g{color:#3ad389}
+#cursorGlow{position:fixed;width:520px;height:520px;left:0;top:0;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(255,255,255,.07),transparent 60%)}
+.btn-ghost.magnet{transition:transform .18s ease-out,border-color .15s}
 .hero-band{position:absolute;left:0;right:0;bottom:-70px;height:280px;pointer-events:none;
   background:radial-gradient(65% 100% at 50% 100%,rgba(255,255,255,.08),transparent 70%)}
 .hero h1{font-family:var(--f-tight);font-weight:400;font-size:56px;line-height:1.2;letter-spacing:-2.8px;
@@ -213,8 +240,16 @@ footer{margin-top:96px;padding-top:32px;border-top:1px solid var(--c-hair);displ
 footer .fl{display:flex;gap:24px}
 footer a{font-size:14px;color:var(--c-ash);text-decoration:none}
 footer a:hover{color:var(--c-white)}
-footer .fm{font-family:var(--f-mono);font-size:12px;color:var(--c-char)}
+footer .fm{font-family:var(--f-mono);font-size:12px;color:var(--c-char);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 footer .fm b{color:var(--c-white)}
+.dev-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--c-hair);border-radius:999px;padding:6px 14px;
+  font-family:var(--f-mono);font-size:12px;color:var(--c-bone);background:rgba(255,255,255,.02)}
+.dev-badge .dot-w{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.9);animation:pulseW 2s infinite}
+@keyframes pulseW{0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.dev-badge b{color:#fff}
+.only-me{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.22);border-radius:999px;
+  padding:6px 12px;font-size:11px;letter-spacing:.14em;color:#fff;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.02))}
+.only-me svg{width:12px;height:12px}
 /* TOASTS */
 #toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;align-items:center}
 .toast{display:flex;align-items:center;gap:10px;background:#000;border:1px solid var(--c-hair);border-radius:6px;
@@ -265,12 +300,13 @@ footer .fm b{color:var(--c-white)}
     <header class="hero" id="top">
       <div class="hero-band"></div>
       <a class="pill-link" data-tab-go="upload" style="cursor:pointer">لينكات مباشرة بامتدادها — من غير حساب <span>←</span></a>
-      <div class="ev-visual">
-        <div class="ev-card">
+      <div class="ev-visual" id="evVisual">
+        <div class="ev-card" id="evCard" title="حرّك الماوس عليها">
+          <div class="ev-glare" id="evGlare"></div>
           <div class="chiprow"><span class="echip"></span><span class="wave">)))</span></div>
           <div class="ebrand"><span class="emark">M</span>MINYAWE-LINK</div>
-          <div class="enum">0000 2000 0030 2026</div>
-          <div class="ehold">ELMINYAWE</div>
+          <div class="enum">elminyawe-link <span class="dim">/v /e /d</span><br>direct-link <span class="dim">• mp3 • mp4</span></div>
+          <div class="ehold"><span>ELMINYAWE</span><span class="exp">30d • 200MB</span></div>
         </div>
         <div class="beam-w"></div>
         <div class="hexcol" id="hex1"></div>
@@ -459,9 +495,10 @@ footer .fm b{color:var(--c-white)}
   <!-- FOOTER -->
   <footer>
     <div class="fl"><a href="/api/docs">API</a><a href="/llms.txt">Agents</a></div>
-    <div class="fm">VAULT V6.3 • MONO • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+    <div class="fm"><span class="dev-badge"><span class="dot-w"></span>Dev <b>ELMINYAWE</b></span><span class="only-me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ONLY ME</span></div>
   </footer>
 </div>
+<div id="cursorGlow"></div>
 <div id="toasts"></div>
 
 <script>
@@ -530,9 +567,16 @@ async function loadStatus(){
     var c=await fetch('/api/config?t='+Date.now()).then(function(r){return r.json();});
     var ms=Math.round(((window.performance&&performance.now)?performance.now():Date.now())-t0);
     dot.classList.remove('bad');st.textContent='ONLINE • MINYAWE-LINK OK';
-    var bn=function(s){return s==='catbox'?'MINYAWE CLOUD ☁️':(s==='local'?'MINYAWE VAULT 🗄️':s);};
+    var bn=function(s){
+      if(!s)return 'MINYAWE-VAULT';
+      s=String(s).toLowerCase();
+      if(s.indexOf('catbox')>=0)return 'MINYAWE-VAULT';
+      if(s.indexOf('local')>=0)return 'MINYAWE VAULT';
+      if(s.indexOf('s3')>=0||s.indexOf('r2')>=0||s.indexOf('storj')>=0)return 'MINYAWE CLOUD';
+      return 'MINYAWE-VAULT';
+    };
     document.getElementById('st-storage').textContent=bn(c.storage);
-    if(document.getElementById('st-chain'))document.getElementById('st-chain').textContent=(c.chain||[c.storage]).map(function(s){return s==='catbox'?'CLOUD':(s==='local'?'VAULT':s);}).join(' → ');
+    if(document.getElementById('st-chain'))document.getElementById('st-chain').textContent=(c.chain||[c.storage]).map(function(s){return bn(s).replace('MINYAWE ','');}).join(' → ');
     if(document.getElementById('st-mirror'))document.getElementById('st-mirror').textContent=c.mirror||'—';
     document.getElementById('st-max').textContent=c.maxMB+'MB';
     if(document.getElementById('st-disk'))document.getElementById('st-disk').textContent=c.disk?(c.disk.freeMB+'MB / '+c.disk.totalMB+'MB'):'—';
@@ -562,7 +606,7 @@ document.addEventListener('paste',function(e){
   toast('اتلصق الملف — جاري الرفع…');
   up();
 });
-fetch('/api/config?t='+Date.now()).then(function(r){return r.json();}).then(function(j){document.getElementById('cfg').innerHTML='VAULT READY :: max '+j.maxMB+'MB :: storage '+j.storage+' :: direct-link ON :: max-expiry 30d';}).catch(function(){document.getElementById('cfg').innerText='vault offline — retrying…';});
+fetch('/api/config?t='+Date.now()).then(function(r){return r.json();}).then(function(j){document.getElementById('cfg').textContent='VAULT READY :: max '+j.maxMB+'MB :: MINYAWE-VAULT :: direct-link ON :: max-expiry 30d';}).catch(function(){document.getElementById('cfg').innerText='vault offline — retrying…';});
 function fmt(s){if(!s)return'—';var d=new Date(s);return d.toLocaleString('ar-EG');}
 function fmtB(b){b=b||0;if(b<1048576)return Math.round(b/1024)+' KB';if(b<1073741824)return (b/1048576).toFixed(1)+' MB';return (b/1073741824).toFixed(2)+' GB';}
 function shareRow(u){
@@ -687,26 +731,76 @@ async function up(){
   }catch(e){box.innerHTML='<span style="color:#ff9592">خطأ: '+e.message+'</span>';toast('فشل الرفع: '+e.message,'#ff9592');}
   btn.disabled=false;btn.innerText='رفع';
 }
-/* hex cascade — Evervault token stream, dim white, always alive */
+/* project stream — words from the vault, scrolling alive + mouse reactive */
 (function(){
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lines=[
+    '<b>elminyawe-link</b> :: direct-link ON',
+    '<span class="g">/v</span> view • <span class="g">/e</span> stream.mp3 • <span class="g">/d</span> dl',
+    'minyawe-vault -- max 200MB -- 30d',
+    '<b>sharex</b> → api/upload ✓ discord ✓',
+    'stream <b>mp3 • mp4</b> with seek',
+    'album / qr-code / views / alias',
+    '<b>elminyawe-link</b> :: ctrl+v ✓ drag ✓',
+    'cors open • inline • no-signup',
+    '<span class="g">/e/</span>song.mp3 → plays all',
+    '<span class="g">/v/</span>photo.jpg → preview',
+    'retention 1h 24h 7d 30d ✓',
+    '<b>MINYAWE-LINK</b> by ELMINYAWE'
+  ];
   var els=[document.getElementById('hex1'),document.getElementById('hex2')].filter(Boolean);
-  if(!els.length)return;
-  var CH='0123456789abcdef·:';
-  function col(){var s='';for(var i=0;i<9;i++){var line='';for(var j=0;j<22;j++)line+=CH[Math.floor(Math.random()*CH.length)];s+=line+(i<8?'<br>':'');}return s;}
-  els.forEach(function(el){el.innerHTML=col();});
-  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  setInterval(function(){
-    if(document.hidden)return;
-    els.forEach(function(el){
-      var html=el.innerHTML.split(/(<br>)/g).map(function(part){
-        if(part.charAt(0)==='<')return part;
-        var out=part.split(''),n=2+Math.floor(Math.random()*5);
-        for(var k=0;k<n;k++){var i=Math.floor(Math.random()*out.length);out[i]=CH[Math.floor(Math.random()*CH.length)];}
-        return out.join('');
-      }).join('');
-      el.innerHTML=html;
+  els.forEach(function(el,ci){
+    var html='<span class="hx-inner">';
+    for(var r=0;r<2;r++){ for(var i=0;i<lines.length;i++){
+      var li=(i+ci*4)%lines.length;
+      html+='<span class="hx-line">'+lines[li]+'</span>';
+    }}
+    html+='</span>';
+    el.innerHTML=html;
+  });
+  if(reduced)return;
+  /* card 3D tilt + glare + shine */
+  var card=document.getElementById('evCard'),glare=document.getElementById('evGlare'),vis=document.getElementById('evVisual');
+  if(card&&vis){
+    var tx=-4,ty=0,rx=-4,ry=0,raf=null;
+    function loop(){rx+=(tx-rx)*.12;ry+=(ty-ry)*.12;
+      card.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg) rotate(-4deg) scale(1.03)';
+      raf=requestAnimationFrame(loop);}
+    vis.addEventListener('mousemove',function(e){
+      var b=card.getBoundingClientRect();
+      var px=(e.clientX-b.left)/b.width-.5, py=(e.clientY-b.top)/b.height-.5;
+      ty=px*24; tx=-py*20-4;
+      if(glare){glare.style.setProperty('--gx',(px+.5)*100+'%');glare.style.setProperty('--gy',(py+.5)*100+'%');}
+      if(!raf)loop();
     });
-  },150);
+    vis.addEventListener('mouseleave',function(){tx=-4;ty=0;
+      setTimeout(function(){if(raf){cancelAnimationFrame(raf);raf=null;card.style.transform='';}},700);});
+    card.addEventListener('mouseenter',function(){card.classList.remove('shine');void card.offsetWidth;card.classList.add('shine');});
+    card.addEventListener('click',function(){showView('upload');});
+    /* parallax: wall shifts with mouse */
+    document.addEventListener('mousemove',function(e){
+      var cx=e.clientX/window.innerWidth-.5, cy=e.clientY/window.innerHeight-.5;
+      els.forEach(function(el){el.style.transform='translate('+cx*12+'px,'+cy*8+'px)';});
+    });
+  }
+  /* cursor glow */
+  var glow=document.getElementById('cursorGlow');
+  if(glow){
+    var gx=innerWidth/2,gy=220,ax=gx,ay=gy;
+    document.addEventListener('mousemove',function(e){gx=e.clientX;gy=e.clientY;});
+    (function anim(){ax+=(gx-ax)*.08;ay+=(gy-ay)*.08;
+      glow.style.transform='translate('+(ax-260)+'px,'+(ay-260)+'px)';
+      requestAnimationFrame(anim);})();
+  }
+  /* magnetic CTA */
+  document.querySelectorAll('.hero-cta .btn-ghost').forEach(function(btn){
+    btn.classList.add('magnet');
+    btn.addEventListener('mousemove',function(e){
+      var b=btn.getBoundingClientRect();
+      btn.style.transform='translate('+((e.clientX-b.left-b.width/2)*.15)+'px,'+((e.clientY-b.top-b.height/2)*.2)+'px)';
+    });
+    btn.addEventListener('mouseleave',function(){btn.style.transform='';});
+  });
 })();
 /* scroll reveal */
 if('IntersectionObserver' in window){
