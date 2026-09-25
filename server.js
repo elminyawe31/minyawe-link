@@ -27,21 +27,46 @@ const S3_SECRET = process.env.S3_SECRET_KEY || '';
 const S3_REGION = process.env.S3_REGION || 'auto';
 const S3_PUBLIC_URL = (process.env.S3_PUBLIC_URL || '').replace(/\/$/, '');
 const USE_S3 = Boolean(S3_ENDPOINT && S3_BUCKET && S3_KEY && S3_SECRET);
+const CLD_NAME = process.env.CLOUDINARY_CLOUD_NAME || '';
+const CLD_KEY = process.env.CLOUDINARY_API_KEY || '';
+const CLD_SECRET = process.env.CLOUDINARY_API_SECRET || '';
+const USE_CLOUDINARY = Boolean(CLD_NAME && CLD_KEY && CLD_SECRET);
+// cloudinary > s3 > catbox > local (أو حددها بنفسك بـ STORAGE_DRIVER)
+// catbox: من غير حساب ومن غير فيزا، لينك مباشر دائم لحد 200MB
+const DRIVER = (process.env.STORAGE_DRIVER || (USE_CLOUDINARY ? 'cloudinary' : (USE_S3 ? 's3' : 'catbox'))).toLowerCase();
+
+async function catboxUpload(buffer, filename) {
+  const fd = new FormData();
+  fd.append('reqtype', 'fileupload');
+  fd.append('fileToUpload', new Blob([buffer], { type: 'application/octet-stream' }), filename);
+  const r = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd });
+  const t = (await r.text()).trim();
+  if (!r.ok || !t.startsWith('http')) throw new Error('catbox rejected: ' + t.slice(0, 120));
+  return t;
+}
 
 let s3 = null;
-if (USE_S3) {
+if (DRIVER === 'catbox') {
+  console.log('  Storage: CATBOX mode (direct permanent links)');
+} else if (DRIVER === 'cloudinary') {
+  const cloudinary = require('cloudinary').v2;
+  cloudinary.config({ cloud_name: CLD_NAME, api_key: CLD_KEY, api_secret: CLD_SECRET, secure: true });
+  console.log('  Storage: CLOUDINARY mode');
+} else if (DRIVER === 's3' && USE_S3) {
   const { S3Client } = require('@aws-sdk/client-s3');
   s3 = new S3Client({
     region: S3_REGION,
     endpoint: S3_ENDPOINT,
     credentials: { accessKeyId: S3_KEY, secretAccessKey: S3_SECRET },
-    forcePathStyle: true
+    // Storj/R2 يشتغلوا path-style، ولو خدمة طلبت virtual-hosted حط S3_FORCE_PATH_STYLE=false
+    forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== 'false'
   });
-  console.log('  Storage: S3/R2 mode ->', S3_BUCKET);
+  console.log('  Storage: S3 mode ->', S3_BUCKET);
 } else {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  if (process.env.STORAGE_DRIVER) console.log('  Note: storage vars missing, falling back to LOCAL');
   console.log('  Storage: LOCAL mode ->', UPLOAD_DIR);
 }
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // ===== DB =====
 let db = { files: {} };
@@ -65,7 +90,7 @@ function parseExpiry(v) {
 const BLOCKED = ['.exe', '.scr', '.com', '.bat', '.ps1', '.vbs', '.jar', '.msi', '.dll'];
 
 const upload = multer({
-  storage: USE_S3 ? multer.memoryStorage() : multer.diskStorage({
+  storage: DRIVER === 'local' ? multer.diskStorage({
     destination: UPLOAD_DIR,
     filename: (req, file, cb) => {
       let id = genId();
@@ -73,7 +98,7 @@ const upload = multer({
       req.minyaweId = id;
       cb(null, id + path.extname(file.originalname).toLowerCase());
     }
-  }),
+  }) : multer.memoryStorage(),
   limits: { fileSize: MAX_MB * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
@@ -109,14 +134,30 @@ async function deleteFromS3(key) {
   } catch {}
 }
 
+function cldUpload(buffer, opts) {
+  const cloudinary = require('cloudinary').v2;
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(opts, (err, res) => err ? reject(err) : resolve(res));
+    stream.end(buffer);
+  });
+}
+
+async function deleteFromCloudinary(meta) {
+  try {
+    const cloudinary = require('cloudinary').v2;
+    await cloudinary.uploader.destroy(meta.stored, { resource_type: meta.resourceType || 'image' });
+  } catch {}
+}
+
 function cleanup() {
   const now = Date.now();
   let changed = false;
   (async () => {
     for (const [id, meta] of Object.entries(db.files)) {
       if (meta.expiryAt && now > meta.expiryAt) {
-        if (meta.driver === 's3' && USE_S3) await deleteFromS3(meta.stored);
-        else { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+        if (meta.driver === 'cloudinary') await deleteFromCloudinary(meta);
+        else if (meta.driver === 's3' && DRIVER === 's3') await deleteFromS3(meta.stored);
+        else if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
         delete db.files[id];
         changed = true;
       }
@@ -135,7 +176,7 @@ app.get('/health', (req, res) => res.send('MINYAWE-LINK OK'));
 app.get('/api/config', (req, res) => res.json({
   brand: BRAND,
   maxMB: MAX_MB,
-  storage: USE_S3 ? 's3:' + S3_BUCKET : 'local',
+  storage: DRIVER === 'cloudinary' ? 'cloudinary' : (DRIVER === 'catbox' ? 'catbox' : (DRIVER === 's3' ? 's3:' + S3_BUCKET : 'local')),
   direct: true
 }));
 
@@ -147,8 +188,27 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     const expiryAt = parseExpiry(expiryInput);
     const deleteToken = crypto.randomBytes(8).toString('hex');
 
-    let id, stored, driver, directUrl;
-    if (USE_S3) {
+    let id, stored, driver, directUrl, resourceType;
+    if (DRIVER === 'catbox') {
+      id = genId();
+      while (db.files[id]) id = genId();
+      directUrl = await catboxUpload(req.file.buffer, req.file.originalname);
+      stored = directUrl; // ملحوظة: catbox مفيهوش مسح، اللينك بيفضل عايش والمسح بيشيله من عندنا بس
+      driver = 'catbox';
+    } else if (DRIVER === 'cloudinary') {
+      id = genId();
+      while (db.files[id]) id = genId();
+      const up = await cldUpload(req.file.buffer, {
+        resource_type: 'auto',
+        public_id: 'minyawe-link/' + id,
+        chunk_size: 6000000,
+        filename_override: req.file.originalname
+      });
+      stored = up.public_id;
+      resourceType = up.resource_type;
+      driver = 'cloudinary';
+      directUrl = up.secure_url;
+    } else if (DRIVER === 's3') {
       id = genId();
       while (db.files[id]) id = genId();
       const ext = path.extname(req.file.originalname).toLowerCase();
@@ -164,7 +224,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     }
 
     db.files[id] = {
-      stored, driver,
+      stored, driver, resourceType, directUrl,
       original: req.file.originalname,
       mimetype: req.file.mimetype,
       size: req.file.size,
@@ -183,8 +243,9 @@ app.get('/i/:id', async (req, res) => {
   const meta = db.files[req.params.id];
   if (!meta) return res.status(404).send('Not found | MINYAWE-LINK');
   if (meta.expiryAt && Date.now() > meta.expiryAt) {
-    if (meta.driver === 's3' && USE_S3) await deleteFromS3(meta.stored);
-    else { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+    if (meta.driver === 'cloudinary') await deleteFromCloudinary(meta);
+    else if (meta.driver === 's3' && DRIVER === 's3') await deleteFromS3(meta.stored);
+    else if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
     delete db.files[req.params.id]; saveDB();
     return res.status(410).send('Expired | MINYAWE-LINK');
   }
@@ -194,7 +255,13 @@ app.get('/i/:id', async (req, res) => {
     'Cross-Origin-Resource-Policy': 'cross-origin',
     'Accept-Ranges': 'bytes' // مهم للفيديو/الأغاني seek
   });
-  if (meta.driver === 's3' && USE_S3 && S3_PUBLIC_URL) {
+  if (meta.driver === 'catbox' && meta.directUrl) {
+    return res.redirect(302, meta.directUrl);
+  }
+  if (meta.driver === 'cloudinary' && meta.directUrl) {
+    return res.redirect(302, meta.directUrl);
+  }
+  if (meta.driver === 's3' && DRIVER === 's3' && S3_PUBLIC_URL) {
     return res.redirect(302, `${S3_PUBLIC_URL}/${meta.stored}`);
   }
   const filePath = path.join(UPLOAD_DIR, meta.stored);
@@ -208,8 +275,9 @@ app.delete('/api/:id', async (req, res) => {
   if (!meta) return res.status(404).json({ error: 'Not found' });
   if (req.query.token !== meta.deleteToken && req.query.admin !== process.env.ADMIN_TOKEN)
     return res.status(403).json({ error: 'Forbidden' });
-  if (meta.driver === 's3' && USE_S3) await deleteFromS3(meta.stored);
-  else { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+  if (meta.driver === 'cloudinary') await deleteFromCloudinary(meta);
+  else if (meta.driver === 's3' && DRIVER === 's3') await deleteFromS3(meta.stored);
+  else if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
   delete db.files[req.params.id]; saveDB();
   res.json({ ok: true, brand: BRAND });
 });
@@ -219,6 +287,6 @@ app.use((err, req, res, next) => res.status(400).json({ error: err.message }));
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
   console.log('  MINYAWE-LINK V3 by ELMINYAWE is READY');
-  console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${USE_S3 ? 'S3/R2' : 'LOCAL'}`);
+  console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${DRIVER.toUpperCase()}`);
   console.log('==========================================');
 });

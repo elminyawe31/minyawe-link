@@ -205,6 +205,19 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   box-shadow:0 0 24px rgba(102,51,238,.5) inset,0 0 18px rgba(102,51,238,.35);animation:dropulse 1s ease-in-out infinite}
 @keyframes dropulse{50%{box-shadow:0 0 34px rgba(142,100,255,.65) inset,0 0 26px rgba(142,100,255,.45)}}
 .result{animation:risein .4s ease both}
+/* status card */
+.statuscard{background:var(--color-slate-layer);border-radius:16px;padding:24px;max-width:680px;margin:0 auto;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px;border-bottom:1px solid var(--color-carbon-border);font-size:14px}
+.srow:last-child{border-bottom:0}
+.srow.head{justify-content:flex-start}
+.srow .mono{font-family:var(--font-mono);font-size:12px;color:var(--color-frost-white);direction:ltr}
+.pulse{width:10px;height:10px;border-radius:50%;background:#4ade80;flex:0 0 auto;animation:ping 1.8s ease-out infinite}
+.pulse.bad{background:#f87171}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.mini{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
+  border-radius:9999px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:var(--font-inter);margin-inline-start:auto}
+.mini:hover{border-color:var(--color-ultraviolet-key)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 @media(max-width:720px){
   .hero-band h1{font-size:36px;letter-spacing:-.7px}
@@ -230,7 +243,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <span class="bars"><i></i><i></i><i></i></span>
       <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
     </a>
-    <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="#api">API</a><a href="/health" target="_blank">الحالة</a></div>
+    <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="#api">API</a><a href="#status">الحالة</a></div>
     <button type="button" class="btn-pill" onclick="document.getElementById('f').click()">+ رفع ملف</button>
   </nav>
 
@@ -273,7 +286,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
     <div class="vault">
       <div class="drop" id="drop" onclick="document.getElementById('f').click()">
         <div class="big" id="dlabel">📤 دوس هنا أو اسحب الملف هنا</div>
-        <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — direct link, no protection</div>
+        <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — أو الصق الملف هنا بـ Ctrl+V 📋</div>
       </div>
       <input type="file" id="f">
       <div class="expr" id="exps">
@@ -285,6 +298,23 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       </div>
       <button type="button" class="upload-btn" id="btn" onclick="up()">رفع 🚀</button>
       <div class="result" id="result"></div>
+    </div>
+  </section>
+
+  <!-- 5.5 STATUS (live, same page) -->
+  <section class="block" id="status">
+    <div class="sec-head">
+      <span class="eyebrow">System Status</span>
+      <h2>حالة الخزنة</h2>
+      <p>نبض حي من السيرفر — يتحدث تلقائيا كل 30 ثانية من غير تاب جديد.</p>
+    </div>
+    <div class="statuscard">
+      <div class="srow head"><span class="pulse" id="st-dot"></span><span id="st-state" class="mono">checking…</span>
+        <button type="button" class="mini" onclick="loadStatus()">↻ تحديث</button></div>
+      <div class="srow"><span>التخزين</span><span class="mono" id="st-storage">—</span></div>
+      <div class="srow"><span>أقصى حجم ملف</span><span class="mono" id="st-max">—</span></div>
+      <div class="srow"><span>أقصى مدة احتفاظ</span><span class="mono">30 يوم</span></div>
+      <div class="srow"><span>زمن الاستجابة</span><span class="mono" id="st-ping">—</span></div>
     </div>
   </section>
 
@@ -387,6 +417,31 @@ async function up(){
   }catch(e){box.innerHTML='❌ '+e.message;}
   btn.disabled=false;btn.innerText='رفع 🚀';
 }
+/* live status + Ctrl+V paste upload */
+async function loadStatus(){
+  var dot=document.getElementById('st-dot'),st=document.getElementById('st-state');
+  if(!dot||!st)return;
+  var t0=(window.performance&&performance.now)?performance.now():Date.now();
+  try{
+    var h=await fetch('/health?t='+Date.now());if(!h.ok)throw 0;
+    var c=await fetch('/api/config?t='+Date.now()).then(function(r){return r.json();});
+    var ms=Math.round(((window.performance&&performance.now)?performance.now():Date.now())-t0);
+    dot.classList.remove('bad');st.textContent='ONLINE • MINYAWE-LINK OK';
+    document.getElementById('st-storage').textContent=c.storage;
+    document.getElementById('st-max').textContent=c.maxMB+'MB';
+    document.getElementById('st-ping').textContent=ms+'ms';
+  }catch(e){dot.classList.add('bad');st.textContent='OFFLINE — retrying…';}
+}
+loadStatus();setInterval(loadStatus,30000);
+document.addEventListener('paste',function(e){
+  if(!e.clipboardData||!e.clipboardData.files||!e.clipboardData.files.length)return;
+  e.preventDefault();
+  var dt=new DataTransfer();
+  for(var i=0;i<e.clipboardData.files.length;i++)dt.items.add(e.clipboardData.files[i]);
+  fi.files=dt.files;fi.onchange();
+  document.getElementById('up').scrollIntoView({behavior:'smooth'});
+  up();
+});
 /* ============ UV LIFE: dust + crypt scramble + marquee + reveal ============ */
 (function(){
   var cv=document.getElementById('dust');
