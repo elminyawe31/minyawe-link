@@ -54,10 +54,10 @@ const genId = () => crypto.randomBytes(4).toString('hex');
 
 function parseExpiry(v) {
   const now = Date.now();
+  const MONTH = 30 * 24 * 3600 * 1000; // أقصى مدة: شهر (بطلب ELMINYAWE)
   if (v === '1h') return now + 3600 * 1000;
   if (v === '7d') return now + 7 * 24 * 3600 * 1000;
-  if (v === '30d') return now + 30 * 24 * 3600 * 1000;
-  if (v === 'never') return null;
+  if (v === '30d' || v === 'never') return now + MONTH;
   return now + 24 * 3600 * 1000;
 }
 
@@ -218,7 +218,7 @@ app.use((err, req, res, next) => res.status(400).json({ error: err.message }));
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
-  console.log('  MINYAWE-LINK V2 by ELMINYAWE is READY');
+  console.log('  MINYAWE-LINK V3 by ELMINYAWE is READY');
   console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${USE_S3 ? 'S3/R2' : 'LOCAL'}`);
   console.log('==========================================');
 });

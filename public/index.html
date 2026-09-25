@@ -4,149 +4,425 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MINYAWE-LINK | ELMINYAWE</title>
+<meta name="description" content="MINYAWE-LINK by ELMINYAWE — ارفع صور وأغاني وفيديوهات وخد لينك مباشر">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ============ EVERVAULT TOKENS (by the letter) ============ */
 :root{
   --color-void-canvas:#010314; --color-obsidian-surface:#171825; --color-slate-layer:#2a2b3a;
   --color-carbon-border:#343543; --color-ash-text:#5e6077; --color-fog-text:#9fa2b9;
   --color-mist-text:#babcd2; --color-lunar-white:#dfe1f4; --color-frost-white:#ececfb;
   --color-pure-white:#ffffff; --color-ultraviolet-key:#b88cff; --color-deep-iris:#6633ee;
   --color-amethyst-glow:#8e64ff; --color-shadow-iris:#2e2a4c; --color-plum-depth:#1f1d3a;
-  --font-display:'Inter Tight','Roobert',system-ui,sans-serif;
+  --color-code-rose:#f92672; --color-crypt-char:#847fa1;
+  --font-display:'Inter Tight',system-ui,sans-serif;
   --font-inter:'Inter',system-ui,sans-serif;
   --font-mono:'Roboto Mono',monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--color-void-canvas);color:var(--color-lunar-white);font-family:var(--font-inter);min-height:100vh}
-/* violet beam */
-.beam{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:500px;pointer-events:none;
-  background:radial-gradient(50% 60% at 50% 0%,rgba(102,51,238,.45),rgba(184,140,255,.12) 55%,transparent 75%);filter:blur(10px)}
-.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;position:relative}
-/* floating pill nav */
-.nav{background:var(--color-obsidian-surface);border-radius:19.2px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;
-  box-shadow:rgba(255,255,255,.1) 0 1px 0 0 inset,rgba(0,0,0,.25) 0 8px 16px -4px;border:1px solid var(--color-carbon-border);
-  position:sticky;top:16px;z-index:10;backdrop-filter:blur(12px)}
-.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;letter-spacing:-.02em}
-.logo .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--color-deep-iris),var(--color-ultraviolet-key));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-mono);font-size:15px}
-.logo small{font-family:var(--font-mono);font-size:10px;color:var(--color-fog-text);letter-spacing:.3em}
-.links{display:flex;gap:13px;font-size:13px;font-weight:500}
-.links a{color:var(--color-lunar-white);text-decoration:none;opacity:.8}.links a:hover{color:var(--color-ultraviolet-key);opacity:1}
-.cta{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer}
-/* hero */
-.hero{text-align:center;padding:64px 0 30px}
-.eyebrow{display:inline-block;background:var(--color-slate-layer);border-radius:8px;padding:6px 10px;
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--color-frost-white);
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--color-void-canvas);color:var(--color-lunar-white);font-family:var(--font-inter);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--color-ultraviolet-key)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1}
+/* ============ 1. ANNOUNCEMENT BAR ============ */
+.anno{width:100%;text-align:center;font-size:12px;padding:10px 12px;color:var(--color-lunar-white)}
+.anno a{color:var(--color-lunar-white);text-decoration:none;font-weight:500}
+.anno a:hover{color:var(--color-ultraviolet-key)}
+.anno .dot{color:var(--color-ultraviolet-key);margin:0 6px}
+/* ============ 2. FLOATING PILL NAV (19.2px) ============ */
+.nav{background:var(--color-obsidian-surface);border-radius:19.2px;padding:8px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:rgba(255,255,255,.1) 0 1px 0 0 inset,rgba(0,0,0,.25) 0 8px 16px -4px;
+  border:1px solid var(--color-carbon-border);
+  position:sticky;top:12px;z-index:50;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand .bars{display:flex;flex-direction:column;gap:3px}
+.brand .bars i{display:block;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--color-deep-iris),var(--color-ultraviolet-key))}
+.brand .bars i:nth-child(1){width:18px}.brand .bars i:nth-child(2){width:13px}.brand .bars i:nth-child(3){width:16px}
+.brand .wm{font-family:var(--font-display);font-weight:500;font-size:15px;color:var(--color-lunar-white);letter-spacing:-.01em;line-height:1.1}
+.brand .wm small{display:block;font-family:var(--font-mono);font-size:9px;font-weight:400;color:var(--color-fog-text);letter-spacing:.35em}
+.nav .links{display:flex;gap:13px}
+.nav .links a{font-size:13px;font-weight:500;color:var(--color-lunar-white);text-decoration:none;opacity:.75}
+.nav .links a:hover{color:var(--color-ultraviolet-key);opacity:1}
+.btn-pill{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:8px 16px;
+  font-family:var(--font-inter);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
+  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset;text-decoration:none;display:inline-block}
+.btn-pill:hover{filter:brightness(.94)}
+.ghost{background:none;border:0;color:var(--color-frost-white);font-family:var(--font-inter);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none}
+.ghost:hover{color:var(--color-ultraviolet-key)}
+/* ============ 3. HERO + GRADIENT BAND ============ */
+.hero-band{position:relative;text-align:center;padding:64px 0 0;overflow:visible}
+.hero-band::before{content:"";position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:min(1100px,130%);height:560px;pointer-events:none;
+  background:radial-gradient(130% 120% at 50% 0%,rgba(102,51,238,.38) 0%,rgba(142,100,255,.14) 40%,transparent 70%)}
+.eyebrow{display:inline-block;position:relative;background:var(--color-slate-layer);border-radius:8px;padding:6px 10px;
+  font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.4em;text-transform:uppercase;color:var(--color-frost-white);
   box-shadow:rgba(0,0,0,.12) 0 0 0 1px inset}
-.hero h1{font-family:var(--font-display);font-size:56px;line-height:1.13;letter-spacing:-1.4px;margin:20px 0 10px;color:var(--color-frost-white)}
-.hero h1 .vio{color:var(--color-ultraviolet-key)}
-.hero p{color:var(--color-fog-text);font-size:16px;line-height:1.94;margin:0}
-.hero .mono{font-family:var(--font-mono);font-size:12px;color:var(--color-ash-text);margin-top:12px}
-/* main card */
-.vault{background:var(--color-slate-layer);border-radius:16px;padding:24px;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(190,167,255,.24) 0 0 0 1.5px inset;
-  max-width:640px;margin:0 auto}
+.hero-band h1{position:relative;font-family:var(--font-display);font-weight:600;font-size:56px;line-height:1.13;letter-spacing:-1.4px;
+  color:var(--color-frost-white);margin:22px auto 12px;max-width:800px}
+.hero-band h1 .vio{color:var(--color-ultraviolet-key)}
+.hero-band .sub{position:relative;font-size:16px;line-height:1.94;color:var(--color-fog-text);margin:0 auto;max-width:560px}
+.hero-cta{position:relative;display:flex;gap:18px;justify-content:center;align-items:center;margin-top:24px;flex-wrap:wrap}
+.hero-cta .btn-pill{padding:10px 22px;font-size:14px}
+.sysline{position:relative;font-family:var(--font-mono);font-size:12px;color:var(--color-ash-text);margin-top:16px}
+/* hero visualization: floating link-card + beam + crypt chars */
+.stage{position:relative;display:flex;justify-content:center;align-items:stretch;gap:0;margin:44px auto 0;max-width:760px;min-height:250px}
+.beam-v{width:90px;background:radial-gradient(50% 50% at 50% 50%,#ffffff 0%,var(--color-deep-iris) 45%,transparent 75%);
+  opacity:.55;filter:blur(6px);border-radius:50%}
+.crypt{font-family:var(--font-mono);font-size:13px;line-height:1.7;color:var(--color-crypt-char);opacity:.8;
+  text-align:left;direction:ltr;user-select:none;overflow:hidden;max-height:250px;flex:1}
+.linkcard{width:340px;border-radius:24px;padding:24px;text-align:left;direction:ltr;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ffffff 0%,#d9ccff 45%,var(--color-amethyst-glow) 100%);color:#010314;
+  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset,rgba(0,0,0,.12) 0 -1px 24px 0 inset,rgba(0,0,0,.2) 0 0 0 1px,rgba(0,0,0,.2) 0 2px 4px 0;
+  display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.linkcard .chiprow{display:flex;justify-content:space-between;align-items:center}
+.linkcard .chip{width:44px;height:32px;border-radius:6px;background:linear-gradient(135deg,#3a3a4a,#101018);
+  position:relative}
+.linkcard .chip::after{content:"";position:absolute;inset:6px 8px;border:1px solid rgba(255,255,255,.4);border-radius:3px}
+.linkcard .wave{font-size:20px;color:#010314;opacity:.7}
+.linkcard .url{font-family:var(--font-mono);font-size:12px;background:rgba(1,3,20,.08);border-radius:8px;padding:8px 10px;word-break:break-all}
+.linkcard .rowline{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;color:#2a2b3a}
+.linkcard .Mmark{font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-.02em}
+/* ============ 4. TRUST LOGO CLOUD ============ */
+.trust{text-align:center;margin-top:80px}
+.trust .cap{font-size:13px;color:var(--color-fog-text);margin-bottom:18px}
+.trust .cloud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.trust .t{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);border-radius:8px;
+  padding:8px 16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;color:var(--color-lunar-white)}
+/* ============ SECTIONS ============ */
+section.block{margin-top:80px}
+.sec-head{text-align:center;max-width:640px;margin:0 auto 28px}
+.sec-head h2{font-family:var(--font-display);font-weight:600;font-size:32px;line-height:1.25;letter-spacing:-.64px;color:var(--color-frost-white);margin:16px 0 8px}
+.sec-head p{font-size:14px;line-height:1.76;color:var(--color-fog-text);margin:0}
+/* ============ 5. UPLOAD VAULT (16px card) ============ */
+.vault{background:var(--color-slate-layer);border-radius:16px;padding:24px;max-width:680px;margin:0 auto;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
 .drop{border:1px dashed var(--color-ultraviolet-key);border-radius:12px;padding:44px 20px;text-align:center;cursor:pointer;background:rgba(102,51,238,.06)}
 .drop:hover{background:rgba(102,51,238,.14)}
-.drop .big{font-size:15px;color:var(--color-frost-white)}
-.drop .sub{font-size:12px;color:var(--color-fog-text);margin-top:6px;font-family:var(--font-mono)}
-.row{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.drop .big{font-size:15px;font-weight:500;color:var(--color-frost-white)}
+.drop .sub{font-size:12px;color:var(--color-fog-text);margin-top:8px;font-family:var(--font-mono)}
+.expr{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.expr .lbl{width:100%;font-family:var(--font-mono);font-size:10px;letter-spacing:.35em;color:var(--color-ash-text);text-transform:uppercase}
 .pill{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
-  border-radius:9999px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--font-inter)}
-.pill.on{background:var(--color-pure-white);color:#010314;border-color:#fff}
-.upload-btn{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:10px 28px;font-size:14px;font-weight:500;cursor:pointer;width:100%}
+  border-radius:9999px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-inter);transition:all .15s}
+.pill:hover{border-color:var(--color-ultraviolet-key)}
+.pill.on{background:linear-gradient(135deg,var(--color-deep-iris),var(--color-amethyst-glow));color:#fff;border-color:transparent;
+  box-shadow:0 0 12px rgba(142,100,255,.55)}
+.upload-btn{background:var(--color-pure-white);color:#010314;border:0;border-radius:9999px;padding:12px 28px;
+  font-family:var(--font-inter);font-size:14px;font-weight:500;cursor:pointer;width:100%;
+  box-shadow:rgba(255,255,255,.2) 0 1px 0 0 inset}
 .upload-btn:disabled{opacity:.5}
-select,input[type=file]{display:none}
-.result{display:none;background:#0f0f1a;border:1px solid var(--color-carbon-border);border-radius:12px;padding:16px;margin-top:16px;word-break:break-all}
-.result a{color:var(--color-ultraviolet-key);font-family:var(--font-mono);font-size:13px}
+input[type=file]{display:none}
+.result{display:none;background:#0b0b15;border:1px solid var(--color-carbon-border);border-radius:12px;padding:16px;margin-top:16px;word-break:break-all;text-align:center}
+.result a{font-family:var(--font-mono);font-size:13px}
 .meta{font-family:var(--font-mono);font-size:11px;color:var(--color-fog-text);margin-top:8px}
 .preview img,.preview video{max-width:100%;border-radius:12px;margin-top:12px}
 .preview audio{width:100%;margin-top:12px}
-.copy{background:var(--color-deep-iris);color:#fff;border:0;border-radius:9999px;padding:8px 18px;font-size:13px;cursor:pointer;margin-top:10px}
-/* features */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;max-width:1000px;margin:40px auto 0}
-.card{background:var(--color-slate-layer);border-radius:16px;padding:24px;
-  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(190,167,255,.24) 0 0 0 1px inset}
-.card .ico{font-size:22px;color:var(--color-ultraviolet-key)}
-.card h3{font-family:var(--font-display);font-size:18px;color:var(--color-frost-white);margin:10px 0 6px;letter-spacing:-.18px}
-.card p{font-size:14px;color:var(--color-fog-text);line-height:1.76;margin:0}
-footer{text-align:center;color:var(--color-ash-text);font-size:12px;margin-top:48px;font-family:var(--font-mono)}
-footer b{color:var(--color-ultraviolet-key)}
-@media(max-width:640px){.hero h1{font-size:36px}.links{display:none}}
+.copy{background:var(--color-deep-iris);color:#fff;border:0;border-radius:9999px;padding:8px 18px;
+  font-family:var(--font-inter);font-size:13px;font-weight:500;cursor:pointer;margin-top:10px}
+/* ============ 6. FEATURE GRID (12px cards per spec) ============ */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.fcard{background:var(--color-slate-layer);border-radius:12px;padding:24px;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1px inset}
+.fcard:hover{background:var(--color-plum-depth)}
+.fcard .ico{width:40px;height:40px;border-radius:10px;background:rgba(184,140,255,.1);border:1px solid rgba(184,140,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:19px}
+.fcard h3{font-family:var(--font-display);font-weight:500;font-size:18px;line-height:1.5;letter-spacing:-.18px;color:var(--color-frost-white);margin:14px 0 6px}
+.fcard p{font-size:14px;line-height:1.76;color:var(--color-fog-text);margin:0}
+/* ============ 7. CODE SNIPPET CARD (12px, Monokai) ============ */
+.codecard{background:var(--color-slate-layer);border:1px solid var(--color-carbon-border);border-radius:12px;
+  max-width:680px;margin:0 auto;overflow:hidden}
+.codecard .tabs{display:flex;gap:4px;padding:10px 12px 0;border-bottom:1px solid var(--color-carbon-border)}
+.codecard .tab{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--color-fog-text);background:none;border:0;padding:8px 12px;cursor:pointer}
+.codecard .tab.on{color:var(--color-frost-white);border-bottom:2px solid var(--color-ultraviolet-key)}
+.codecard pre{margin:0;padding:16px;font-family:var(--font-mono);font-size:12px;line-height:1.5;overflow-x:auto;direction:ltr;text-align:left;color:var(--color-frost-white)}
+.codecard .k{color:var(--color-code-rose)} .codecard .s{color:var(--color-ultraviolet-key)} .codecard .v{color:var(--color-frost-white)} .codecard .c{color:var(--color-ash-text)}
+/* ============ 8. ICON GRID ============ */
+.icongrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;max-width:800px;margin:0 auto}
+.tile{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);border-radius:12px;padding:18px 8px;text-align:center}
+.tile .t{font-size:24px;color:var(--color-ultraviolet-key)}
+.tile div:last-child{font-size:11px;color:var(--color-fog-text);margin-top:8px}
+/* ============ 9. FINAL CTA BAND ============ */
+.ctaband{position:relative;text-align:center;border-radius:38.4px;margin-top:80px;padding:64px 24px;overflow:hidden;
+  background:radial-gradient(130% 120% at 50% 0%,rgba(102,51,238,.5) 0%,rgba(42,43,58,.6) 55%,var(--color-obsidian-surface) 100%);
+  border:1px solid var(--color-carbon-border)}
+.ctaband h2{font-family:var(--font-display);font-weight:600;font-size:48px;line-height:1.13;letter-spacing:-1.2px;color:var(--color-frost-white);margin:0 0 10px}
+.ctaband p{color:var(--color-lunar-white);opacity:.8;font-size:14px;margin:0 0 24px}
+/* ============ FOOTER ============ */
+footer{margin-top:80px;border-top:1px solid var(--color-carbon-border);padding-top:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer .fm{font-family:var(--font-mono);font-size:11px;color:var(--color-ash-text)}
+footer .fm b{color:var(--color-ultraviolet-key)}
+/* ============ MOTION / UV LIFE (animated) ============ */
+#dust{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
+.hero-band::before{animation:bandbreathe 9s ease-in-out infinite}
+@keyframes bandbreathe{0%,100%{opacity:.7;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.12)}}
+.hero-band::after{content:"";position:absolute;top:30px;width:420px;height:420px;pointer-events:none;filter:blur(80px);opacity:.35;
+  background:radial-gradient(circle,rgba(184,140,255,.55),transparent 70%);animation:orbdrift 14s ease-in-out infinite}
+@keyframes orbdrift{0%,100%{left:4%;transform:translateY(0)}50%{left:58%;transform:translateY(46px)}}
+.nav{animation:navin .8s ease both}
+@keyframes navin{from{opacity:0;transform:translateY(-14px)}}
+.hero-band .eyebrow,.hero-band h1,.hero-band .sub,.hero-cta{animation:risein .9s cubic-bezier(.2,.7,.2,1) both}
+.hero-band h1{animation-delay:.1s}.hero-band .sub{animation-delay:.2s}.hero-cta{animation-delay:.3s}
+@keyframes risein{from{opacity:0;transform:translateY(22px)}}
+.hero-band h1 .vio{background:linear-gradient(90deg,#b88cff,#8e64ff,#ececfb,#b88cff);background-size:250% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:voslide 5s linear infinite}
+@keyframes voslide{to{background-position:250% center}}
+.stage{perspective:900px}
+.stage::before{content:"";position:absolute;top:50%;left:50%;width:440px;height:440px;transform:translate(-50%,-50%);
+  background:conic-gradient(from 0deg,transparent 0 68%,rgba(184,140,255,.4) 85%,transparent 100%);
+  border-radius:50%;filter:blur(12px);animation:spin 12s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.linkcard{animation:floaty 6s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotateX(2deg)}50%{transform:translateY(-14px) rotateX(-2deg)}}
+.beam-v{animation:beampulse 4s ease-in-out infinite}
+@keyframes beampulse{0%,100%{opacity:.3}50%{opacity:.7}}
+.crypt{animation:cryptflick 3.2s ease-in-out infinite}
+@keyframes cryptflick{0%,100%{opacity:.8}50%{opacity:.45}}
+.trust .cloud{display:block;overflow:hidden;direction:ltr;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.trust .track{display:flex;gap:10px;width:max-content;animation:mq 24s linear infinite}
+.trust .track .t{flex:0 0 auto}
+.trust .cloud:hover .track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+.fcard,.tile{transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease}
+.fcard:hover{transform:translateY(-5px);
+  box-shadow:rgba(0,0,0,.3) 0 14px 28px -6px,rgba(190,167,255,.45) 0 0 0 1.5px inset,0 0 26px rgba(102,51,238,.35)}
+.tile:hover{transform:translateY(-4px);border-color:var(--color-ultraviolet-key);box-shadow:0 0 16px rgba(184,140,255,.3)}
+.btn-pill{transition:transform .15s ease,box-shadow .2s ease,filter .15s ease}
+.btn-pill:hover{filter:none;box-shadow:0 0 18px rgba(184,140,255,.55);transform:translateY(-1px)}
+.btn-pill:active{transform:scale(.97)}
+.upload-btn{transition:box-shadow .2s ease,transform .15s ease}
+.upload-btn:hover:not(:disabled){box-shadow:0 0 22px rgba(184,140,255,.6)}
+.upload-btn:active:not(:disabled){transform:scale(.99)}
+.codecard .tab{transition:color .15s}
+.drop{transition:background .2s,box-shadow .2s,border-color .2s}
+.drop.over{border-color:#fff;background:rgba(102,51,238,.2);
+  box-shadow:0 0 24px rgba(102,51,238,.5) inset,0 0 18px rgba(102,51,238,.35);animation:dropulse 1s ease-in-out infinite}
+@keyframes dropulse{50%{box-shadow:0 0 34px rgba(142,100,255,.65) inset,0 0 26px rgba(142,100,255,.45)}}
+.result{animation:risein .4s ease both}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media(max-width:720px){
+  .hero-band h1{font-size:36px;letter-spacing:-.7px}
+  .nav .links{display:none}
+  .stage{flex-direction:column;align-items:center}
+  .crypt{display:none}
+  .beam-v{display:none}
+  .linkcard{width:100%;max-width:340px}
+  .ctaband h2{font-size:32px}
+}
 </style>
 </head>
 <body>
-<div class="beam"></div>
+<canvas id="dust"></canvas>
+
 <div class="wrap">
+  <!-- 1. ANNOUNCEMENT BAR -->
+  <div class="anno">🟣 Storj <b>25GB</b> storage is live on the vault <span class="dot">•</span> <a href="#up">Start uploading →</a></div>
+
+  <!-- 2. FLOATING PILL NAV -->
   <nav class="nav">
-    <div class="logo"><div class="mark">M</div><div>MINYAWE-LINK<br><small>BY ELMINYAWE</small></div></div>
-    <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="/health" target="_blank">الحالة</a></div>
-    <button class="cta" onclick="document.getElementById('f').click()">+ رفع ملف</button>
+    <a class="brand" href="#top">
+      <span class="bars"><i></i><i></i><i></i></span>
+      <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
+    </a>
+    <div class="links"><a href="#up">رفع</a><a href="#feat">المميزات</a><a href="#api">API</a><a href="/health" target="_blank">الحالة</a></div>
+    <button type="button" class="btn-pill" onclick="document.getElementById('f').click()">+ رفع ملف</button>
   </nav>
 
-  <section class="hero">
+  <!-- 3. HERO -->
+  <header class="hero-band" id="top">
     <span class="eyebrow">Direct • Fast • Free</span>
-    <h1>MINYAWE<span class="vio">-LINK</span></h1>
-    <p>ارفع صورة، أغنية، فيديو أو أي ملف وخد لينك مباشر يشتغل في أي حتة</p>
-    <div class="mono" id="cfg">checking vault…</div>
-  </section>
-
-  <section class="vault" id="up">
-    <div class="drop" id="drop" onclick="document.getElementById('f').click()">
-      <div class="big" id="dlabel">📤 دوس هنا أو اسحب الملف هنا</div>
-      <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — direct link, no protection</div>
+    <h1>خزنة ملفاتك تحت <span class="vio">الضوء البنفسجي</span></h1>
+    <p class="sub">ارفع صور، أغاني، فيديوهات وأي ملفات — وخد لينك مباشر يشتغل في أي متصفح وأي مشغل وأي موقع، من غير صفحات حماية.</p>
+    <div class="hero-cta">
+      <button type="button" class="btn-pill" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ابدأ الرفع 🚀</button>
+      <a class="ghost" href="#api">شوف الـ API ←</a>
     </div>
-    <input type="file" id="f">
-    <div class="row" id="exps">
-      <button class="pill" data-v="1h">⏳ ساعة</button>
-      <button class="pill on" data-v="24h">🕐 24 ساعة</button>
-      <button class="pill" data-v="7d">📅 7 أيام</button>
-      <button class="pill" data-v="30d">🗓️ شهر</button>
-      <button class="pill" data-v="never">♾️ دائم</button>
+    <div class="sysline" id="cfg">connecting to vault…</div>
+    <div class="stage">
+      <div class="crypt">9f7f·d110·a3c9·77e2<br>minyawe·link·vault<br>01:03:14·STORJ·OK<br>ff·88·cc·66·33·ee<br>direct·link·ready<br>ELMINYAWE·key·✓<br>b8·8c·ff·iris·on</div>
+      <div class="beam-v"></div>
+      <div class="linkcard">
+        <div class="chiprow"><div class="chip"></div><div class="wave">)))</div></div>
+        <div class="url">https://minyawe-link…/i/9f7fd110.ico</div>
+        <div class="rowline"><span class="Mmark">M</span><span>MINYAWE-LINK • DIRECT</span></div>
+      </div>
+      <div class="beam-v"></div>
+      <div class="crypt">token·ized·vault<br>84·7f·a1·crypt<br>upload·sealed·✓<br>6633ee·beam·on<br>30d·max·expiry<br>b88cff·key·live<br>no·ads·no·limits</div>
     </div>
-    <button class="upload-btn" id="btn" onclick="up()">رفع 🚀</button>
-    <div class="result" id="result"></div>
+  </header>
+
+  <!-- 4. TRUST LOGO CLOUD -->
+  <div class="trust">
+    <div class="cap">يشتغل مع أدواتك المفضلة — من غير إعدادات معقدة</div>
+    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">STORJ</span><span class="t">CLOUDFLARE R2</span><span class="t">REST API</span></div>
+  </div>
+
+  <!-- 5. UPLOAD VAULT -->
+  <section class="block" id="up">
+    <div class="sec-head">
+      <span class="eyebrow">The Vault</span>
+      <h2>ارفع هنا</h2>
+      <p>ملف واحد → لينك مباشر واحد. أقصى مدة احتفاظ شهر كامل.</p>
+    </div>
+    <div class="vault">
+      <div class="drop" id="drop" onclick="document.getElementById('f').click()">
+        <div class="big" id="dlabel">📤 دوس هنا أو اسحب الملف هنا</div>
+        <div class="sub">jpg • png • mp3 • mp4 • pdf • zip — direct link, no protection</div>
+      </div>
+      <input type="file" id="f">
+      <div class="expr" id="exps">
+        <span class="lbl">Retension مدة الاحتفاظ</span>
+        <button type="button" class="pill" data-v="1h">⏳ ساعة</button>
+        <button type="button" class="pill" data-v="24h">🕐 24 ساعة</button>
+        <button type="button" class="pill" data-v="7d">📅 7 أيام</button>
+        <button type="button" class="pill on" data-v="30d">🗓️ شهر</button>
+      </div>
+      <button type="button" class="upload-btn" id="btn" onclick="up()">رفع 🚀</button>
+      <div class="result" id="result"></div>
+    </div>
   </section>
 
-  <section class="grid" id="feat">
-    <div class="card"><div class="ico">🔗</div><h3>لينك مباشر دايما</h3><p>inline + CORS مفتوح، يشتغل في المتصفح والمشغلات والديسكورد من غير صفحة حماية.</p></div>
-    <div class="card"><div class="ico">🎵</div><h3>أغاني وفيديو</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek، زي top4top بالظبط.</p></div>
-    <div class="card"><div class="ico">💾</div><h3>مساحة أكبر ببلاش</h3><p>local على Railway + وضع S3/R2/Storj لما تفعل المتغيرات — توصل 10GB و 25GB مجانا.</p></div>
-    <div class="card"><div class="ico">🧬</div><h3>بصمة ELMINYAWE</h3><p>هيدر X-Powered-By و API جاهز لـ ShareX وأي بوت.</p></div>
+  <!-- 6. FEATURES -->
+  <section class="block" id="feat">
+    <div class="sec-head">
+      <span class="eyebrow">Why Minyawe-Link</span>
+      <h2>ليه الخزنة دي؟</h2>
+      <p>أربع حاجات بتخليها مختلفة عن أي موقع رفع تاني.</p>
+    </div>
+    <div class="grid">
+      <div class="fcard"><div class="ico">🔗</div><h3>لينك مباشر دايما</h3><p>inline + CORS مفتوح + Accept-Ranges. يشتغل في المتصفح والمشغلات والديسكورد من غير صفحة حماية.</p></div>
+      <div class="fcard"><div class="ico">🎵</div><h3>أغاني وفيديو بجد</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek — قدّم وأخّر براحتك زي top4top بالظبط.</p></div>
+      <div class="fcard"><div class="ico">💾</div><h3>25GB ببلاش</h3><p>تخزين S3 حقيقي على Storj بدل الـ 500MB بتاعة Railway. ولو حبيت R2 موجود بنفس الكود.</p></div>
+      <div class="fcard"><div class="ico">🧬</div><h3>API للمطورين</h3><p>نقطة رفع واحدة + توقيع ELMINYAWE في كل رد. وصّل ShareX أو أي بوت في دقيقة.</p></div>
+    </div>
   </section>
 
-  <footer>Made with 💜 by <b>ELMINYAWE</b> • MINYAWE-LINK V2 • Evervault style</footer>
+  <!-- 7. CODE -->
+  <section class="block" id="api">
+    <div class="sec-head">
+      <span class="eyebrow">Built for Developers</span>
+      <h2>وصّلها في دقيقة</h2>
+      <p>مثالين جاهزين: رفع من التيرمينال، وإعداد ShareX.</p>
+    </div>
+    <div class="codecard">
+      <div class="tabs"><button type="button" class="tab on" onclick="showTab(0,this)">upload.sh</button><button type="button" class="tab" onclick="showTab(1,this)">sharex.sxcu</button></div>
+      <pre id="code0"><span class="c"># upload from terminal</span>
+<span class="k">curl</span> <span class="v">-F</span> <span class="s">"file=@song.mp3"</span> <span class="v">-F</span> <span class="s">"expiry=30d"</span> \
+  <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span></pre>
+      <pre id="code1" style="display:none"><span class="c">// ShareX → Custom uploader</span>
+{
+  <span class="s">"RequestURL"</span>: <span class="s">"https://minyawe-link-production.up.railway.app/api/upload"</span>,
+  <span class="s">"FileFormName"</span>: <span class="s">"file"</span>,
+  <span class="s">"URL"</span>: <span class="s">"$json:url$"</span>
+}</pre>
+    </div>
+  </section>
+
+  <!-- 8. ICON GRID -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">File Types</span>
+      <h2>كل الأنواع مدعومة</h2>
+    </div>
+    <div class="icongrid">
+      <div class="tile"><div class="t">🖼️</div><div>صور</div></div>
+      <div class="tile"><div class="t">🎵</div><div>أغاني</div></div>
+      <div class="tile"><div class="t">🎬</div><div>فيديو</div></div>
+      <div class="tile"><div class="t">📄</div><div>PDF</div></div>
+      <div class="tile"><div class="t">🗜️</div><div>ZIP</div></div>
+      <div class="tile"><div class="t">🔗</div><div>روابط</div></div>
+      <div class="tile"><div class="t">⬛</div><div>QR</div></div>
+      <div class="tile"><div class="t">🤖</div><div>API</div></div>
+    </div>
+  </section>
+
+  <!-- 9. FINAL CTA -->
+  <div class="ctaband">
+    <h2>افتح خزنتك دلوقتي</h2>
+    <p>مجاني • مباشر • من غير إعلانات • بصمة ELMINYAWE</p>
+    <button type="button" class="btn-pill" onclick="document.getElementById('up').scrollIntoView({behavior:'smooth'})">ارفع أول ملف 🚀</button>
+  </div>
+
+  <footer>
+    <a class="brand" href="#top">
+      <span class="bars"><i></i><i></i><i></i></span>
+      <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
+    </a>
+    <div class="fm">VAULT V3 • ANIMATED UV • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+  </footer>
 </div>
 
 <script>
-let exp='24h';
+function showTab(i,el){document.getElementById('code0').style.display=i===0?'block':'none';document.getElementById('code1').style.display=i===1?'block':'none';document.querySelectorAll('.codecard .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');}
+let exp='30d';
 document.querySelectorAll('#exps .pill').forEach(b=>b.onclick=e=>{e.stopPropagation();document.querySelectorAll('#exps .pill').forEach(x=>x.classList.remove('on'));b.classList.add('on');exp=b.dataset.v;});
 const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=document.getElementById('dlabel');
 fi.onchange=()=>{if(fi.files[0])dl.innerText='📁 '+fi.files[0].name+' ('+(fi.files[0].size/1048576).toFixed(2)+' MB)';};
 ['dragover','drop'].forEach(e=>drop.addEventListener(e,e=>{e.preventDefault();if(e.dataTransfer?.files[0]){fi.files=e.dataTransfer.files;fi.onchange();}}));
-fetch('/api/config').then(r=>r.json()).then(j=>{document.getElementById('cfg').innerText=`VAULT READY :: max ${j.maxMB}MB :: storage ${j.storage} :: direct-link ON`;}).catch(()=>{});
+fetch('/api/config?t='+Date.now()).then(r=>r.json()).then(j=>{document.getElementById('cfg').innerText=`VAULT READY :: max ${j.maxMB}MB :: storage ${j.storage} :: direct-link ON :: max-expiry 30d`;}).catch(()=>{document.getElementById('cfg').innerText='vault offline — retrying…';});
 function fmt(s){if(!s)return'—';const d=new Date(s);return d.toLocaleString('ar-EG');}
 async function up(){
   if(!fi.files[0])return alert('اختار ملف الأول');
   const btn=document.getElementById('btn'),box=document.getElementById('result');
-  btn.disabled=true;btn.innerText='جاري الرفع… ⏳';box.style.display='block';box.innerHTML='uploading to vault…';
+  btn.disabled=true;btn.innerText='جاري الرفع… ⏳';box.style.display='block';box.innerHTML='sealing into vault…';
   try{
     const fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
     const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
     if(!r.ok)throw new Error(j.error||'upload failed');
     const ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
     let prev='';
-    if(['jpg','jpeg','png','gif','webp'].includes(ext))prev=`<div class="preview"><img src="${j.url}"></div>`;
+    if(['jpg','jpeg','png','gif','webp','ico'].includes(ext))prev=`<div class="preview"><img src="${j.url}"></div>`;
     else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.url}" controls></video></div>`;
     else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.url}" controls></audio></div>`;
     box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.url}" target="_blank">${j.url}</a>
       <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'دائم'}</div>
-      ${prev}<br><button class="copy" onclick="navigator.clipboard.writeText('${j.url}')">📋 نسخ اللينك المباشر</button>
+      ${prev}<br><button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.url}')">📋 نسخ اللينك المباشر</button>
       <br><br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.url)}">`;
   }catch(e){box.innerHTML='❌ '+e.message;}
   btn.disabled=false;btn.innerText='رفع 🚀';
 }
+/* ============ UV LIFE: dust + crypt scramble + marquee + reveal ============ */
+(function(){
+  var cv=document.getElementById('dust');
+  if(cv&&cv.getContext){
+    var cx=cv.getContext('2d'),W,H,ps=[];
+    function rs(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+    rs();window.addEventListener('resize',rs);
+    for(var i=0;i<70;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.8+.4,s:Math.random()*.35+.08,o:Math.random()*.6+.2,ph:Math.random()*6.28});
+    (function loop(t){cx.clearRect(0,0,W,H);for(var k=0;k<ps.length;k++){var p=ps[k];p.y-=p.s;p.x+=Math.sin(t/2400+p.ph)*.15;
+      if(p.y<-4){p.y=H+4;p.x=Math.random()*W;}
+      var tw=p.o*(0.6+0.4*Math.sin(t/700+p.ph));cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);
+      cx.fillStyle='rgba(184,140,255,'+tw.toFixed(3)+')';cx.fill();}
+      requestAnimationFrame(loop);})(0);
+  }
+  var cr=document.querySelectorAll('.crypt'),ch='0123456789abcdef·:✓×';
+  function scramble(html){return html.split(/(<[^>]+>)/g).map(function(part){
+    if(part.charAt(0)==='<')return part;
+    var out=part.split(''),n=Math.floor(Math.random()*4);
+    for(var k=0;k<n;k++){var j=Math.floor(Math.random()*out.length);
+      if(/[a-z0-9·:✓×]/i.test(out[j]))out[j]=ch[Math.floor(Math.random()*ch.length)];}
+    return out.join('');}).join('');}
+  if(cr.length)setInterval(function(){cr.forEach(function(el){el.innerHTML=scramble(el.innerHTML);});},160);
+  var cl=document.querySelector('.trust .cloud');
+  if(cl){var tr=document.createElement('div');tr.className='track';tr.innerHTML=cl.innerHTML+cl.innerHTML;cl.innerHTML='';cl.appendChild(tr);}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.12});
+    document.querySelectorAll('section.block,.fcard,.tile,.codecard,.ctaband,.trust').forEach(function(el,i){el.classList.add('rv');el.style.transitionDelay=Math.min((i%8)*60,420)+'ms';io.observe(el);});
+  }
+  var dp=document.getElementById('drop');
+  if(dp){
+    dp.addEventListener('dragenter',function(e){e.preventDefault();dp.classList.add('over');});
+    dp.addEventListener('dragover',function(e){e.preventDefault();dp.classList.add('over');});
+    dp.addEventListener('dragleave',function(){dp.classList.remove('over');});
+    dp.addEventListener('drop',function(){dp.classList.remove('over');});
+  }
+})();
 </script>
 </body>
 </html>
