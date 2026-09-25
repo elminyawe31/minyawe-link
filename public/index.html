@@ -815,11 +815,8 @@ async function up(){
     var rows=[];
     for(var i=0;i<ROWS;i++){var d=document.createElement('div');d.className='hx-row';el.appendChild(d);rows.push(d);}
     var st={el:el,rows:rows,r:0,c:0,pi:offset,phase:'type',waitUntil:0,boostUntil:0,speed:speed};
-    if(reduced){
-      for(var k=0;k<ROWS;k++){var ph=PHRASES[(offset+k)%PHRASES.length];rows[k].textContent=ph.t;rows[k].className='hx-row '+ph.c;rows[k].style.opacity=(0.35+0.6*(k/(ROWS-1))).toFixed(2);}
-      cols.push(st);return st;
-    }
-    setInterval(function(){tick(st);},speed);
+    /* الكتابة شغالة دايمًا (تفاعلية وبطلب صريح) — إعداد تقليل الحركة بيوقف الطفو التلقائي فقط */
+    try{setInterval(function(){try{tick(st);}catch(e){}},speed);}catch(e){}
     cols.push(st);return st;
   }
   function tick(st){
@@ -847,10 +844,11 @@ async function up(){
       st.phase='type';st.r=0;st.c=0;st.pi+=2;st.waitUntil=now+350;
     }
   }
-  buildCol('hex1',0,36);
-  buildCol('hex2',5,46);
-  if(reduced)return;
-  /* card 3D tilt on the WRAPPER (the card itself has the float animation, so inline transform on it never shows) */
+  try{buildCol('hex1',0,36);}catch(e){}
+  try{buildCol('hex2',5,46);}catch(e){}
+  /* reduced-motion يوقف التأرجح التلقائي فقط — الكتابة والميل مع الماوس شغالين دايمًا */
+  /* card 3D tilt on the WRAPPER (the card itself has the float animation, so inline transform on it   never shows) */
+  try{
   var tilt=document.getElementById('evTilt'),card=document.getElementById('evCard'),
       glare=document.getElementById('evGlare'),vis=document.getElementById('evVisual');
   if(tilt&&card&&vis){
@@ -868,6 +866,7 @@ async function up(){
     vis.addEventListener('mouseleave',function(){tilt.classList.remove('live');tilt.style.transform='';});
     card.addEventListener('mouseenter',function(){card.classList.remove('shine');void card.offsetWidth;card.classList.add('shine');});
     setInterval(function(){
+      if(reduced)return; /* تأرجح تلقائي: يقف مع تقليل الحركة */
       if(document.hidden)return;
       if(Date.now()-lastMove<4000)return;
       var t=Date.now()/1000;
@@ -879,7 +878,9 @@ async function up(){
       ['hex1','hex2'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.translate=cx*12+'px '+cy*8+'px';});
     });
   }
+  }catch(e){}
   /* cursor glow */
+  try{
   var glow=document.getElementById('cursorGlow');
   if(glow){
     var gx=innerWidth/2,gy=220,ax=gx,ay=gy;
@@ -888,7 +889,9 @@ async function up(){
       glow.style.transform='translate('+(ax-260)+'px,'+(ay-260)+'px)';
       requestAnimationFrame(anim);})();
   }
+  }catch(e){}
   /* magnetic CTA */
+  try{
   document.querySelectorAll('.hero-cta .btn-ghost').forEach(function(btn){
     btn.classList.add('magnet');
     btn.addEventListener('mousemove',function(e){
@@ -897,6 +900,8 @@ async function up(){
     });
     btn.addEventListener('mouseleave',function(){btn.style.transform='';});
   });
+  }catch(e){}
+  window.__vaultMotion={osReduced:!!reduced,interactive:true};
 })();
 /* scroll reveal */
 if('IntersectionObserver' in window){
