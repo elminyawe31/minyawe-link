@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { Readable } = require('stream');
 
 const app = express();
 app.set('trust proxy', 1); // مهم عشان Railway يطلع https صح
@@ -149,6 +150,47 @@ async function deleteFromCloudinary(meta) {
   } catch {}
 }
 
+// تحميل الميتا مع تنظيف المنتهي (مشترك بين /e و /d و /v)
+async function loadMeta(id) {
+  const meta = db.files[id];
+  if (!meta) return { err: 404 };
+  if (meta.expiryAt && Date.now() > meta.expiryAt) {
+    if (meta.driver === 'cloudinary') await deleteFromCloudinary(meta);
+    else if (meta.driver === 's3' && DRIVER === 's3') await deleteFromS3(meta.stored);
+    else if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+    delete db.files[id]; saveDB();
+    return { err: 410 };
+  }
+  return { meta };
+}
+
+// بروكسي باسمك: يجيب الملف من التخزين ويقدمه بدومين موقعك (يدعم seek للصوت/الفيديو)
+async function proxyFile(meta, req, res, disposition) {
+  try {
+    const headers = {};
+    if (req.headers.range) headers.Range = req.headers.range;
+    const r = await fetch(meta.directUrl, { headers });
+    if (!r.ok && r.status !== 206) return res.status(502).send('upstream error | MINYAWE-LINK');
+    res.status(r.status);
+    res.set({
+      'Content-Type': r.headers.get('content-type') || meta.mimetype || 'application/octet-stream',
+      'Content-Disposition': `${disposition}; filename*=UTF-8''${encodeURIComponent(meta.original)}`,
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'public, max-age=86400',
+      'Access-Control-Allow-Origin': '*',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+      'X-Powered-By': BRAND
+    });
+    const cl = r.headers.get('content-length'); if (cl) res.set('Content-Length', cl);
+    const cr = r.headers.get('content-range'); if (cr) res.set('Content-Range', cr);
+    Readable.fromWeb(r.body).pipe(res);
+  } catch (e) { res.status(502).send('proxy failed | MINYAWE-LINK'); }
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function cleanup() {
   const now = Date.now();
   let changed = false;
@@ -232,7 +274,17 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       createdAt: Date.now()
     };
     saveDB();
-    res.json({ id, url: directUrl, short: `${baseUrl(req)}/i/${id}`, expiryAt, deleteToken, powered_by: BRAND });
+    const b = baseUrl(req);
+    res.json({
+      id,
+      url: directUrl,              // اللينك الخام (catbox/cloudinary)
+      short: `${b}/i/${id}`,       // اللينك المختصر
+      view: `${b}/v/${id}`,        // 👁️ صفحة العرض باسمك
+      stream: `${b}/e/${id}`,      // ▶️ التشغيل المباشر باسمك (inline)
+      download: `${b}/d/${id}`,    // ⬇️ التحميل المباشر باسمك (attachment)
+      expiryAt, deleteToken,
+      powered_by: BRAND
+    });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -268,6 +320,62 @@ app.get('/i/:id', async (req, res) => {
   res.set('Content-Disposition', `inline; filename="${encodeURIComponent(meta.original)}"`);
   if (meta.mimetype) res.type(meta.mimetype);
   res.sendFile(filePath);
+});
+
+// ▶️ التشغيل المباشر باسمك (inline — يشتغل جوه المتصفح والمشغل)
+app.get('/e/:id', async (req, res) => {
+  const { meta, err } = await loadMeta(req.params.id);
+  if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
+  if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  if (meta.directUrl) return proxyFile(meta, req, res, 'inline');
+  const filePath = path.join(UPLOAD_DIR, meta.stored);
+  res.set({
+    'X-Powered-By': BRAND, 'Access-Control-Allow-Origin': '*',
+    'Cross-Origin-Resource-Policy': 'cross-origin', 'Accept-Ranges': 'bytes'
+  });
+  res.set('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(meta.original)}`);
+  if (meta.mimetype) res.type(meta.mimetype);
+  res.sendFile(filePath);
+});
+
+// ⬇️ التحميل المباشر باسمك (attachment — يحمّل علطول)
+app.get('/d/:id', async (req, res) => {
+  const { meta, err } = await loadMeta(req.params.id);
+  if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
+  if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  if (meta.directUrl) return proxyFile(meta, req, res, 'attachment');
+  res.download(path.join(UPLOAD_DIR, meta.stored), meta.original);
+});
+
+// 👁️ صفحة العرض باسمك (مشغل أنيق + كل اللينكات)
+app.get('/v/:id', async (req, res) => {
+  const { meta, err } = await loadMeta(req.params.id);
+  if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
+  if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  const b = baseUrl(req);
+  const stream = `${b}/e/${req.params.id}`, dl = `${b}/d/${req.params.id}`;
+  const mt = meta.mimetype || '', name = esc(meta.original);
+  const size = (meta.size / 1048576).toFixed(2) + ' MB';
+  let player;
+  if (mt.startsWith('image/')) player = `<img src="${stream}" alt="${name}">`;
+  else if (mt.startsWith('video/')) player = `<video src="${stream}" controls playsinline></video>`;
+  else if (mt.startsWith('audio/')) player = `<div class="fn">${name}</div><audio src="${stream}" controls></audio>`;
+  else player = `<div class="file">📁<div class="fn">${name}</div><div class="sz">${size}</div></div>`;
+  res.send(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${name} | MINYAWE-LINK</title>
+<style>body{margin:0;background:#010314;color:#dfe1f4;font-family:system-ui;text-align:center;padding:24px 16px 60px}
+.wrap{max-width:640px;margin:0 auto}.logo{font-weight:600;letter-spacing:-.02em;color:#ececfb;text-decoration:none}
+.logo span{color:#b88cff}.card{background:#2a2b3a;border-radius:16px;padding:24px;margin-top:20px;box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(190,167,255,.24) 0 0 0 1.5px inset}
+img,video{max-width:100%;border-radius:12px}audio{width:100%;margin-top:12px}.fn{font-family:monospace;font-size:13px;word-break:break-all;margin:8px 0}
+.sz{font-family:monospace;font-size:11px;color:#9fa2b9}.meta{font-family:monospace;font-size:11px;color:#9fa2b9;margin-top:10px}
+.btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+a.btn{background:#fff;color:#010314;border-radius:9999px;padding:10px 22px;font-size:14px;font-weight:500;text-decoration:none}
+a.btn.ghost{background:transparent;color:#ececfb;border:1px solid #343543}
+footer{margin-top:28px;font-family:monospace;font-size:11px;color:#5e6077}footer b{color:#b88cff}</style></head>
+<body><div class="wrap"><a class="logo" href="/">MINYAWE<span>-LINK</span></a>
+<div class="card">${player}<div class="meta">${size} • ينتهي: ${meta.expiryAt ? new Date(meta.expiryAt).toLocaleString('ar-EG') : 'شهر كحد أقصى'}</div>
+<div class="btns"><a class="btn" href="${stream}" target="_blank">▶️ تشغيل مباشر</a><a class="btn ghost" href="${dl}">⬇️ تحميل</a><a class="btn ghost" href="#" onclick="navigator.clipboard.writeText('${dl}');return false">📋 نسخ</a></div></div>
+<footer>MADE WITH 💜 BY <b>ELMINYAWE</b></footer></div></body></html>`);
 });
 
 app.delete('/api/:id', async (req, res) => {

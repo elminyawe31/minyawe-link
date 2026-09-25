@@ -205,6 +205,16 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   box-shadow:0 0 24px rgba(102,51,238,.5) inset,0 0 18px rgba(102,51,238,.35);animation:dropulse 1s ease-in-out infinite}
 @keyframes dropulse{50%{box-shadow:0 0 34px rgba(142,100,255,.65) inset,0 0 26px rgba(142,100,255,.45)}}
 .result{animation:risein .4s ease both}
+/* my files list */
+.filelist{background:var(--color-slate-layer);border-radius:16px;padding:12px 24px;max-width:680px;margin:0 auto;
+  box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
+.frow{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--color-carbon-border);font-size:13px}
+.frow:last-child{border-bottom:0}
+.frow .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono);font-size:12px;color:var(--color-frost-white);direction:ltr;text-align:right}
+.frow .tag{font-family:var(--font-mono);font-size:10px;color:var(--color-ash-text);white-space:nowrap}
+.frow .ab{background:var(--color-obsidian-surface);border:1px solid var(--color-carbon-border);color:var(--color-lunar-white);
+  border-radius:9999px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:var(--font-inter);white-space:nowrap}
+.frow .ab:hover{border-color:var(--color-ultraviolet-key)}
 /* status card */
 .statuscard{background:var(--color-slate-layer);border-radius:16px;padding:24px;max-width:680px;margin:0 auto;
   box-shadow:rgba(0,0,0,.25) 0 8px 16px -4px,rgba(0,0,0,.25) 0 4px 8px -2px,rgba(0,0,0,.2) 0 1px 2px 0,rgba(190,167,255,.24) 0 0 0 1.5px inset}
@@ -235,7 +245,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
 
 <div class="wrap">
   <!-- 1. ANNOUNCEMENT BAR -->
-  <div class="anno">🟣 Storj <b>25GB</b> storage is live on the vault <span class="dot">•</span> <a href="#up">Start uploading →</a></div>
+  <div class="anno">🟣 لينكات مباشرة دايمة <b>من غير حساب</b> <span class="dot">•</span> <a href="#up">Start uploading →</a></div>
 
   <!-- 2. FLOATING PILL NAV -->
   <nav class="nav">
@@ -273,7 +283,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
   <!-- 4. TRUST LOGO CLOUD -->
   <div class="trust">
     <div class="cap">يشتغل مع أدواتك المفضلة — من غير إعدادات معقدة</div>
-    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">STORJ</span><span class="t">CLOUDFLARE R2</span><span class="t">REST API</span></div>
+    <div class="cloud"><span class="t">SHAREX</span><span class="t">DISCORD</span><span class="t">TELEGRAM</span><span class="t">CATBOX</span><span class="t">CTRL+V</span><span class="t">REST API</span></div>
   </div>
 
   <!-- 5. UPLOAD VAULT -->
@@ -318,6 +328,17 @@ footer .fm b{color:var(--color-ultraviolet-key)}
     </div>
   </section>
 
+  <!-- 5.6 MY FILES (local history) -->
+  <section class="block" id="myfiles" style="display:none">
+    <div class="sec-head">
+      <span class="eyebrow">Your Vault</span>
+      <h2>ملفاتي الأخيرة</h2>
+      <p>محفوظة في متصفحك بس — تقدر تمسحها في أي وقت.</p>
+    </div>
+    <div class="filelist" id="filelist"></div>
+    <div style="text-align:center;margin-top:12px"><button type="button" class="mini" onclick="clearMine()">🗑️ مسح الكل</button></div>
+  </section>
+
   <!-- 6. FEATURES -->
   <section class="block" id="feat">
     <div class="sec-head">
@@ -328,7 +349,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
     <div class="grid">
       <div class="fcard"><div class="ico">🔗</div><h3>لينك مباشر دايما</h3><p>inline + CORS مفتوح + Accept-Ranges. يشتغل في المتصفح والمشغلات والديسكورد من غير صفحة حماية.</p></div>
       <div class="fcard"><div class="ico">🎵</div><h3>أغاني وفيديو بجد</h3><p>mp3 و mp4 بيشتغلوا streaming مع seek — قدّم وأخّر براحتك زي top4top بالظبط.</p></div>
-      <div class="fcard"><div class="ico">💾</div><h3>25GB ببلاش</h3><p>تخزين S3 حقيقي على Storj بدل الـ 500MB بتاعة Railway. ولو حبيت R2 موجود بنفس الكود.</p></div>
+      <div class="fcard"><div class="ico">💾</div><h3>3 لينكات باسمك</h3><p>كل ملف بياخد صفحة عرض + تشغيل مباشر + تحميل — كلهم بدومين موقعك من غير ما حد يشوف التخزين وراها.</p></div>
       <div class="fcard"><div class="ico">🧬</div><h3>API للمطورين</h3><p>نقطة رفع واحدة + توقيع ELMINYAWE في كل رد. وصّل ShareX أو أي بوت في دقيقة.</p></div>
     </div>
   </section>
@@ -384,7 +405,7 @@ footer .fm b{color:var(--color-ultraviolet-key)}
       <span class="bars"><i></i><i></i><i></i></span>
       <span class="wm">minyawe-link<small>BY ELMINYAWE</small></span>
     </a>
-    <div class="fm">VAULT V3 • ANIMATED UV • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
+    <div class="fm">VAULT V3.7 • ANIMATED UV • MADE WITH 💜 BY <b>ELMINYAWE</b></div>
   </footer>
 </div>
 
@@ -406,18 +427,42 @@ async function up(){
     const r=await fetch('/api/upload',{method:'POST',body:fd});const j=await r.json();
     if(!r.ok)throw new Error(j.error||'upload failed');
     const ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
+    if(j.view){try{saveMine({name:fi.files[0].name,view:j.view,size:(fi.files[0].size/1048576).toFixed(2)+' MB',expiryAt:j.expiryAt||null});}catch(e){}}
     let prev='';
-    if(['jpg','jpeg','png','gif','webp','ico'].includes(ext))prev=`<div class="preview"><img src="${j.url}"></div>`;
-    else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.url}" controls></video></div>`;
-    else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.url}" controls></audio></div>`;
-    box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.url}" target="_blank">${j.url}</a>
-      <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'دائم'}</div>
-      ${prev}<br><button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.url}')">📋 نسخ اللينك المباشر</button>
-      <br><br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.url)}">`;
+    if(['jpg','jpeg','png','gif','webp','ico'].includes(ext))prev=`<div class="preview"><img src="${j.stream}"></div>`;
+    else if(['mp4','webm','mov'].includes(ext))prev=`<div class="preview"><video src="${j.stream}" controls></video></div>`;
+    else if(['mp3','wav','ogg','m4a'].includes(ext))prev=`<div class="preview"><audio src="${j.stream}" controls></audio></div>`;
+    box.innerHTML=`✅ اترفع بنجاح<br><a href="${j.view}" target="_blank">${j.view}</a>
+      <div class="meta">${fi.files[0].name} • ينتهي: ${j.expiryAt?fmt(j.expiryAt):'—'}</div>
+      ${prev}<div class="row" style="margin-top:12px">
+      <button type="button" class="copy" onclick="window.open('${j.view}','_blank')">👁️ عرض</button>
+      <button type="button" class="copy" onclick="window.open('${j.stream}','_blank')">▶️ تشغيل مباشر</button>
+      <button type="button" class="copy" onclick="window.open('${j.download}','_blank')">⬇️ تحميل</button></div>
+      <div class="row"><button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.view}')">📋 نسخ رابط العرض</button>
+      <button type="button" class="copy" onclick="navigator.clipboard.writeText('${j.stream}')">📋 نسخ المباشر</button></div>
+      <div class="meta">raw: <a href="${j.url}" target="_blank">${j.url}</a></div>
+      <br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(j.view)}">`;
   }catch(e){box.innerHTML='❌ '+e.message;}
   btn.disabled=false;btn.innerText='رفع 🚀';
 }
-/* live status + Ctrl+V paste upload */
+/* my files + live status + Ctrl+V paste upload */
+function getMine(){try{return JSON.parse(localStorage.getItem('minyawe_files')||'[]');}catch(e){return[];}}
+function saveMine(f){var a=getMine();a.unshift(f);a=a.slice(0,12);try{localStorage.setItem('minyawe_files',JSON.stringify(a));}catch(e){}renderMine();}
+function renderMine(){
+  var sec=document.getElementById('myfiles'),box=document.getElementById('filelist');
+  if(!sec||!box)return;
+  var a=getMine().filter(function(f){return !f.expiryAt||f.expiryAt>Date.now();});
+  if(!a.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  box.innerHTML=a.map(function(f){
+    var n=String(f.name||'file').replace(/[<>&"]/g,'');
+    return '<div class="frow"><span class="fn">'+n+'</span><span class="tag">'+(f.size||'')+'</span>'
+    +'<button type="button" class="ab" onclick="window.open(\''+f.view+'\',\'_blank\')">👁️ عرض</button>'
+    +'<button type="button" class="ab" onclick="navigator.clipboard.writeText(\''+f.view+'\')">📋 نسخ</button></div>';
+  }).join('');
+}
+function clearMine(){try{localStorage.removeItem('minyawe_files');}catch(e){}renderMine();}
+renderMine();
 async function loadStatus(){
   var dot=document.getElementById('st-dot'),st=document.getElementById('st-state');
   if(!dot||!st)return;
