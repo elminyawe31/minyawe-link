@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MINYAWE-LINK | ELMINYAWE</title>
 <meta name="description" content="MINYAWE-LINK by ELMINYAWE — ارفع صور وأغاني وفيديوهات وخد لينك مباشر بامتداده">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -63,22 +65,29 @@ a{color:var(--c-smoke)}
 .lnk-chev{color:var(--c-bone);font-size:16px;text-decoration:none}
 .lnk-chev:hover{color:var(--c-white)}
 .sysline{font-family:var(--f-mono);font-size:12px;color:var(--c-char);margin-top:20px;direction:ltr;text-align:right}
-/* MAGIC CUBE — chunky glossy black blocks, solving itself */
-.stage{display:flex;justify-content:center;align-items:center;min-height:300px;perspective:1000px;position:relative}
-.stage::after{content:"";position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:200px;height:30px;
-  background:radial-gradient(50% 50% at 50% 50%,rgba(255,255,255,.12),transparent 70%);filter:blur(6px)}
-#rcube{position:relative;width:280px;height:280px;transform-style:preserve-3d}
-.rbox{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;animation:stagespin 48s linear infinite}
-@keyframes stagespin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
-.cl{position:absolute;left:-27px;top:-27px;width:54px;height:54px;transform-style:preserve-3d}
-.fc{position:absolute;width:54px;height:54px;background:linear-gradient(145deg,#1b1b1b 0%,#070707 70%);
-  border:1px solid #33373b;border-radius:10px}
-.f0{transform:translateZ(27px)} .f1{transform:rotateY(180deg) translateZ(27px)}
-.f2{transform:rotateY(90deg) translateZ(27px)} .f3{transform:rotateY(-90deg) translateZ(27px)}
-.f4{transform:rotateX(90deg) translateZ(27px)} .f5{transform:rotateX(-90deg) translateZ(27px)}
-.stick{position:absolute;left:9px;top:9px;width:36px;height:36px;border-radius:8px;
-  background:linear-gradient(145deg,#f5f5f5 0%,#cfcfcf 40%,#8f8f8f 100%);
-  box-shadow:inset 2px 2px 4px rgba(255,255,255,.9),inset -3px -3px 5px rgba(0,0,0,.4)}
+/* MAGIC CUBE — glossy black blocks, real per-face studio lighting, solving itself */
+.stage{display:flex;justify-content:center;align-items:center;min-height:320px;perspective:1100px;position:relative}
+.stage::after{content:"";position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:210px;height:32px;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(255,255,255,.14),transparent 70%);filter:blur(7px);animation:shdw 7s ease-in-out infinite}
+@keyframes shdw{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.9}50%{transform:translateX(-50%) scaleX(.86);opacity:.6}}
+#rcube{position:relative;width:280px;height:280px;transform-style:preserve-3d;animation:bob 7s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.rbox{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;animation:stagespin 60s linear infinite}
+@keyframes stagespin{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
+.cl{position:absolute;left:-28px;top:-28px;width:56px;height:56px;transform-style:preserve-3d}
+.fc{position:absolute;width:56px;height:56px;border:1px solid #3a3f44;border-radius:12px}
+.f0{background:linear-gradient(150deg,#2b2b2b 0%,#101010 55%,#050505 100%)}
+.f1{background:linear-gradient(150deg,#141414 0%,#050505 70%)}
+.f2{background:linear-gradient(150deg,#202020 0%,#080808 65%)}
+.f3{background:linear-gradient(150deg,#101010 0%,#030303 70%)}
+.f4{background:linear-gradient(150deg,#3d3d3d 0%,#141414 60%,#060606 100%)}
+.f5{background:linear-gradient(150deg,#0d0d0d 0%,#020202 70%)}
+.f0{transform:translateZ(28px)} .f1{transform:rotateY(180deg) translateZ(28px)}
+.f2{transform:rotateY(90deg) translateZ(28px)} .f3{transform:rotateY(-90deg) translateZ(28px)}
+.f4{transform:rotateX(90deg) translateZ(28px)} .f5{transform:rotateX(-90deg) translateZ(28px)}
+.stick{position:absolute;left:10px;top:10px;width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(145deg,#fafafa 0%,#d4d4d4 35%,#909090 100%);
+  box-shadow:inset 2px 3px 4px rgba(255,255,255,.95),inset -3px -3px 6px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.6)}
 /* LOGOS */
 .logos{margin-top:96px;text-align:center}
 .logos .cap{font-size:14px;color:var(--c-ash);margin-bottom:24px}
@@ -134,6 +143,12 @@ input[type=file]{display:none}
 .result .meta{font-family:var(--f-mono);font-size:12px;color:var(--c-ash);margin-top:10px}
 .result .meta a{color:var(--c-smoke)}
 .brow{display:flex;gap:16px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--c-hair);border-radius:6px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--c-ash);font-family:var(--f-ui);font-size:13px;padding:8px 16px;cursor:pointer}
+.seg button.on{background:var(--c-white);color:#000}
+.pbar{height:6px;border:1px solid var(--c-hair);border-radius:6px;overflow:hidden;margin-top:16px;direction:ltr}
+.pbar i{display:block;height:100%;width:0;background:var(--c-white);transition:width .2s ease}
+.pbar .plbl{font-family:var(--f-mono);font-size:11px;color:var(--c-ash);margin-top:6px;direction:ltr}
 .preview img,.preview video{max-width:100%;border-radius:16px;margin-top:16px}
 .preview audio{width:100%;margin-top:16px}
 /* FILES + STATS + STATUS */
@@ -369,8 +384,9 @@ footer .fm b{color:var(--c-white)}
         <div class="stat"><div class="n" id="sn-bytes">—</div><div class="l">مساحة مستخدمة</div></div>
         <div class="stat"><div class="n" id="sn-top">—</div><div class="l">الأعلى مشاهدة</div></div>
       </div>
-      <div class="filelist toplist" id="toplist" style="display:none"></div>
-      <div style="text-align:center;margin-top:16px"><button type="button" class="btn-ghost sm" onclick="loadStats()">تحديث الأرقام</button></div>
+    <div class="filelist toplist" id="toplist" style="display:none"></div>
+    <div class="aliasrow" style="max-width:760px;margin:16px auto 0"><span>وضع الأدمن (مسح + تفاصيل)</span><input id="adminpass" type="password" placeholder="ADMIN_TOKEN" dir="ltr"><button type="button" class="btn-ghost sm" onclick="adminUnlock()">تفعيل</button></div>
+    <div style="text-align:center;margin-top:16px"><button type="button" class="btn-ghost sm" onclick="loadStats()">تحديث الأرقام</button></div>
     </section>
   </div>
 
@@ -534,25 +550,69 @@ fetch('/api/config?t='+Date.now()).then(function(r){return r.json();}).then(func
 function fmt(s){if(!s)return'—';var d=new Date(s);return d.toLocaleString('ar-EG');}
 function fmtB(b){b=b||0;if(b<1048576)return Math.round(b/1024)+' KB';if(b<1073741824)return (b/1048576).toFixed(1)+' MB';return (b/1073741824).toFixed(2)+' GB';}
 function shareRow(u){
-  var e=encodeURIComponent(u);
-  return '<div class="brow"><button type="button" class="btn-ghost sm" onclick="window.open(\'https://wa.me/?text='+e+'\',\'_blank\')">واتساب</button>'
-  +'<button type="button" class="btn-ghost sm" onclick="window.open(\'https://t.me/share/url?url='+e+'\',\'_blank\')">تيليجرام</button>'
-  +'<button type="button" class="btn-ghost sm" onclick="window.open(\'https://twitter.com/intent/tweet?url='+e+'\',\'_blank\')">X</button></div>';
+  return '<div class="brow"><span class="seg"><button type="button" class="on" onclick="setShareMode(\'open\',this)">فتح التطبيق</button><button type="button" onclick="setShareMode(\'copy\',this)">نسخ الرابط</button></span></div>'
+  +'<div class="brow"><button type="button" class="btn-ghost sm" onclick="shareGo(\'wa\',\''+u+'\')">واتساب</button>'
+  +'<button type="button" class="btn-ghost sm" onclick="shareGo(\'tg\',\''+u+'\')">تيليجرام</button>'
+  +'<button type="button" class="btn-ghost sm" onclick="shareGo(\'x\',\''+u+'\')">X</button></div>';
+}
+var shareMode='open';
+function setShareMode(m,el){shareMode=m;var seg=el.parentNode;for(var i=0;i<seg.children.length;i++)seg.children[i].classList.toggle('on',seg.children[i]===el);}
+function shareGo(net,u){
+  if(shareMode==='copy'){copyText(u,'تم نسخ رابط المشاركة ✓');return;}
+  var links={wa:'https://wa.me/?text='+encodeURIComponent(u),tg:'https://t.me/share/url?url='+encodeURIComponent(u),x:'https://twitter.com/intent/tweet?url='+encodeURIComponent(u)};
+  window.open(links[net]||u,'_blank');
+}
+/* رفع مع شريط تقدم حقيقي */
+function postForm(url,fd,onp){
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest();x.open('POST',url);
+    x.upload.onprogress=function(e){if(e.lengthComputable)onp(e.loaded/e.total);};
+    x.onload=function(){try{var j=JSON.parse(x.responseText);res({ok:x.status>=200&&x.status<300,j:j});}catch(e){rej(new Error('bad response'));}};
+    x.onerror=function(){rej(new Error('network error'));};
+    x.send(fd);
+  });
+}
+function progHTML(){return '<div class="pbar"><i id="pfill"></i></div><div class="plbl" id="ptxt">0%</div>';}
+function progSet(p){var f=document.getElementById('pfill'),t=document.getElementById('ptxt');if(f)f.style.width=Math.round(p*100)+'%';if(t)t.textContent=Math.round(p*100)+'%';}
+function adminToken(){try{return sessionStorage.getItem('mw_admin')||'';}catch(e){return '';}}
+async function adminUnlock(){
+  var v=document.getElementById('adminpass').value;
+  try{sessionStorage.setItem('mw_admin',v);}catch(e){}
+  toast('اتحفظ التوكن — حدّث الأرقام');
+  loadStats();
+}
+async function adminDel(id){
+  if(!confirm('تحذف الملف ده نهائيا؟'))return;
+  var tok=adminToken();
+  var r=await fetch('/api/'+id+'?admin='+encodeURIComponent(tok),{method:'DELETE'});
+  if(r.ok){toast('اتمسح ✓');loadStats();}else toast('فشل المسح','#ff9592');
+}
+function countUp(el,to){
+  try{
+    var t0=null,D=800;
+    function fr(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);el.textContent=Math.round(to*k);if(k<1)requestAnimationFrame(fr);}
+    requestAnimationFrame(fr);
+  }catch(e){el.textContent=to;}
 }
 async function loadStats(){
   try{
-    var s=await fetch('/api/stats?t='+Date.now()).then(function(r){return r.json();});
-    document.getElementById('sn-files').textContent=s.files;
-    document.getElementById('sn-views').textContent=s.totalViews;
+    var tok=adminToken();
+    var s=await fetch('/api/stats?t='+Date.now()+(tok?'&admin='+encodeURIComponent(tok):'')).then(function(r){return r.json();});
+    countUp(document.getElementById('sn-files'),s.files);
+    countUp(document.getElementById('sn-views'),s.totalViews);
     document.getElementById('sn-bytes').textContent=fmtB(s.totalBytes);
     document.getElementById('sn-top').textContent=s.top.length?s.top[0].views:'0';
     var box=document.getElementById('toplist');
     if(s.top.length){
       box.style.display='block';
       box.innerHTML=s.top.map(function(f){
-        var n=String(f.name||'file').replace(/[<>&"]/g,'');
-        return '<div class="frow"><span class="fn">'+n+'</span><span class="tag">'+f.views+' views</span>'
-        +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+f.view+'\',\'_blank\')">عرض</button></div>';
+        if(f.view){
+          var n=String(f.name||'file').replace(/[<>&"]/g,'');
+          var del=s.admin?'<button type="button" class="btn-ghost sm" onclick="adminDel(\''+f.id+'\')">حذف</button>':'';
+          return '<div class="frow"><span class="fn">'+n+'</span><span class="tag">'+f.views+' views</span>'
+          +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+f.view+'\',\'_blank\')">عرض</button>'+del+'</div>';
+        }
+        return '<div class="frow"><span class="fn">•••</span><span class="tag">'+f.views+' views</span></div>';
       }).join('');
     }else box.style.display='none';
   }catch(e){}
@@ -567,7 +627,8 @@ async function up(){
       var fa=new FormData();
       for(var i=0;i<fi.files.length;i++)fa.append('files',fi.files[i]);
       fa.append('expiry',exp);
-      var ra=await fetch('/api/album',{method:'POST',body:fa});var ja=await ra.json();
+      box.innerHTML=progHTML();
+      var ra=await postForm('/api/album',fa,progSet);var ja=ra.j;
       if(!ra.ok)throw new Error(ja.error||'upload failed');
       var rows=ja.files.map(function(f){
         return '<div class="frow"><span class="fn">'+String(f.name).replace(/[<>&"]/g,'')+'</span>'
@@ -586,8 +647,9 @@ async function up(){
     var fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
     var aliasEl=document.getElementById('alias');
     if(aliasEl&&aliasEl.value.trim())fd.append('alias',aliasEl.value.trim());
-    var r=await fetch('/api/upload',{method:'POST',body:fd});var j=await r.json();
-    if(!r.ok)throw new Error(j.error||'upload failed');
+    box.innerHTML=progHTML();
+    var rr=await postForm('/api/upload',fd,progSet);var j=rr.j;
+    if(!rr.ok)throw new Error(j.error||'upload failed');
     var ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
     if(j.view){try{saveMine({name:fi.files[0].name,view:j.view,size:(fi.files[0].size/1048576).toFixed(2)+' MB',expiryAt:j.expiryAt||null});}catch(e){}}
     var prev='';
@@ -611,9 +673,10 @@ async function up(){
 }
 /* magic cube — glossy black blocks solving themselves, looping */
 (function(){
+  try{
   var stage=document.getElementById('rcube');if(!stage)return;
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var S=58;
+  var S=60, lastMove=Date.now();
   function I(){return [[1,0,0],[0,1,0],[0,0,1]];}
   function mul(A,B){var C=[[0,0,0],[0,0,0],[0,0,0]];for(var i=0;i<3;i++)for(var j=0;j<3;j++){var s=0;for(var k=0;k<3;k++)s+=A[i][k]*B[k][j];C[i][j]=s;}return C;}
   function rot(ax,deg){var r=deg*Math.PI/180,c=Math.cos(r),s=Math.sin(r);
@@ -656,7 +719,7 @@ async function up(){
   function doMove(mv,done){
     var R90=rot(mv.ax,mv.dir*90);
     var L=cls.filter(function(c){return c.p[axIdx(mv.ax)]===mv.v;});
-    var t0=null,D=520;
+    var t0=null,D=680;
     function fr(t){
       if(!t0)t0=t;
       var k=Math.min(1,(t-t0)/D);
@@ -665,18 +728,25 @@ async function up(){
       L.forEach(function(c){render(c,R);});
       if(k<1){requestAnimationFrame(fr);return;}
       L.forEach(function(c){c.p=rnd(applyV(R90,c.p));c.r=rndM(mul(R90,c.r));render(c);});
+      lastMove=Date.now();
       if(done)done();
     }
     requestAnimationFrame(fr);
   }
-  var seq=[{ax:'y',v:1,dir:1},{ax:'x',v:1,dir:-1},{ax:'y',v:1,dir:-1},{ax:'x',v:1,dir:1},{ax:'z',v:-1,dir:1},{ax:'y',v:-1,dir:1},{ax:'z',v:-1,dir:-1},{ax:'y',v:-1,dir:-1}];
+  var seq=[{ax:'y',v:1,dir:1},{ax:'y',v:1,dir:1},{ax:'x',v:1,dir:-1},{ax:'y',v:1,dir:-1},{ax:'x',v:1,dir:1},{ax:'z',v:-1,dir:1},{ax:'z',v:-1,dir:1},{ax:'y',v:-1,dir:1},{ax:'x',v:-1,dir:1},{ax:'y',v:-1,dir:-1},{ax:'x',v:-1,dir:-1},{ax:'z',v:1,dir:-1}];
   var si=0;
   function next(){
     if(document.hidden){setTimeout(next,1000);return;}
     var mv=seq[si%seq.length];si++;
-    doMove(mv,function(){setTimeout(next,si%seq.length===0?1700:280);});
+    doMove(mv,function(){setTimeout(next,si%seq.length===0?1900:380);});
   }
   setTimeout(next,900);
+  /* watchdog: لو الحركات وقفت لأي سبب، سرّع دوران الجسم كله عشان يفضل حي */
+  setInterval(function(){
+    if(Date.now()-lastMove>8000){box.style.animationDuration='14s';}
+    else{box.style.animationDuration='';}
+  },4000);
+  }catch(err){}
 })();
 /* scroll reveal */
 if('IntersectionObserver' in window){

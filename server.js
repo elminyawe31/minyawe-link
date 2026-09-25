@@ -73,6 +73,27 @@ const saveDB = () => { try { fs.writeFileSync(DB_PATH, JSON.stringify(db)); } ca
 
 const genId = () => crypto.randomBytes(4).toString('hex');
 
+// إصلاح أسماء العربي: المتصفح بيبعت UTF-8 وmulter بيقراها latin1 فبتطلع رموز غريبة (Ø±Ø¨…)
+// الحل: نرجع البايتات لأصلها أول ما الملف يوصل
+function fixName(n) {
+  try {
+    const f = Buffer.from(String(n), 'latin1').toString('utf8');
+    if (f !== String(n) && !f.includes('�')) return f;
+  } catch {}
+  return String(n);
+}
+// هجرة لمرة واحدة: صلح الأسماء اللي اتخزنت غلط قبل كده (تحتوي عربي بعد الإصلاح فقط)
+(function healNames() {
+  let changed = false;
+  for (const [id, m] of Object.entries(db.files)) {
+    if (m && m.original && /[ØÙÞÃÂ]/.test(m.original)) {
+      const f = fixName(m.original);
+      if (f !== m.original && /[؀-ۿ]/.test(f)) { m.original = f; changed = true; }
+    }
+  }
+  if (changed) saveDB();
+})();
+
 // أسماء مخصصة: 3-30 حرف (انجليزي/أرقام/-/_%) وفريدة
 const SLUG_RE = /^[a-z0-9-_]{3,30}$/i;
 function slugTaken(s) {
@@ -166,6 +187,14 @@ async function proxyFile(meta, req, res, disposition) {
       const headers = {};
       if (req.headers.range) headers.Range = req.headers.range;
       const r = await fetch(target, { headers });
+      if (r.status === 416) {
+        const cr416 = r.headers.get('content-range');
+        res.status(416);
+        if (cr416) res.set('Content-Range', cr416);
+        res.set({ 'Accept-Ranges': 'bytes', 'X-Powered-By': BRAND });
+        try { r.body.cancel(); } catch {}
+        return res.send('Range Not Satisfiable | MINYAWE-LINK');
+      }
       if (!r.ok && r.status !== 206) { lastStatus = r.status; continue; }
       res.status(r.status);
       // لو التخزين بعت نوع عام (octet-stream) نخمن الصح من الامتداد — عشان الـ .md والـ .txt يتعرضوا مش يتحملوا
@@ -300,6 +329,7 @@ GET ${b}/api/stats => { files, totalViews, totalBytes, byKind, top[5] }
 
 // نواة الرفع المشتركة (ملف واحد) — ترجع {id, meta}
 async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias }, req) {
+  original = fixName(original); // صلح العربي قبل أي حاجة
   let slug = null;
   if (alias !== undefined && alias !== null && String(alias).trim() !== '') {
     const a = String(alias).trim();
@@ -417,9 +447,14 @@ app.get('/api/stats', (req, res) => {
     totalViews += m.views || 0; totalBytes += m.size || 0;
     try { const k = kindOf(m); if (byKind[k] !== undefined) byKind[k]++; } catch {}
   });
-  const top = live.map(([id, m]) => ({ id, key: m.slug || id, name: m.original, views: m.views || 0, size: m.size, view: `${baseUrl(req)}/v/${m.slug || id}` }))
+  // الخصوصية: التفاصيل (أسماء/لينكات) للأدمن بس — أي حد تاني يشوف الأرقام الإجمالية بس
+  // أي مستخدم يشوف ملفاته هو من متصفحه (ملفاتي الأخيرة)، وأي ملف يتفتح بالرابط بتاعه عادي
+  const isAdmin = process.env.ADMIN_TOKEN && req.query.admin === process.env.ADMIN_TOKEN;
+  const top = live.map(([id, m]) => isAdmin
+    ? { id, key: m.slug || id, name: m.original, views: m.views || 0, size: m.size, view: `${baseUrl(req)}/v/${m.slug || id}` }
+    : { views: m.views || 0, size: m.size })
     .sort((a, b) => b.views - a.views).slice(0, 5);
-  res.json({ files: live.length, totalViews, totalBytes, byKind, top, powered_by: BRAND });
+  res.json({ files: live.length, totalViews, totalBytes, byKind, top, admin: !!isAdmin, powered_by: BRAND });
 });
 
 // لينك مباشر دايما — inline + CORS مفتوح عشان يشتغل في أي مشغل/موقع
