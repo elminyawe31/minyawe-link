@@ -6,6 +6,7 @@
 <title>MINYAWE-LINK | ELMINYAWE</title>
 <meta name="description" content="MINYAWE-LINK by ELMINYAWE — ارفع صور وأغاني وفيديوهات وخد لينك مباشر بامتداده">
 <meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,11 +21,13 @@
 }
 /* ===== LIGHT THEME: نفس الهوية، ألوان معكوسة — يتبدل بزر من الـ nav ويتحفظ في المتصفح ===== */
 html[data-theme="light"]{
-  --c-void:#f4f4f2; --c-hair:#d9d9d4; --c-white:#0a0a0a; --c-bone:#1b1b1b;
+  --c-void:#ffffff; --c-hair:#d9d9d4; --c-bone:#1b1b1b;
   --c-ash:#5b5f64; --c-smoke:#3d4146; --c-iron:#9a9ea4; --c-char:#b6b9bd;
   --c-green:#0f8a4d; --c-red:#d33f3b; --c-amber:#a97a00;
 }
-html[data-theme="light"] .nav{background:rgba(244,244,242,.92)}
+html{background:#000}
+html[data-theme="light"]{background:#fff}
+html[data-theme="light"] .nav{background:rgba(255,255,255,.92)}
 html[data-theme="light"] .toplight{background:radial-gradient(58% 100% at 50% 0%,rgba(0,0,0,.06),transparent 70%)}
 html[data-theme="light"] .hero-band{background:radial-gradient(65% 100% at 50% 100%,rgba(0,0,0,.07),transparent 70%)}
 html[data-theme="light"] .hero .ev-visual::before{background:radial-gradient(50% 60% at 50% 0%,rgba(0,0,0,.06),transparent 70%)}
@@ -254,6 +257,7 @@ input[type=file]{display:none}
 .stat .n{font-family:var(--f-mono);font-size:28px;color:var(--c-white);direction:ltr}
 .stat .l{font-size:13px;color:var(--c-ash);margin-top:8px}
 .toplist{max-width:760px;margin:0 auto}
+.toplist{max-height:340px;overflow-y:auto;overscroll-behavior:contain}
 .status{max-width:760px;margin:0 auto;border:1px solid var(--c-hair);border-radius:16px;padding:8px 32px}
 .srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--c-hair);font-size:14px}
 .srow:last-child{border-bottom:0}
@@ -351,6 +355,7 @@ footer .fm b{color:var(--c-white)}
 @media(max-width:760px){
   /* الـ nav: اللينكات سكرول أفقي بدل ما تختفي */
   .nav{padding:14px 0;gap:10px}
+  .nav [data-tab-go]{display:none} /* زر "رفع ملف" مكرر — تبويب "رفع" موجود في اللينكات */
   .nav .links{display:flex;gap:18px;flex:1;min-width:0;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
   .nav .links::-webkit-scrollbar{display:none}
   .nav .links a{font-size:13px;white-space:nowrap}
@@ -750,8 +755,9 @@ function copyLlms(){if(window._llmsRaw)copyText(window._llmsRaw,'تم نسخ llm
 function curTheme(){try{return localStorage.getItem('mw_theme')||'dark';}catch(e){return 'dark';}}
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
+  try{document.documentElement.style.colorScheme=(t==='light'?'light':'dark');}catch(e){}
   var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'☀️':'🌙');
-  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#f4f4f2':'#000000');
+  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#ffffff':'#000000');
   try{localStorage.setItem('mw_theme',t);}catch(e){}
 }
 function toggleTheme(){applyTheme(curTheme()==='light'?'dark':'light');}
@@ -763,6 +769,15 @@ function renderMine(){
   var box=document.getElementById('filelist');
   if(!box)return;
   var a=getMine().filter(function(f){return !f.expiryAt||f.expiryAt>Date.now();});
+  // اشتقاق الـ id للمدخلات القديمة (قبل تخزينه) من آخر رابط العرض
+  a.forEach(function(f){if(!f.id&&f.view){var p=String(f.view).split('/');f.id=p[p.length-1]||'';}});
+  if(!a.length){box.innerHTML='<div class="frow"><span class="fn">لا توجد ملفات بعد — ارفع أول ملف</span></div>';return;}
+  paintMine(a);
+  verifyMine(a);
+}
+function paintMine(a){
+  var box=document.getElementById('filelist');
+  if(!box)return;
   if(!a.length){box.innerHTML='<div class="frow"><span class="fn">لا توجد ملفات بعد — ارفع أول ملف</span></div>';return;}
   box.innerHTML=a.map(function(f){
     var n=String(f.name||'file').replace(/[<>&"]/g,'');
@@ -771,6 +786,22 @@ function renderMine(){
     +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+v+'\',\'_blank\')">عرض</button>'
     +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+v+'\',\'تم نسخ رابط العرض ✓\')">نسخ</button></div>';
   }).join('');
+}
+/* تحقق من السيرفر: أي ملف حذفه الأدمن أو انتهى يتشال من القائمة تلقائيا (القائمة محفوظة في متصفح كل مستخدم) */
+async function verifyMine(a){
+  try{
+    var ids=a.map(function(f){return f.id||'';}).filter(Boolean);
+    if(!ids.length)return;
+    var r=await fetch('/api/check?ids='+encodeURIComponent(ids.join(',')));
+    if(!r.ok)return;
+    var j=await r.json();
+    var alive=a.filter(function(f){return !f.id||(j.ok&&j.ok[f.id]);});
+    if(alive.length!==a.length){
+      try{localStorage.setItem('minyawe_files',JSON.stringify(alive.slice(0,12)));}catch(e){}
+      paintMine(alive);
+      toast('اتشال '+(a.length-alive.length)+' ملف محذوف/منتهي من القائمة');
+    }
+  }catch(e){}
 }
 function clearMine(){try{localStorage.removeItem('minyawe_files');}catch(e){}renderMine();toast('اتمسحت ملفاتك من المتصفح');}
 /* live status */
@@ -929,7 +960,8 @@ function countUp(el,to){
 }
 async function loadStats(){
   try{
-    var s=await fetch('/api/stats?t='+Date.now(),{headers:adminHdr()}).then(function(r){return r.json();});
+    var lim=adminToken()?'&limit=100':'';
+    var s=await fetch('/api/stats?t='+Date.now()+lim,{headers:adminHdr()}).then(function(r){return r.json();});
     countUp(document.getElementById('sn-files'),s.files);
     countUp(document.getElementById('sn-views'),s.totalViews);
     document.getElementById('sn-bytes').textContent=fmtB(s.totalBytes);
@@ -945,7 +977,7 @@ async function loadStats(){
           +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+f.view+'\',\'_blank\')">عرض</button>'+del+'</div>';
         }
         return '<div class="frow"><span class="fn">•••</span><span class="tag">'+f.views+' views</span></div>';
-      }).join('');
+      }).join('')+'<div class="frow"><span class="tag">المعروض: '+s.top.length+'</span></div>';
     }else box.style.display='none';
   }catch(e){}
 }
@@ -995,7 +1027,7 @@ async function up(){
       okN++;lastJ=j;lastF=f;
       qset(k,1,'تم ✓'+(j.locked?' • 🔒 محمي':''),'done',opsFor(j));
       qmeta(k,fmtB(f.size)+' • ينتهي: '+(j.expiryAt?fmt(j.expiryAt):'—'));
-      try{saveMine({name:f.name,view:j.view,size:fmtB(f.size),expiryAt:j.expiryAt||null});}catch(e){}
+      try{saveMine({id:j.id,name:f.name,view:j.view,size:fmtB(f.size),expiryAt:j.expiryAt||null});}catch(e){}
     }catch(e){qset(k,0,'خطأ: '+e.message,'err');}
   }
   btn.disabled=false;btn.innerText='رفع';

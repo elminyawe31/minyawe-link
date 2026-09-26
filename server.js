@@ -590,6 +590,18 @@ app.post('/api/album', rateLimit, upload.array('files', 10), async (req, res) =>
   } catch (e) { apiErr(res, e); }
 });
 
+// فحص وجود ملفات (لتبويب "ملفاتي"): يرجع true للموجود وغير المنتهي فقط — بدون أي آثار جانبية (لا عداد ولا مسح)
+app.get('/api/check', (req, res) => {
+  const now = Date.now();
+  const ids = String(req.query.ids || '').split(',').map(s => s.trim().slice(0, 64)).filter(Boolean).slice(0, 20);
+  const ok = {};
+  for (const key of ids) {
+    const found = findFile(key);
+    ok[key] = !!(found && (!found.meta.expiryAt || found.meta.expiryAt > now));
+  }
+  res.json({ ok });
+});
+
 // إحصائيات — لوحة الأرقام
 app.get('/api/stats', (req, res) => {
   const now = Date.now();
@@ -604,10 +616,12 @@ app.get('/api/stats', (req, res) => {
   // أي مستخدم يشوف ملفاته هو من متصفحه (ملفاتي الأخيرة)، وأي ملف يتفتح بالرابط بتاعه عادي
   // التوكن يتقبل في هيدر x-admin-token (الأفضل) أو كويري ?admin= — يقارن timing-safe
   const isAdmin = isAdminReq(req);
+  // الأدمن يشوف لحد 100 (?limit=) مع سكرول في الواجهة — الزائر أول 5 فقط
+  const lim = isAdmin ? Math.min(Math.max(parseInt(req.query.limit || '5', 10) || 5, 1), 100) : 5;
   const top = live.map(([id, m]) => isAdmin
-    ? { id, key: m.slug || id, name: m.original, views: m.views || 0, size: m.size, view: `${baseUrl(req)}/v/${m.slug || id}` }
-    : { views: m.views || 0, size: m.size })
-    .sort((a, b) => b.views - a.views).slice(0, 5);
+  ? { id, key: m.slug || id, name: m.original, views: m.views || 0, size: m.size, view: `${baseUrl(req)}/v/${m.slug || id}` }
+  : { views: m.views || 0, size: m.size })
+    .sort((a, b) => b.views - a.views).slice(0, lim);
   res.json({ files: live.length, totalViews, totalBytes, byKind, top, admin: !!isAdmin, powered_by: BRAND });
 });
 
