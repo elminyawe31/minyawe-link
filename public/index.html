@@ -18,6 +18,45 @@
   --f-ui:'Inter',system-ui,sans-serif; --f-tight:'Inter Tight','Inter',system-ui,sans-serif;
   --f-serif:'Playfair Display',Georgia,serif; --f-mono:'JetBrains Mono',monospace;
 }
+/* ===== LIGHT THEME: نفس الهوية، ألوان معكوسة — يتبدل بزر من الـ nav ويتحفظ في المتصفح ===== */
+html[data-theme="light"]{
+  --c-void:#f4f4f2; --c-hair:#d9d9d4; --c-white:#0a0a0a; --c-bone:#1b1b1b;
+  --c-ash:#5b5f64; --c-smoke:#3d4146; --c-iron:#9a9ea4; --c-char:#b6b9bd;
+  --c-green:#0f8a4d; --c-red:#d33f3b; --c-amber:#a97a00;
+}
+html[data-theme="light"] .nav{background:rgba(244,244,242,.92)}
+html[data-theme="light"] .toplight{background:radial-gradient(58% 100% at 50% 0%,rgba(0,0,0,.06),transparent 70%)}
+html[data-theme="light"] .hero-band{background:radial-gradient(65% 100% at 50% 100%,rgba(0,0,0,.07),transparent 70%)}
+html[data-theme="light"] .hero .ev-visual::before{background:radial-gradient(50% 60% at 50% 0%,rgba(0,0,0,.06),transparent 70%)}
+html[data-theme="light"] #cursorGlow{background:radial-gradient(circle,rgba(0,0,0,.06),transparent 60%)}
+html[data-theme="light"] .toast{background:#fff}
+html[data-theme="light"] .ev-card{border:1px solid #cfcfca;
+  box-shadow:0 0 60px rgba(0,0,0,.10),0 24px 48px rgba(0,0,0,.18)}
+html[data-theme="light"] .beam-w{background:linear-gradient(to bottom,transparent,#0a0a0a 30%,#0a0a0a 70%,transparent);
+  box-shadow:0 0 18px rgba(0,0,0,.35),0 0 60px rgba(0,0,0,.12)}
+html[data-theme="light"] .beam-w::after{background:linear-gradient(to bottom,transparent,#0a0a0a,transparent)}
+html[data-theme="light"] .hexcol .hx-row.b{color:#3a3a3a}
+html[data-theme="light"] .hexcol .hx-cursor{color:#0a0a0a}
+html[data-theme="light"] .hexcol .hx-row:hover{color:#000!important}
+html[data-theme="light"] ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.20)}
+html[data-theme="light"].scrolling::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.42)}
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.6)}
+html[data-theme="light"]{scrollbar-color:rgba(0,0,0,.20) transparent}
+html[data-theme="light"].scrolling{scrollbar-color:rgba(0,0,0,.42) transparent}
+html[data-theme="light"] .drop.over{background:#e9e9e5}
+html[data-theme="light"] .bcard .ico{background:#ececea}
+html[data-theme="light"] .seg button.on{background:#0a0a0a;color:#fff}
+html[data-theme="light"] .chip.on{border-color:#0a0a0a;color:#0a0a0a}
+html[data-theme="light"] .btn-ghost:hover{border-color:#0a0a0a}
+html[data-theme="light"] .dev-badge .dot-w{background:#0a0a0a;box-shadow:0 0 10px rgba(0,0,0,.5)}
+html[data-theme="light"] .dev-badge b{color:#0a0a0a}
+html[data-theme="light"] .only-me{color:#0a0a0a;border-color:rgba(0,0,0,.25);
+  background:linear-gradient(135deg,rgba(0,0,0,.08),rgba(0,0,0,.02))}
+html[data-theme="light"] .mchip.post{background:rgba(15,138,77,.12);color:#0f8a4d;border-color:rgba(15,138,77,.35)}
+html[data-theme="light"] .mchip.get{background:rgba(20,110,220,.10);color:#1466d6;border-color:rgba(20,110,220,.35)}
+html[data-theme="light"] .mchip.del{background:rgba(211,63,59,.10);color:#d33f3b;border-color:rgba(211,63,59,.35)}
+html[data-theme="light"] .term .g{color:#0f8a4d}
+html[data-theme="light"] .dot{background:var(--c-green)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.16) transparent}
 html.scrolling{scrollbar-color:rgba(255,255,255,.38) transparent}
@@ -298,11 +337,87 @@ footer .fm b{color:var(--c-white)}
   .hero .sub{margin:0 auto}
   .hero-cta{justify-content:center}
   .hero h1,.sec-head h2,.cta h2{font-size:40px;letter-spacing:-1.5px}
-  .nav .links{display:none}
   .logos .grid{grid-template-columns:repeat(2,1fr);row-gap:32px}
   .bento{grid-template-columns:1fr}
   .bcard.big{grid-column:span 1}
   section.block{margin-top:64px}
+}
+/* ===== تجاوب كامل: موبايل / تابلت / لابتوب / شاشات كبيرة ===== */
+@media(max-width:1024px){
+  .wrap{padding:0 18px 48px}
+  .hero .ev-visual{max-width:100%}
+  .cta{padding:56px 20px}
+}
+@media(max-width:760px){
+  /* الـ nav: اللينكات سكرول أفقي بدل ما تختفي */
+  .nav{padding:14px 0;gap:10px}
+  .nav .links{display:flex;gap:18px;flex:1;min-width:0;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .nav .links::-webkit-scrollbar{display:none}
+  .nav .links a{font-size:13px;white-space:nowrap}
+  .brand .wm{font-size:14px}
+  /* الهيرو يتكدس عموديا: الكارت فوق، شعاع أفقي، سطور الماتريكس تحت */
+  .hero{padding-top:40px}
+  .hero .ev-visual{flex-direction:column;align-items:center;min-height:0;margin-top:28px}
+  .ev-card{width:min(330px,86vw)}
+  .beam-w{width:62%;min-height:3px;margin:22px 0;
+    background:linear-gradient(to right,transparent,#ffffff 30%,#ffffff 70%,transparent)}
+  .beam-w::after{left:-8%;top:-2px;width:16%;height:7px;
+    background:linear-gradient(to right,transparent,#fff,transparent);
+    animation-name:beamDropH}
+  @keyframes beamDropH{0%{left:-8%}55%{left:92%}100%{left:92%;opacity:0}}
+  .hexcol{width:100%;max-width:430px;min-height:150px;max-height:150px;font-size:11px}
+  .hero h1,.sec-head h2,.cta h2{font-size:34px;letter-spacing:-1px}
+  .hero .sub{font-size:16px}
+  .panel .body{padding:22px 16px}
+  .drop{padding:32px 14px}
+  .aliasrow input{flex:1 1 100%;min-width:0}
+  .frow{flex-wrap:wrap;row-gap:8px}
+  .frow .ops{margin-inline-start:auto}
+  .statgrid{grid-template-columns:repeat(2,1fr)}
+  .term pre{font-size:12px;padding:16px}
+  .cta{padding:48px 16px}
+  footer{flex-direction:column;text-align:center;justify-content:center}
+}
+@media(max-width:420px){
+  .hero h1,.sec-head h2,.cta h2{font-size:29px}
+  .brand .mark{width:24px;height:24px;font-size:13px}
+  .btn-ghost.sm{padding:7px 12px;font-size:12px}
+  .hexcol{font-size:10px;min-height:130px;max-height:130px}
+}
+/* ===== قائمة الرفع المتعدد: كل ملف سطر + شريط تقدم خاص ===== */
+#queue{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+#queue:empty{display:none}
+.qfile{border:1px solid var(--c-hair);border-radius:6px;padding:12px 14px;direction:ltr;text-align:left}
+.qfile .qn{font-family:var(--f-mono);font-size:12.5px;color:var(--c-bone);word-break:break-all}
+.qfile .qm{font-family:var(--f-mono);font-size:11px;color:var(--c-ash);margin-top:4px}
+.qfile .qbar{height:5px;border:1px solid var(--c-hair);border-radius:6px;overflow:hidden;margin-top:8px}
+.qfile .qbar i{display:block;height:100%;width:0;background:var(--c-white);transition:width .15s linear}
+.qfile .qst{font-family:var(--f-mono);font-size:11px;color:var(--c-ash);margin-top:6px}
+.qfile.done .qst{color:var(--c-green)}
+.qfile.err .qst{color:var(--c-red)}
+.qfile .qops{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+/* ===== لوحة الأدمن: بحث + جدول ملفات + سجل ===== */
+.adm-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 auto 14px;max-width:760px}
+.adm-tools input{flex:1;min-width:160px;background:transparent;border:1px solid var(--c-hair);border-radius:6px;
+  color:var(--c-white);font-family:var(--f-mono);font-size:13px;padding:8px 12px;direction:ltr;outline:none}
+.adm-tools input:focus{border-color:var(--c-white)}
+.adm-tools input::placeholder{color:var(--c-char)}
+.abadge{font-family:var(--f-mono);font-size:11px;border:1px solid var(--c-hair);border-radius:6px;padding:3px 9px;white-space:nowrap}
+.abadge.lock{border-color:var(--c-amber);color:var(--c-amber)}
+.abadge.exp{color:var(--c-ash)}
+.alog{display:flex;flex-direction:column;gap:0;max-width:760px;margin:0 auto}
+.alog .arow{display:flex;gap:10px;align-items:baseline;padding:10px 4px;border-bottom:1px solid var(--c-hair);
+  font-family:var(--f-mono);font-size:12px;direction:ltr;text-align:left;flex-wrap:wrap}
+.alog .arow:last-child{border-bottom:0}
+.alog .at{color:var(--c-char);white-space:nowrap}
+.alog .aa{font-weight:600;color:var(--c-white);white-space:nowrap}
+.alog .ad{color:var(--c-ash);word-break:break-all}
+.alog .aip{color:var(--c-iron);white-space:nowrap}
+.frow .ops{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:760px){
+  html[data-theme="light"] .beam-w{background:linear-gradient(to right,transparent,#0a0a0a 30%,#0a0a0a 70%,transparent);
+    box-shadow:0 0 18px rgba(0,0,0,.30),0 0 60px rgba(0,0,0,.10)}
+  html[data-theme="light"] .beam-w::after{background:linear-gradient(to right,transparent,#0a0a0a,transparent)}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
@@ -322,6 +437,7 @@ footer .fm b{color:var(--c-white)}
       <a data-tab="api">API</a>
       <a data-tab="status">الحالة</a>
     </div>
+    <button type="button" class="btn-ghost sm" id="themeBtn" onclick="toggleTheme()" title="فاتح / داكن">🌙</button>
     <button type="button" class="btn-ghost sm" data-tab-go="upload">رفع ملف</button>
   </nav>
 
@@ -403,7 +519,7 @@ footer .fm b{color:var(--c-white)}
       <div class="sec-head">
         <div class="kick">THE VAULT</div>
         <h2>ارفع هنا</h2>
-        <p>ملف واحد ← 3 لينكات. كذا ملف ← ألبوم. أقصى مدة شهر.</p>
+        <p>اختار ملف أو عشرة — كل ملف بيترفع لوحده بشريط تقدم خاص ولينكاته الخاصة. أقصى مدة شهر.</p>
       </div>
       <div class="panel">
         <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span><span class="t">minyawe — upload</span></div>
@@ -420,8 +536,10 @@ footer .fm b{color:var(--c-white)}
             <button type="button" class="chip" data-v="7d">7 أيام</button>
             <button type="button" class="chip on" data-v="30d">شهر</button>
           </div>
-          <div class="aliasrow"><span>اسم مخصص للرابط (اختياري)</span><input id="alias" maxlength="30" placeholder="my-song" dir="ltr"></div>
+          <div class="aliasrow"><span>اسم مخصص للرابط (اختياري — لملف واحد فقط)</span><input id="alias" maxlength="30" placeholder="my-song" dir="ltr"></div>
+          <div class="aliasrow"><span>باسورد للملف (اختياري — min 3 حروف)</span><input id="fpass" type="password" maxlength="128" placeholder="اتركه فاضي لملف مفتوح" dir="ltr" autocomplete="off"></div>
           <button type="button" class="btn-ghost upload-btn" id="btn" onclick="up()">رفع</button>
+          <div id="queue"></div>
           <div class="result" id="result"></div>
         </div>
       </div>
@@ -458,6 +576,32 @@ footer .fm b{color:var(--c-white)}
     <div class="filelist toplist" id="toplist" style="display:none"></div>
     <div class="aliasrow" style="max-width:760px;margin:16px auto 0"><span>وضع الأدمن (مسح + تفاصيل)</span><input id="adminpass" type="password" placeholder="ADMIN_TOKEN" dir="ltr"><button type="button" class="btn-ghost sm" onclick="adminUnlock()">تفعيل</button></div>
     <div style="text-align:center;margin-top:16px"><button type="button" class="btn-ghost sm" onclick="loadStats()">تحديث الأرقام</button></div>
+    </section>
+    <!-- ADMIN MANAGER: بحث الملفات + باسورد + نسخ احتياطي + سجل العمليات -->
+    <section class="block" style="margin-top:64px">
+      <div class="sec-head">
+        <div class="kick">ADMIN ONLY</div>
+        <h2>إدارة الخزنة</h2>
+        <p>فعّل وضع الأدمن فوق أولًا — كل العمليات هنا تتسجل في السجل.</p>
+      </div>
+      <div class="adm-tools">
+        <input id="admSearch" placeholder="دوّر بالاسم أو الرابط… (Enter)" dir="ltr" onkeydown="if(event.key==='Enter')loadAdminFiles()">
+        <button type="button" class="btn-ghost sm" onclick="loadAdminFiles()">بحث</button>
+        <button type="button" class="btn-ghost sm" onclick="doBackup()">⬇ نسخ احتياطي ZIP</button>
+      </div>
+      <div class="filelist" id="adminlist"><div class="frow"><span class="fn">فعّل الأدمن ودوّر على ملفاتك هنا</span></div></div>
+    </section>
+    <section class="block" style="margin-top:64px">
+      <div class="sec-head">
+        <div class="kick">AUDIT LOG</div>
+        <h2>سجل العمليات</h2>
+        <p>رفع • مسح • انتهاء • باسورد • نسخ — مع IP والوقت.</p>
+      </div>
+      <div class="adm-tools">
+        <input id="auditSearch" placeholder="فلترة السجل… (Enter)" dir="ltr" onkeydown="if(event.key==='Enter')loadAudit()">
+        <button type="button" class="btn-ghost sm" onclick="loadAudit()">عرض السجل</button>
+      </div>
+      <div class="alog" id="auditlist"></div>
     </section>
   </div>
 
@@ -602,6 +746,16 @@ async function loadDocs(){
   }catch(e){if(lb)lb.innerHTML='<span class="c">تعذر تحميل llms.txt — السيرفر مش متاح</span>';}
 }
 function copyLlms(){if(window._llmsRaw)copyText(window._llmsRaw,'تم نسخ llms.txt ✓');else toast('لسه بيتحمل…','#ffca16');}
+/* theme: dark (default) / light — persists in browser */
+function curTheme(){try{return localStorage.getItem('mw_theme')||'dark';}catch(e){return 'dark';}}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'☀️':'🌙');
+  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#f4f4f2':'#000000');
+  try{localStorage.setItem('mw_theme',t);}catch(e){}
+}
+function toggleTheme(){applyTheme(curTheme()==='light'?'dark':'light');}
+applyTheme(curTheme());
 /* my files (local history) */
 function getMine(){try{return JSON.parse(localStorage.getItem('minyawe_files')||'[]');}catch(e){return[];}}
 function saveMine(f){var a=getMine();a.unshift(f);a=a.slice(0,12);try{localStorage.setItem('minyawe_files',JSON.stringify(a));}catch(e){}renderMine();}
@@ -650,7 +804,7 @@ const fi=document.getElementById('f'),drop=document.getElementById('drop'),dl=do
 fi.onchange=function(){
   if(!fi.files.length){dl.innerText='دوس هنا أو اسحب الملف هنا';return;}
   if(fi.files.length===1)dl.innerText=fi.files[0].name+' ('+(fi.files[0].size/1048576).toFixed(2)+' MB)';
-  else{var t=0;for(var i=0;i<fi.files.length;i++)t+=fi.files[i].size;dl.innerText=fi.files.length+' ملفات ('+(t/1048576).toFixed(2)+' MB) — هيترفعوا كألبوم';}
+  else{var t=0;for(var i=0;i<fi.files.length;i++)t+=fi.files[i].size;dl.innerText=fi.files.length+' ملفات ('+(t/1048576).toFixed(2)+' MB) — كل واحد بلينكاته';}
 };
 ['dragover','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();if(ev.dataTransfer&&ev.dataTransfer.files[0]){fi.files=ev.dataTransfer.files;fi.onchange();}});});
 drop.addEventListener('dragenter',function(e){e.preventDefault();drop.classList.add('over');});
@@ -692,20 +846,79 @@ function postForm(url,fd,onp){
     x.send(fd);
   });
 }
-function progHTML(){return '<div class="pbar"><i id="pfill"></i></div><div class="plbl" id="ptxt">0%</div>';}
-function progSet(p){var f=document.getElementById('pfill'),t=document.getElementById('ptxt');if(f)f.style.width=Math.round(p*100)+'%';if(t)t.textContent=Math.round(p*100)+'%';}
 function adminToken(){try{return sessionStorage.getItem('mw_admin')||'';}catch(e){return '';}}
+function adminHdr(){var t=adminToken();return t?{'x-admin-token':t}:{};}
 async function adminUnlock(){
   var v=document.getElementById('adminpass').value;
   try{sessionStorage.setItem('mw_admin',v);}catch(e){}
-  toast('اتحفظ التوكن — حدّث الأرقام');
-  loadStats();
+  toast('اتحفظ التوكن — جاري تحميل بيانات الأدمن…');
+  loadStats();loadAdminFiles();loadAudit();
 }
 async function adminDel(id){
   if(!confirm('تحذف الملف ده نهائيا؟'))return;
-  var tok=adminToken();
-  var r=await fetch('/api/'+id+'?admin='+encodeURIComponent(tok),{method:'DELETE'});
-  if(r.ok){toast('اتمسح ✓');loadStats();}else toast('فشل المسح','#ff9592');
+  var r=await fetch('/api/'+id,{method:'DELETE',headers:adminHdr()});
+  if(r.ok){toast('اتمسح ✓');loadStats();loadAdminFiles();}else toast('فشل المسح','#ff9592');
+}
+/* ===== لوحة الأدمن: بحث ملفات + باسورد + نسخ احتياطي + سجل ===== */
+async function loadAdminFiles(){
+  var box=document.getElementById('adminlist');if(!box)return;
+  var qEl=document.getElementById('admSearch');
+  var q=qEl?qEl.value||'':'';
+  box.innerHTML='<div class="frow"><span class="fn">جاري البحث…</span></div>';
+  try{
+    var r=await fetch('/api/admin/files?q='+encodeURIComponent(q),{headers:adminHdr()});
+    var j=await r.json();
+    if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
+    if(!j.files.length){box.innerHTML='<div class="frow"><span class="fn">لا نتائج — فعّل الأدمن أو غيّر البحث</span></div>';return;}
+    box.innerHTML=j.files.map(function(f){
+      var n=String(f.name||'file').replace(/[<>&"]/g,'');
+      var lock=f.locked?' <span class="abadge lock">🔒</span>':'';
+      var meta=fmtB(f.size)+' • '+f.views+' 👁 • '+(f.expiryAt?fmt(f.expiryAt):'—')+lock;
+      return '<div class="frow"><span class="fn">'+n+'</span><span class="tag">'+meta+'</span>'
+      +'<span class="ops"><button type="button" class="btn-ghost sm" onclick="window.open(\''+f.view+'\',\'_blank\')">عرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+f.view+'\',\'تم النسخ ✓\')">نسخ</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="adminSetPw(\''+f.id+'\','+(f.locked?1:0)+')">'+(f.locked?'باسورد':'قفل')+'</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="adminDel(\''+f.id+'\')">حذف</button></span></div>';
+    }).join('')+'<div class="frow"><span class="tag">الإجمالي: '+j.total+'</span></div>';
+  }catch(e){box.innerHTML='<div class="frow"><span class="fn">خطأ: '+escH(e.message)+'</span></div>';}
+}
+async function adminSetPw(id,has){
+  var v=prompt(has?'باسورد جديد (فاضي = إزالة القفل):':'باسورد للملف (min 3 حروف):','');
+  if(v===null)return;
+  try{
+    var r=await fetch('/api/'+id+'/password',{method:'POST',
+      headers:Object.assign({'Content-Type':'application/json'},adminHdr()),
+      body:JSON.stringify({password:v})});
+    var j=await r.json().catch(function(){return {};});
+    if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
+    toast(v?'اتقفل بباسورد 🔒':'اتشال القفل ✓');loadAdminFiles();
+  }catch(e){toast('فشل: '+e.message,'#ff9592');}
+}
+function doBackup(){
+  if(!adminToken()){toast('فعّل وضع الأدمن الأول','#ffca16');return;}
+  window.open('/api/admin/backup?admin='+encodeURIComponent(adminToken()),'_blank');
+  toast('جاري تجهيز النسخة الاحتياطية…');
+}
+async function loadAudit(){
+  var box=document.getElementById('auditlist');if(!box)return;
+  var qEl=document.getElementById('auditSearch');
+  var q=qEl?qEl.value||'':'';
+  box.innerHTML='<div class="arow"><span class="ad">جاري التحميل…</span></div>';
+  try{
+    var r=await fetch('/api/admin/audit?q='+encodeURIComponent(q)+'&limit=200',{headers:adminHdr()});
+    var j=await r.json();
+    if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
+    if(!j.entries.length){box.innerHTML='<div class="arow"><span class="ad">السجل فاضي</span></div>';return;}
+    box.innerHTML=j.entries.map(function(e){
+      var d=e.key?String(e.key):'';
+      if(e.name)d+=(d?' • ':'')+String(e.name).slice(0,40);
+      if(e.count!==undefined)d+=(d?' • ':'')+'count='+e.count;
+      if(e.driver)d+=(d?' • ':'')+String(e.driver);
+      return '<div class="arow"><span class="at">'+new Date(e.t).toLocaleString('ar-EG')+'</span>'
+      +'<span class="aa">'+escH(e.act||'?')+'</span><span class="ad">'+escH(d)+'</span>'
+      +'<span class="aip">'+escH(e.ip||'')+'</span></div>';
+    }).join('');
+  }catch(e){box.innerHTML='<div class="arow"><span class="ad">خطأ: '+escH(e.message)+'</span></div>';}
 }
 function countUp(el,to){
   try{
@@ -716,8 +929,7 @@ function countUp(el,to){
 }
 async function loadStats(){
   try{
-    var tok=adminToken();
-    var s=await fetch('/api/stats?t='+Date.now()+(tok?'&admin='+encodeURIComponent(tok):'')).then(function(r){return r.json();});
+    var s=await fetch('/api/stats?t='+Date.now(),{headers:adminHdr()}).then(function(r){return r.json();});
     countUp(document.getElementById('sn-files'),s.files);
     countUp(document.getElementById('sn-views'),s.totalViews);
     document.getElementById('sn-bytes').textContent=fmtB(s.totalBytes);
@@ -737,59 +949,79 @@ async function loadStats(){
     }else box.style.display='none';
   }catch(e){}
 }
+/* رفع متعدد: كل ملف request لوحده + شريط تقدم خاص + باسورد + اسم مخصص (لملف واحد) */
 async function up(){
   if(!fi.files.length){toast('اختار ملف الأول','#ffca16');return;}
-  var btn=document.getElementById('btn'),box=document.getElementById('result');
-  btn.disabled=true;btn.innerText='جاري الرفع…';box.style.display='block';box.innerHTML='sealing into vault…';
-  try{
-    if(fi.files.length>1){
-      if(fi.files.length>10)throw new Error('الألبوم لحد 10 ملفات بس');
-      var fa=new FormData();
-      for(var i=0;i<fi.files.length;i++)fa.append('files',fi.files[i]);
-      fa.append('expiry',exp);
-      box.innerHTML=progHTML();
-      var ra=await postForm('/api/album',fa,progSet);var ja=ra.j;
-      if(!ra.ok)throw new Error(ja.error||'upload failed');
-      var rows=ja.files.map(function(f){
-        return '<div class="frow"><span class="fn">'+String(f.name).replace(/[<>&"]/g,'')+'</span>'
-        +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+f.view+'\',\'_blank\')">عرض</button>'
-        +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+f.view+'\',\'تم النسخ ✓\')">نسخ</button></div>';
-      }).join('');
-      box.innerHTML='<div class="okline">تم رفع الألبوم ✓ ('+ja.count+' ملفات)</div><a class="u" href="'+ja.url+'" target="_blank">'+ja.url+'</a>'
-        +'<div class="filelist" style="margin-top:16px;box-shadow:none;border:1px solid var(--c-hair)">'+rows+'</div>'
-        +'<div class="brow"><button type="button" class="btn-ghost sm" onclick="copyText(\''+ja.url+'\',\'تم نسخ رابط الألبوم ✓\')">نسخ رابط الألبوم</button></div>'
-        +shareRow(ja.url)
-        +'<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(ja.url)+'">';
-      try{saveMine({name:'ألبوم ('+ja.count+')',view:ja.url,size:'',expiryAt:ja.expiryAt||null});}catch(e){}
-      toast('اترفع الألبوم ✓');loadStats();
-      btn.disabled=false;btn.innerText='رفع';return;
-    }
-    var fd=new FormData();fd.append('file',fi.files[0]);fd.append('expiry',exp);
-    var aliasEl=document.getElementById('alias');
-    if(aliasEl&&aliasEl.value.trim())fd.append('alias',aliasEl.value.trim());
-    box.innerHTML=progHTML();
-    var rr=await postForm('/api/upload',fd,progSet);var j=rr.j;
-    if(!rr.ok)throw new Error(j.error||'upload failed');
-    var ext=(fi.files[0].name.split('.').pop()||'').toLowerCase();
-    if(j.view){try{saveMine({name:fi.files[0].name,view:j.view,size:(fi.files[0].size/1048576).toFixed(2)+' MB',expiryAt:j.expiryAt||null});}catch(e){}}
-    var prev='';
-    if(['jpg','jpeg','png','gif','webp','ico'].indexOf(ext)>=0)prev='<div class="preview"><img src="'+j.stream+'"></div>';
-    else if(['mp4','webm','mov'].indexOf(ext)>=0)prev='<div class="preview"><video src="'+j.stream+'" controls></video></div>';
-    else if(['mp3','wav','ogg','m4a'].indexOf(ext)>=0)prev='<div class="preview"><audio src="'+j.stream+'" controls></audio></div>';
-    else if(['txt','md','json','js','py','css','html','csv','log'].indexOf(ext)>=0)prev='<div class="preview"><div class="meta"><a class="u" href="'+j.view+'" target="_blank">معاينة النص في صفحة العرض ←</a></div></div>';
-    box.innerHTML='<div class="okline">تم الرفع بنجاح ✓</div><a class="u" href="'+j.view+'" target="_blank">'+j.view+'</a>'
-      +'<div class="meta">'+fi.files[0].name+' • ينتهي: '+(j.expiryAt?fmt(j.expiryAt):'—')+'</div>'
-      +prev+'<div class="brow">'
-      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.view+'\',\'_blank\')">عرض</button>'
-      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.stream+'\',\'_blank\')">تشغيل مباشر</button>'
-      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.download+'\',\'_blank\')">تحميل</button></div>'
-      +'<div class="brow"><button type="button" class="btn-ghost sm" onclick="copyText(\''+j.view+'\',\'تم نسخ رابط العرض ✓\')">نسخ العرض</button>'
-      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+j.stream+'\',\'تم نسخ الرابط المباشر ✓\')">نسخ المباشر</button></div>'
-      +shareRow(j.view)
-      +'<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(j.view)+'">';
-    toast('اترفع بنجاح ✓');loadStats();
-  }catch(e){box.innerHTML='<span style="color:#ff9592">خطأ: '+e.message+'</span>';toast('فشل الرفع: '+e.message,'#ff9592');}
+  var files=[];for(var i=0;i<fi.files.length;i++)files.push(fi.files[i]);
+  if(files.length>10){toast('الحد الأقصى 10 ملفات في المرة','#ff9592');return;}
+  var btn=document.getElementById('btn'),box=document.getElementById('result'),q=document.getElementById('queue');
+  var aliasEl=document.getElementById('alias'),passEl=document.getElementById('fpass');
+  var alias=(aliasEl&&aliasEl.value.trim())||'';
+  var pw=(passEl&&passEl.value)||'';
+  if(files.length>1&&alias){toast('الاسم المخصص لملف واحد فقط — هيتجاهل','#ffca16');alias='';}
+  btn.disabled=true;box.style.display='none';box.innerHTML='';
+  q.innerHTML=files.map(function(f,k){
+    return '<div class="qfile" id="qf'+k+'"><div class="qn">'+escH(f.name)+'</div>'
+      +'<div class="qm">'+fmtB(f.size)+' • في الانتظار</div><div class="qbar"><i></i></div>'
+      +'<div class="qst">بانتظار الدور…</div><div class="qops"></div></div>';
+  }).join('');
+  function qrow(k){return document.getElementById('qf'+k);}
+  function qset(k,pct,txt,cls,ops){
+    var row=qrow(k);if(!row)return;
+    row.querySelector('.qbar i').style.width=Math.round(pct*100)+'%';
+    row.querySelector('.qst').textContent=txt;
+    if(cls)row.classList.add(cls);
+    if(ops)row.querySelector('.qops').innerHTML=ops;
+  }
+  function qmeta(k,txt){var row=qrow(k);if(row)row.querySelector('.qm').textContent=txt;}
+  function opsFor(j){
+    return '<button type="button" class="btn-ghost sm" onclick="window.open(\''+j.view+'\',\'_blank\')">عرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+j.view+'\',\'تم النسخ ✓\')">نسخ</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+j.stream+'\',\'تم نسخ المباشر ✓\')">مباشر</button>';
+  }
+  var okN=0,lastJ=null,lastF=null;
+  for(var k=0;k<files.length;k++){
+    btn.innerText='جاري الرفع… ('+k+'/'+files.length+')';
+    var f=files[k];
+    qmeta(k,fmtB(f.size)+' • بيترفع…');
+    try{
+      var fd=new FormData();fd.append('file',f);fd.append('expiry',exp);
+      if(k===0&&alias)fd.append('alias',alias);
+      if(pw)fd.append('password',pw);
+      var prg=(function(kk){return function(p){qset(kk,p,Math.round(p*100)+'%');};})(k);
+      var rr=await postForm('/api/upload',fd,prg);
+      var j=rr.j;
+      if(!rr.ok)throw new Error(j.error||'upload failed');
+      okN++;lastJ=j;lastF=f;
+      qset(k,1,'تم ✓'+(j.locked?' • 🔒 محمي':''),'done',opsFor(j));
+      qmeta(k,fmtB(f.size)+' • ينتهي: '+(j.expiryAt?fmt(j.expiryAt):'—'));
+      try{saveMine({name:f.name,view:j.view,size:fmtB(f.size),expiryAt:j.expiryAt||null});}catch(e){}
+    }catch(e){qset(k,0,'خطأ: '+e.message,'err');}
+  }
   btn.disabled=false;btn.innerText='رفع';
+  box.style.display='block';
+  if(files.length===1&&lastJ){
+    var ext=(lastF.name.split('.').pop()||'').toLowerCase();
+    var prev='';
+    if(['jpg','jpeg','png','gif','webp','ico'].indexOf(ext)>=0)prev='<div class="preview"><img src="'+lastJ.stream+'"></div>';
+    else if(['mp4','webm','mov'].indexOf(ext)>=0)prev='<div class="preview"><video src="'+lastJ.stream+'" controls></video></div>';
+    else if(['mp3','wav','ogg','m4a'].indexOf(ext)>=0)prev='<div class="preview"><audio src="'+lastJ.stream+'" controls></audio></div>';
+    box.innerHTML='<div class="okline">تم الرفع بنجاح ✓'+(lastJ.locked?' • 🔒 محمي بباسورد':'')+'</div><a class="u" href="'+lastJ.view+'" target="_blank">'+lastJ.view+'</a>'
+      +'<div class="meta">'+escH(lastF.name)+' • ينتهي: '+(lastJ.expiryAt?fmt(lastJ.expiryAt):'—')+'</div>'
+      +prev+'<div class="brow">'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+lastJ.view+'\',\'_blank\')">عرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+lastJ.stream+'\',\'_blank\')">تشغيل مباشر</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="window.open(\''+lastJ.download+'\',\'_blank\')">تحميل</button></div>'
+      +'<div class="brow"><button type="button" class="btn-ghost sm" onclick="copyText(\''+lastJ.view+'\',\'تم نسخ رابط العرض ✓\')">نسخ العرض</button>'
+      +'<button type="button" class="btn-ghost sm" onclick="copyText(\''+lastJ.stream+'\',\'تم نسخ الرابط المباشر ✓\')">نسخ المباشر</button></div>'
+      +shareRow(lastJ.view)
+      +'<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(lastJ.view)+'">';
+  }else{
+    box.innerHTML='<div class="okline">خلص الرفع: '+okN+'/'+files.length+' ✓</div>'
+      +'<div class="meta">كل ملف فوق له لينكاته الخاصة'+(pw?' • الملفات محمية — الزوار يحتاجوا الباسورد':'')+'</div>';
+  }
+  if(okN)toast('اترفع '+okN+'/'+files.length+' ✓');else toast('فشل الرفع','#ff9592');
+  loadStats();
 }
 /* vault motion: matrix typer + 3D tilt card + cursor glow (fixed: tilt on wrapper, not the animated card) */
 (function(){

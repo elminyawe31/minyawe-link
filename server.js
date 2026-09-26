@@ -22,9 +22,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== حد معدل بسيط ضد السبام (بدون مكتبات): 30 رفع لكل IP كل 10 دقايق =====
+// ===== حد معدل بسيط ضد السبام (بدون مكتبات): 60 طلب لكل IP كل 10 دقايق (الرفع المتعدد بيستهلك واحد لكل ملف) =====
 const RL = new Map();
-const RL_MAX = parseInt(process.env.RATE_MAX || '30', 10);
+const RL_MAX = parseInt(process.env.RATE_MAX || '60', 10);
 const RL_WIN = 10 * 60 * 1000;
 function rateLimit(req, res, next) {
   try {
@@ -38,7 +38,7 @@ function rateLimit(req, res, next) {
     if (RL.size > 5000) { // تنظيف دوري عشان الذاكرة
       for (const [k, v] of RL) { if (now - v.t > RL_WIN) RL.delete(k); if (RL.size < 4000) break; }
     }
-    if (rec.n > RL_MAX) return res.status(429).json({ error: 'Too many uploads — try again in a few minutes' });
+    if (rec.n > RL_MAX) return res.status(429).json({ error: 'Too many requests — try again in a few minutes' });
     next();
   } catch { next(); }
 }
@@ -69,6 +69,46 @@ const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const DB_PATH = path.join(DATA_DIR, 'db.json');
 const MAX_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '200', 10);
 const BRAND = 'MINYAWE-LINK | ELMINYAWE';
+const AUDIT_PATH = path.join(DATA_DIR, 'audit.log');
+const AUDIT_MAX_BYTES = 3 * 1024 * 1024; // تدوير السجل بعد 3MB
+
+// IP العميل للسجل فقط (Railway يبعت x-forwarded-for — قابل للتزوير، للتوثيق مش للأمان)
+function clientIp(req) {
+  try {
+    const fwd = String(req.get('x-forwarded-for') || '').split(',')[0].trim();
+    return ((fwd || req.ip || 'unknown') + '').slice(0, 64);
+  } catch { return 'unknown'; }
+}
+// سجل العمليات: سطر JSON لكل حدث {t, ip, act, ...} — يُقرأ من /api/admin/audit
+function audit(act, req, detail) {
+  try {
+    if (fs.existsSync(AUDIT_PATH) && fs.statSync(AUDIT_PATH).size > AUDIT_MAX_BYTES) {
+      try { fs.renameSync(AUDIT_PATH, AUDIT_PATH + '.old'); } catch {}
+    }
+    const line = JSON.stringify({ t: Date.now(), ip: (detail && detail.ip) || clientIp(req), act, ...(detail || {}) });
+    fs.appendFileSync(AUDIT_PATH, line + '\n');
+  } catch {}
+}
+// باسورد الملف: scrypt مدمج (بدون مكتبات) — المخزن "salt:hash" فقط، والمقارنة timing-safe
+function hashPw(pw) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const h = crypto.scryptSync(String(pw), salt, 32).toString('hex');
+  return salt + ':' + h;
+}
+function verifyPw(pw, stored) {
+  try {
+    const [salt, h] = String(stored || '').split(':');
+    if (!salt || !h) return false;
+    const a = Buffer.from(crypto.scryptSync(String(pw || ''), salt, 32).toString('hex'));
+    const b = Buffer.from(h);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  } catch { return false; }
+}
+// هل الملف مقفول والطلب معهوش الباسورد الصح؟ (?pw= في الرابط)
+function needPw(meta, req) {
+  if (!meta || !meta.pw) return false;
+  return !verifyPw(req.query.pw, meta.pw);
+}
 
 // التخزين: catbox (أساسي — من غير حساب) ثم local (احتياطي دايما)
 // اللي ظاهر للمستخدم بصمة ELMINYAWE بس — التخزين مجرد مخزن ورا الكواليس
@@ -203,7 +243,7 @@ const BLOCKED = ['.exe', '.scr', '.com', '.bat', '.ps1', '.vbs', '.jar', '.msi',
 
 const upload = multer({
   storage: multer.memoryStorage(), // دايما في الرام، والحفظ على الديسك يدوي لو local كسب
-  limits: { fileSize: MAX_MB * 1024 * 1024, files: 10, fields: 6, parts: 20, fieldNameSize: 100, fieldSize: 1024 * 1024 },
+  limits: { fileSize: MAX_MB * 1024 * 1024, files: 10, fields: 8, parts: 20, fieldNameSize: 100, fieldSize: 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if (BLOCKED.includes(ext)) return cb(new Error('File type blocked by MINYAWE'));
@@ -237,12 +277,13 @@ function localFilePath(meta) {
 
 
 // تحميل الميتا مع تنظيف المنتهي (مشترك بين /e و /d و /v) — يقبل id أو اسم مخصص
-async function loadMeta(key) {
+async function loadMeta(key, req) {
   const found = findFile(key);
   if (!found) return { err: 404 };
   const { id, meta } = found;
   if (meta.expiryAt && Date.now() > meta.expiryAt) {
     if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+    audit('expired', req, { id, key: meta.slug || id, name: meta.original, driver: meta.driver || '?', lazy: true });
     delete db.files[id]; saveDB();
     return { err: 410 };
   }
@@ -304,7 +345,9 @@ function cleanup() {
   (async () => {
     for (const [id, meta] of Object.entries(db.files)) {
       if (meta.expiryAt && now > meta.expiryAt) {
+        // ملحوظة صريحة: local يتمسح من القرص فعلا — catbox لا يمكن مسحه عن بعد، فيتشال من الفهرس فقط
         if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+        audit('expired', null, { ip: 'cron', id, key: (meta && meta.slug) || id, name: meta && meta.original, driver: (meta && meta.driver) || '?' });
         delete db.files[id];
         changed = true;
       }
@@ -315,7 +358,7 @@ function cleanup() {
     if (changed) saveDB();
   })();
 }
-setInterval(cleanup, 10 * 60 * 1000);
+setInterval(cleanup, 5 * 60 * 1000);
 cleanup();
 
 // ===== ROUTES =====
@@ -338,6 +381,7 @@ app.get('/api/config', (req, res) => {
   mirror: 'retry×2 per driver + vault fallback',
   disk, // مساحة الفوليوم — عشان الموقع ميملاش ويموت فجأة
   direct: true,
+  features: { multiUpload: true, password: true, adminFiles: true, audit: true, backup: true, themes: ['dark', 'light'] },
   docs: `${baseUrl(req)}/api/docs`,
   agents: `${baseUrl(req)}/llms.txt`
   });
@@ -349,26 +393,30 @@ app.get('/api/docs', (req, res) => {
   res.json({
     name: 'MINYAWE-LINK',
     by: 'ELMINYAWE',
-    version: '6.3',
+    version: '6.4',
     base: b,
     auth: 'none',
     limits: { maxMB: MAX_MB, maxExpiryDays: 30, expiryValues: ['1h', '24h', '7d', '30d'], blockedExtensions: BLOCKED },
     storage: { chain: DRIVERS.map(dispDriver), note: 'each driver gets 2 attempts (1.5s apart), then next driver; vault disk is final fallback.' },
     endpoints: [
-      { method: 'POST', path: '/api/upload', fields: { file: 'binary (multipart field "file")', expiry: '1h|24h|7d|30d (default 24h)', alias: 'optional slug a-z0-9-_ (3-30)' }, returns: ['id', 'slug', 'url(raw storage)', 'short', 'view(page)', 'stream(direct play)', 'download(force download)', 'views', 'expiryAt', 'deleteToken'] },
+      { method: 'POST', path: '/api/upload', fields: { file: 'binary (multipart field "file")', expiry: '1h|24h|7d|30d (default 24h)', alias: 'optional slug a-z0-9-_ (3-30)', password: 'optional (min 3 chars) — locks file, access via ?pw=' }, returns: ['id', 'slug', 'url(raw storage)', 'short', 'view(page)', 'stream(direct play)', 'download(force download)', 'views', 'expiryAt', 'locked', 'deleteToken'] },
       { method: 'POST', path: '/api/album', fields: { files: 'up to 10 binaries (multipart field "files")', expiry: 'same as upload' }, returns: ['id', 'url(/a/:id)', 'count', 'files[]'] },
       { method: 'GET', path: '/a/:id', desc: 'album page: all files with links' },
       { method: 'GET', path: '/api/stats', desc: 'dashboard: files, views, bytes, byKind, top5' },
-      { method: 'GET', path: '/v/:id', desc: 'branded preview page with player' },
-      { method: 'GET', path: '/e/:id.:ext', desc: 'branded direct stream with file extension (inline + Range); ext optional' },
-      { method: 'GET', path: '/d/:id.:ext', desc: 'branded force download with file extension (attachment); ext optional' },
-      { method: 'GET', path: '/i/:id', desc: 'short link (redirects to file)' },
+      { method: 'GET', path: '/v/:id', desc: 'branded preview page with player (password form if locked)' },
+      { method: 'GET', path: '/e/:id.:ext', desc: 'branded direct stream with file extension (inline + Range); ext optional; locked files need ?pw=' },
+      { method: 'GET', path: '/d/:id.:ext', desc: 'branded force download with file extension (attachment); ext optional; locked files need ?pw=' },
+      { method: 'GET', path: '/i/:id', desc: 'short link (redirects to file); locked files need ?pw=' },
       { method: 'DELETE', path: '/api/:id?token=DELETE_TOKEN', desc: 'delete file record' },
+      { method: 'POST', path: '/api/:id/password (admin)', fields: { password: 'new password, or empty string to remove' }, returns: ['ok', 'locked'] },
+      { method: 'GET', path: '/api/admin/files?admin=TOKEN&q=', desc: 'admin: full file list with search (name/slug/id)' },
+      { method: 'GET', path: '/api/admin/audit?admin=TOKEN&q=&limit=', desc: 'admin: operation log (upload/delete/expired/pw/backup) with IP+time' },
+      { method: 'GET', path: '/api/admin/backup?admin=TOKEN', desc: 'admin: download ZIP (db.json + audit.log + uploads + server.js)' },
       { method: 'GET', path: '/api/config', desc: 'live limits + storage chain' },
       { method: 'GET', path: '/health', desc: 'liveness probe, returns text OK' }
     ],
     examples: {
-      curl: `curl -F "file=@song.mp3" -F "expiry=30d" "${b}/api/upload"`,
+      curl: `curl -F "file=@song.mp3" -F "expiry=30d" -F "password=s3cret" "${b}/api/upload"`,
       sharex: { RequestURL: `${b}/api/upload`, FileFormName: 'file', URL: '$json:url$' }
     }
   });
@@ -384,12 +432,19 @@ No auth. Max ${MAX_MB}MB per file. Expiry: 1h|24h|7d|30d (default 24h, max 30 da
 Storage chain (tried in order): ${DRIVERS.map(dispDriver).join(' -> ')}.
 
 ## Upload
-POST ${b}/api/upload (multipart: file=<binary>, expiry=30d, alias=my-song [optional, unique])
-=> JSON: { id, slug, url, short, view, stream, download, views, expiryAt, deleteToken }
+POST ${b}/api/upload (multipart: file=<binary>, expiry=30d, alias=my-song [optional, unique], password=s3cret [optional, min 3 chars])
+=> JSON: { id, slug, url, short, view, stream, download, views, expiryAt, locked, deleteToken }
+Locked files: open ${b}/v/:id?pw=s3cret (form shown automatically) or append ?pw= to /e /d /i links.
 
 ## Album (up to 10 files, one page)
 POST ${b}/api/album (multipart: files=<binaries>, expiry=7d)
 => JSON: { id, url: ${b}/a/:id, count, files[] }
+
+## Admin (header x-admin-token or ?admin=TOKEN)
+- POST ${b}/api/:id/password {password} — set/change/remove (empty) file password
+- GET ${b}/api/admin/files?q= — full list + search
+- GET ${b}/api/admin/audit?q=&limit= — operation log with IP+time
+- GET ${b}/api/admin/backup — ZIP download (db + audit + uploads)
 
 ## Stats
 GET ${b}/api/stats => { files, totalViews, totalBytes, byKind, top[5] }
@@ -408,7 +463,7 @@ GET ${b}/api/stats => { files, totalViews, totalBytes, byKind, top[5] }
 });
 
 // نواة الرفع المشتركة (ملف واحد) — ترجع {id, meta}
-async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias }, req) {
+async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias, password }, req) {
   original = fixName(original); // صلح العربي قبل أي حاجة
   original = String(original).replace(/[\r\n\x00-\x1f\x7f]/g, '').slice(0, 180); // منع حقن هيدرات + أسماء عملاقة
   let slug = null;
@@ -470,6 +525,12 @@ async function persistUpload({ buffer, original, mimetype, size, expiryAt, alias
     createdAt: Date.now(), views: 0
   };
   if (slug) meta.slug = slug;
+  // باسورد اختياري: يتخزن hash فقط (scrypt) — أبدا plain text
+  if (password !== undefined && password !== null && String(password) !== '') {
+    const pw = String(password).slice(0, 128);
+    if (pw.length < 3) { const err = new Error('password too short (min 3 chars)'); err.code = 400; throw err; }
+    meta.pw = hashPw(pw);
+  }
   db.files[id] = meta;
   saveDB();
   return { id, meta };
@@ -491,14 +552,17 @@ app.post('/api/upload', rateLimit, upload.single('file'), async (req, res) => {
     const { id, meta } = await persistUpload({
       buffer: req.file.buffer, original: req.file.originalname,
       mimetype: req.file.mimetype, size: req.file.size,
-      expiryAt, alias: req.body.alias || req.query.alias
+      expiryAt, alias: req.body.alias || req.query.alias,
+      password: req.body.password || req.query.password
     }, req);
+    audit('upload', req, { id, key: meta.slug || id, name: meta.original, size: meta.size, locked: !!meta.pw });
     res.json({
       id, slug: meta.slug || null,
       url: meta.directUrl,           // اللينك الخام للتخزين
       ...fileLinks(req, id, meta),   // short/view/stream/download باسمك
       mirror: null,
       expiryAt, deleteToken: meta.deleteToken, views: 0,
+      locked: !!meta.pw,             // هل محتاج باسورد (?pw=)
       powered_by: BRAND
     });
   } catch (e) { apiErr(res, e); }
@@ -521,6 +585,7 @@ app.post('/api/album', rateLimit, upload.array('files', 10), async (req, res) =>
     while (db.albums[aid]) aid = genId();
     db.albums[aid] = { files: out.map(o => o.id), createdAt: Date.now(), expiryAt };
     saveDB();
+    audit('album', req, { id: aid, count: out.length });
     res.json({ id: aid, url: `${baseUrl(req)}/a/${aid}`, count: out.length, expiryAt, files: out, powered_by: BRAND });
   } catch (e) { apiErr(res, e); }
 });
@@ -553,9 +618,11 @@ app.get('/i/:id', async (req, res) => {
   const { id, meta } = found;
   if (meta.expiryAt && Date.now() > meta.expiryAt) {
     if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
+    audit('expired', req, { id, key: meta.slug || id, name: meta.original, driver: meta.driver || '?', lazy: true });
     delete db.files[id]; saveDB();
     return res.status(410).send('Expired | MINYAWE-LINK');
   }
+  if (needPw(meta, req)) return res.status(403).send('Locked — password required (?pw=) | MINYAWE-LINK');
   res.set({
     'X-Powered-By': BRAND,
     'Access-Control-Allow-Origin': '*',
@@ -580,11 +647,13 @@ app.get('/i/:id', async (req, res) => {
 // ▶️ التشغيل المباشر باسمك (يقبل /e/id.mp3 عشان المشغلات — والقديم من غير امتداد شغال)
 app.get('/e/:file', async (req, res) => {
   const { key, ext } = parseKey(req.params.file);
-  const { id, meta, err } = await loadMeta(key);
+  const { id, meta, err } = await loadMeta(key, req);
   if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
   if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  if (needPw(meta, req)) return res.status(403).send('Locked — password required (?pw=) | MINYAWE-LINK');
   const rx = realExt(meta);
-  if (ext && ext !== rx) return res.redirect(301, `/e/${meta.slug || id}.${rx}`);
+  const keepPw = req.query.pw ? '?pw=' + encodeURIComponent(req.query.pw) : '';
+  if (ext && ext !== rx) return res.redirect(301, `/e/${meta.slug || id}.${rx}${keepPw}`);
   meta.views = (meta.views || 0) + 1; saveDB(); // عداد المشاهدات
   if (meta.driver !== 'local' && meta.directUrl) return proxyFile(meta, req, res, 'inline');
   const filePath = localFilePath(meta);
@@ -603,11 +672,13 @@ app.get('/e/:file', async (req, res) => {
 // ⬇️ التحميل المباشر باسمك (يقبل /d/id.mp3 — والقديم شغال)
 app.get('/d/:file', async (req, res) => {
   const { key, ext } = parseKey(req.params.file);
-  const { id, meta, err } = await loadMeta(key);
+  const { id, meta, err } = await loadMeta(key, req);
   if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
   if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  if (needPw(meta, req)) return res.status(403).send('Locked — password required (?pw=) | MINYAWE-LINK');
   const rx = realExt(meta);
-  if (ext && ext !== rx) return res.redirect(301, `/d/${meta.slug || id}.${rx}`);
+  const keepPw2 = req.query.pw ? '?pw=' + encodeURIComponent(req.query.pw) : '';
+  if (ext && ext !== rx) return res.redirect(301, `/d/${meta.slug || id}.${rx}${keepPw2}`);
   if (meta.driver !== 'local' && meta.directUrl) return proxyFile(meta, req, res, 'attachment');
   const dlPath = localFilePath(meta);
   if (!dlPath) return res.status(410).send('Gone | MINYAWE-LINK');
@@ -616,12 +687,33 @@ app.get('/d/:file', async (req, res) => {
 
 // 👁️ صفحة العرض باسمك (مشغل أنيق + كل اللينكات)
 app.get('/v/:id', async (req, res) => {
-  const { id, meta, err } = await loadMeta(req.params.id);
+  const { id, meta, err } = await loadMeta(req.params.id, req);
   if (err === 404) return res.status(404).send('Not found | MINYAWE-LINK');
   if (err === 410) return res.status(410).send('Expired | MINYAWE-LINK');
+  // ملف محمي: من غير الباسورد الصح اعرض نموذج فتح (GET ?pw=) — لا يزيد عداد المشاهدات
+  if (needPw(meta, req)) {
+    const wrong = req.query.pw !== undefined ? '<div class="err">باسورد غلط — حاول تاني</div>' : '';
+    return res.status(200).send(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ملف محمي | MINYAWE-LINK</title>
+<style>body{margin:0;background:#000;color:#f0f0f0;font-family:Inter,system-ui,sans-serif;text-align:center;padding:24px 16px 60px}
+.wrap{max-width:480px;margin:0 auto}.logo{font-weight:600;color:#fff;text-decoration:none}
+.card{background:#000;border:1px solid #292d30;border-radius:16px;padding:32px;margin-top:20px}
+h2{font-size:20px;font-weight:500;color:#fff;margin:0 0 8px}.hint{font-family:monospace;font-size:12px;color:#a1a4a5;margin-bottom:20px}
+.err{font-size:14px;color:#ff9592;margin-bottom:12px}
+input{background:transparent;border:1px solid #292d30;border-radius:6px;color:#fff;font-family:monospace;font-size:14px;padding:12px 16px;width:100%;box-sizing:border-box;outline:none;direction:ltr;text-align:center}
+input:focus{border-color:#fff}
+button{background:transparent;color:#fff;border:1px solid #292d30;border-radius:6px;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;width:100%;margin-top:12px}
+button:hover{border-color:#fff}
+footer{margin-top:28px;font-family:monospace;font-size:12px;color:#464a4d}footer b{color:#fff}</style></head>
+<body><div class="wrap"><a class="logo" href="/">MINYAWE-LINK</a>
+<div class="card"><h2>🔒 ملف محمي</h2><div class="hint">${esc(meta.original)}</div>${wrong}
+<form method="GET"><input type="password" name="pw" placeholder="password" autocomplete="off"><button type="submit">فتح الملف</button></form></div>
+<footer>Dev <b>ELMINYAWE</b></footer></div></body></html>`);
+  }
   meta.views = (meta.views || 0) + 1; saveDB(); // عداد المشاهدات
   const L = fileLinks(req, id, meta);
-  const stream = L.stream, dl = L.download, view = L.view;
+  const pwSuffix = meta.pw && req.query.pw ? '?pw=' + encodeURIComponent(req.query.pw) : '';
+  const stream = L.stream + pwSuffix, dl = L.download + pwSuffix, view = L.view;
   const enc = encodeURIComponent(view);
   const name = esc(meta.original), kind = kindOf(meta);
   const size = (meta.size / 1048576).toFixed(2) + ' MB';
@@ -669,6 +761,80 @@ footer{margin-top:28px;font-family:monospace;font-size:12px;color:#464a4d}footer
 <script>function cp(t){function ok(){var e=document.getElementById('tst');e.textContent='تم النسخ ✓';e.style.display='block';setTimeout(function(){e.style.display='none';},5000);}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){ok();});}else{var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(_){}a.remove();ok();}}</script></body></html>`);
 });
 
+// ===== إدارة الأدمن (كلها تتطلب ADMIN_TOKEN عبر هيدر x-admin-token أو ?admin=) =====
+function needAdmin(req, res) {
+  if (!isAdminReq(req)) { res.status(403).json({ error: 'Forbidden — admin only' }); return false; }
+  return true;
+}
+// تعيين/تغيير/إزالة باسورد ملف: {password:"..."} للإضافة، {password:""} للإزالة
+app.post('/api/:id/password', async (req, res) => {
+  if (!needAdmin(req, res)) return;
+  const found = findFile(req.params.id);
+  if (!found) return res.status(404).json({ error: 'Not found' });
+  const pw = req.body && req.body.password !== undefined ? String(req.body.password) : null;
+  if (pw === null) return res.status(400).json({ error: 'password field required (empty string removes)' });
+  if (pw === '') {
+    delete found.meta.pw; saveDB();
+    audit('pw-remove', req, { id: found.id, key: found.meta.slug || found.id });
+    return res.json({ ok: true, locked: false });
+  }
+  if (pw.length < 3 || pw.length > 128) return res.status(400).json({ error: 'password must be 3-128 chars' });
+  found.meta.pw = hashPw(pw); saveDB();
+  audit('pw-set', req, { id: found.id, key: found.meta.slug || found.id });
+  res.json({ ok: true, locked: true });
+});
+// قائمة الملفات الكاملة + بحث (q يدور في الاسم والرابط والـ id)
+app.get('/api/admin/files', (req, res) => {
+  if (!needAdmin(req, res)) return;
+  const q = String(req.query.q || '').toLowerCase();
+  const b = baseUrl(req);
+  let arr = Object.entries(db.files).map(([id, m]) => ({
+    id, key: m.slug || id, name: m.original, size: m.size || 0,
+    views: m.views || 0, kind: kindOf(m), driver: m.driver,
+    createdAt: m.createdAt || 0, expiryAt: m.expiryAt || null,
+    locked: !!m.pw, view: `${b}/v/${m.slug || id}`
+  })).sort((x, y) => y.createdAt - x.createdAt);
+  if (q) arr = arr.filter(f => (f.name + ' ' + f.key + ' ' + f.id).toLowerCase().includes(q));
+  res.json({ files: arr.slice(0, 500), total: arr.length });
+});
+// سجل العمليات: الأحدث أولا + بحث نصي + حد أقصى
+app.get('/api/admin/audit', (req, res) => {
+  if (!needAdmin(req, res)) return;
+  const q = String(req.query.q || '').toLowerCase();
+  const limit = Math.min(Math.max(parseInt(req.query.limit || '200', 10) || 200, 1), 1000);
+  let lines = [];
+  try {
+    if (fs.existsSync(AUDIT_PATH)) {
+      const raw = fs.readFileSync(AUDIT_PATH, 'utf8').split('\n').filter(Boolean);
+      lines = raw.slice(-2000).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    }
+  } catch {}
+  lines.reverse();
+  if (q) lines = lines.filter(e => JSON.stringify(e).toLowerCase().includes(q));
+  res.json({ entries: lines.slice(0, limit), total: lines.length });
+});
+// نسخ احتياطي ZIP: db.json + audit.log + كل ملفات uploads (تحميل يدوي من لوحة الأدمن)
+app.get('/api/admin/backup', (req, res) => {
+  if (!needAdmin(req, res)) return;
+  let archiver;
+  try { archiver = require('archiver'); }
+  catch { return res.status(501).json({ error: 'backup module missing — run npm install' }); }
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+  res.set({ 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="minyawe-backup-${stamp}.zip"` });
+  const zip = archiver('zip', { zlib: { level: 6 } });
+  zip.on('error', () => { try { res.end(); } catch {} });
+  zip.pipe(res);
+  try {
+    if (fs.existsSync(DB_PATH)) zip.file(DB_PATH, { name: 'db.json' });
+    if (fs.existsSync(AUDIT_PATH)) zip.file(AUDIT_PATH, { name: 'audit.log' });
+    if (fs.existsSync(AUDIT_PATH + '.old')) zip.file(AUDIT_PATH + '.old', { name: 'audit.old.log' });
+    zip.file(__filename, { name: 'server.js' });
+    if (fs.existsSync(UPLOAD_DIR)) zip.directory(UPLOAD_DIR, 'uploads');
+  } catch {}
+  audit('backup', req, {});
+  zip.finalize();
+});
+
 app.delete('/api/:id', async (req, res) => {
   const found = findFile(req.params.id);
   if (!found) return res.status(404).json({ error: 'Not found' });
@@ -678,6 +844,7 @@ app.delete('/api/:id', async (req, res) => {
     return res.status(403).json({ error: 'Forbidden' });
   if (meta.driver !== 'catbox') { try { fs.unlinkSync(path.join(UPLOAD_DIR, meta.stored)); } catch {} }
   delete db.files[id]; saveDB();
+  audit('delete', req, { id, key: meta.slug || id, name: meta.original, by: req.query.token === meta.deleteToken ? 'owner-token' : 'admin' });
   res.json({ ok: true, brand: BRAND });
 });
 
@@ -720,7 +887,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
-  console.log('  MINYAWE-LINK V6.3 by ELMINYAWE is READY');
+  console.log('  MINYAWE-LINK V6.4 by ELMINYAWE is READY');
   console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${DRIVER.toUpperCase()}`);
   console.log('==========================================');
 });

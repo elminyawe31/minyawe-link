@@ -1,11 +1,12 @@
 {
   "name": "minyawe-link",
-  "version": "6.3.0",
-  "description": "MINYAWE-LINK V6.3 by ELMINYAWE - tabs, bento, magic cube, ext links",
+  "version": "6.4.0",
+  "description": "MINYAWE-LINK V6.4 by ELMINYAWE - multi-upload, passwords, audit, backup, themes",
   "main": "server.js",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js" },
   "dependencies": {
+    "archiver": "^7.0.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "multer": "^2.0.2"
