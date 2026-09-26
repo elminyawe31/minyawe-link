@@ -21,9 +21,9 @@
 }
 /* ===== LIGHT THEME: نفس الهوية، ألوان معكوسة — يتبدل بزر من الـ nav ويتحفظ في المتصفح ===== */
 html[data-theme="light"]{
-  --c-void:#ffffff; --c-hair:#d9d9d4; --c-bone:#1b1b1b;
-  --c-ash:#5b5f64; --c-smoke:#3d4146; --c-iron:#9a9ea4; --c-char:#b6b9bd;
-  --c-green:#0f8a4d; --c-red:#d33f3b; --c-amber:#a97a00;
+  --c-void:#ffffff; --c-hair:#c2c2bd; --c-bone:#161616;
+  --c-ash:#4e5257; --c-smoke:#33373b; --c-iron:#8b8f95; --c-char:#6f747a;
+  --c-green:#0f8a4d; --c-red:#d33f3b; --c-amber:#96690a;
 }
 html{background:#000}
 html[data-theme="light"]{background:#fff}
@@ -60,6 +60,25 @@ html[data-theme="light"] .mchip.get{background:rgba(20,110,220,.10);color:#1466d
 html[data-theme="light"] .mchip.del{background:rgba(211,63,59,.10);color:#d33f3b;border-color:rgba(211,63,59,.35)}
 html[data-theme="light"] .term .g{color:#0f8a4d}
 html[data-theme="light"] .dot{background:var(--c-green)}
+/* ===== تباين الفاتح: حدود وأزرار واضحة — لا شيء أبيض على أبيض ===== */
+html[data-theme="light"] .btn-ghost{border-color:#9a9a95;color:#0a0a0a}
+html[data-theme="light"] .btn-ghost:hover{border-color:#0a0a0a}
+html[data-theme="light"] .chip{border-color:#9a9a95;color:#161616}
+html[data-theme="light"] .chip.on{border-color:#0a0a0a;color:#0a0a0a}
+html[data-theme="light"] .seg{border-color:#9a9a95}
+html[data-theme="light"] .seg button{color:#4e5257}
+html[data-theme="light"] .aliasrow input,html[data-theme="light"] .adm-tools input{border-color:#9a9a95;color:#0a0a0a}
+html[data-theme="light"] .toast{border-color:#9a9a95;color:#0a0a0a}
+html[data-theme="light"] .hexcol{color:#62666d}
+html[data-theme="light"] .stat{border-color:#9a9a95}
+html[data-theme="light"] .pill-link{border-color:#9a9a95;color:#161616}
+html[data-theme="light"] .eyebrow{border-color:#9a9a95}
+html[data-theme="light"] .limitchips span,html[data-theme="light"] .linkchips span{border-color:#9a9a95;color:#161616}
+html[data-theme="light"] .abadge{border-color:#9a9a95;color:#4e5257}
+html[data-theme="light"] .abadge.lock{border-color:#96690a;color:#96690a}
+html[data-theme="light"] .qfile{border-color:#9a9a95}
+html[data-theme="light"] .only-me{border-color:rgba(0,0,0,.35)}
+html[data-theme="light"] .dev-badge{border-color:#9a9a95;color:#161616}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.16) transparent}
 html.scrolling{scrollbar-color:rgba(255,255,255,.38) transparent}
@@ -353,24 +372,24 @@ footer .fm b{color:var(--c-white)}
   .cta{padding:56px 20px}
 }
 @media(max-width:760px){
-  /* الـ nav: اللينكات سكرول أفقي بدل ما تختفي */
-  .nav{padding:14px 0;gap:10px}
+  /* الـ nav صفّين على الموبايل: (البراند + زر الثيم) فوق، واللينكات سكرول أفقي تحت — بدون تكدس أو فراغات */
+  .nav{flex-wrap:wrap;padding:12px 0;gap:8px}
   .nav [data-tab-go]{display:none} /* زر "رفع ملف" مكرر — تبويب "رفع" موجود في اللينكات */
-  .nav .links{display:flex;gap:18px;flex:1;min-width:0;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .nav .links{order:3;flex:1 1 100%;display:flex;gap:18px;overflow-x:auto;padding:6px 2px 4px;margin:0;scrollbar-width:none}
   .nav .links::-webkit-scrollbar{display:none}
   .nav .links a{font-size:13px;white-space:nowrap}
   .brand .wm{font-size:14px}
   /* الهيرو يتكدس عموديا: الكارت فوق، شعاع أفقي، سطور الماتريكس تحت */
   .hero{padding-top:40px}
   .hero .ev-visual{flex-direction:column;align-items:center;min-height:0;margin-top:28px}
-  .ev-card{width:min(330px,86vw)}
-  .beam-w{width:62%;min-height:3px;margin:22px 0;
+  .ev-card{width:min(300px,84vw);padding:20px 18px}
+  .beam-w{width:52%;min-height:3px;margin:22px 0;
     background:linear-gradient(to right,transparent,#ffffff 30%,#ffffff 70%,transparent)}
   .beam-w::after{left:-8%;top:-2px;width:16%;height:7px;
     background:linear-gradient(to right,transparent,#fff,transparent);
     animation-name:beamDropH}
   @keyframes beamDropH{0%{left:-8%}55%{left:92%}100%{left:92%;opacity:0}}
-  .hexcol{width:100%;max-width:430px;min-height:150px;max-height:150px;font-size:11px}
+  .hexcol{width:100%;max-width:380px;min-height:150px;max-height:150px;font-size:11px}
   .hero h1,.sec-head h2,.cta h2{font-size:34px;letter-spacing:-1px}
   .hero .sub{font-size:16px}
   .panel .body{padding:22px 16px}
@@ -419,6 +438,25 @@ footer .fm b{color:var(--c-white)}
 .alog .ad{color:var(--c-ash);word-break:break-all}
 .alog .aip{color:var(--c-iron);white-space:nowrap}
 .frow .ops{display:flex;gap:8px;flex-wrap:wrap}
+/* ===== نافذة الأدمن (من شارة ONLY ME): دخول + خروج ===== */
+.modal{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:20px}
+html[data-theme="light"] .modal{background:rgba(255,255,255,.6)}
+.mbox{background:var(--c-void);border:1px solid var(--c-hair);border-radius:16px;padding:28px;width:min(400px,100%)}
+.mbox .mtitle{font-size:18px;font-weight:600;color:var(--c-white)}
+.mbox .msub{font-size:13px;color:var(--c-ash);margin:8px 0 16px;line-height:1.7}
+.mbox input{width:100%;box-sizing:border-box;background:transparent;border:1px solid var(--c-hair);border-radius:6px;
+  color:var(--c-white);font-family:var(--f-mono);font-size:14px;padding:10px 12px;direction:ltr;outline:none}
+html[data-theme="light"] .mbox input{border-color:#9a9a95;color:#0a0a0a}
+.mbox input:focus{border-color:var(--c-white)}
+html[data-theme="light"] .mbox input:focus{border-color:#0a0a0a}
+.mbox input::placeholder{color:var(--c-char)}
+.mbox .mrow{display:flex;gap:10px;margin-top:14px}
+.mbox .mrow .btn-ghost{flex:1}
+.only-me{cursor:pointer;user-select:none}
+.only-me.on{border-color:var(--c-green);color:var(--c-green)}
+.only-me .out-hint{font-size:10px;letter-spacing:.1em;opacity:.8}
+body.admin-on .only-me{border-color:var(--c-green)}
 @media(max-width:760px){
   html[data-theme="light"] .beam-w{background:linear-gradient(to right,transparent,#0a0a0a 30%,#0a0a0a 70%,transparent);
     box-shadow:0 0 18px rgba(0,0,0,.30),0 0 60px rgba(0,0,0,.10)}
@@ -671,11 +709,20 @@ footer .fm b{color:var(--c-white)}
   <!-- FOOTER -->
   <footer>
     <div class="fl"><a data-tab-go="api" style="cursor:pointer">API</a><a data-tab-go="api" style="cursor:pointer">Agents</a></div>
-    <div class="fm"><span class="dev-badge"><span class="dot-w"></span>Dev <b>ELMINYAWE</b></span><span class="only-me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>ONLY ME</span></div>
+    <div class="fm"><span class="dev-badge"><span class="dot-w"></span>Dev <b>ELMINYAWE</b></span><span class="only-me" id="onlyMe" onclick="admOpen()" title="وضع الأدمن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="onlyMeTxt">ONLY ME</span></span></div>
   </footer>
 </div>
 <div id="cursorGlow"></div>
 <div id="toasts"></div>
+<div class="modal" id="admModal" style="display:none" onclick="if(event.target===this)admClose()">
+  <div class="mbox">
+    <div class="mtitle" id="admMT">وضع الأدمن</div>
+    <div class="msub" id="admMS">دخل توكن الأدمن (ADMIN_TOKEN من إعدادات السيرفر) — يتحفظ في هذه الجلسة فقط.</div>
+    <input id="admInput" type="password" placeholder="ADMIN_TOKEN" dir="ltr" autocomplete="off" onkeydown="if(event.key==='Enter')admGo()">
+    <div class="mrow"><button type="button" class="btn-ghost sm" onclick="admGo()">دخول</button><button type="button" class="btn-ghost sm" onclick="admClose()">إلغاء</button></div>
+    <div class="mrow" id="admOutRow" style="display:none"><button type="button" class="btn-ghost sm" onclick="admOut()">خروج من وضع الأدمن</button></div>
+  </div>
+</div>
 
 <script>
 /* tab router */
@@ -883,7 +930,50 @@ async function adminUnlock(){
   var v=document.getElementById('adminpass').value;
   try{sessionStorage.setItem('mw_admin',v);}catch(e){}
   toast('اتحفظ التوكن — جاري تحميل بيانات الأدمن…');
+  refreshAdminUI();
   loadStats();loadAdminFiles();loadAudit();
+}
+/* ===== دخول/خروج الأدمن من شارة ONLY ME ===== */
+function admOpen(){
+  var m=document.getElementById('admModal');if(!m)return;
+  var on=!!adminToken();
+  document.getElementById('admMT').textContent=on?'وضع الأدمن مفعّل ✓':'وضع الأدمن';
+  document.getElementById('admMS').textContent=on
+    ?'التوكن محفوظ في هذه الجلسة — كل أقسام الإدارة مفتوحة. تقدر تخرج أو تدخل توكن جديد.'
+    :'دخل توكن الأدمن (ADMIN_TOKEN من إعدادات السيرفر) — يتحفظ في هذه الجلسة فقط.';
+  document.getElementById('admOutRow').style.display=on?'flex':'none';
+  m.style.display='flex';
+  var inp=document.getElementById('admInput');inp.value='';
+  if(!on)setTimeout(function(){inp.focus();},60);
+}
+function admClose(){var m=document.getElementById('admModal');if(m)m.style.display='none';}
+function admGo(){
+  var inp=document.getElementById('admInput');
+  var v=(inp&&inp.value)||'';
+  if(!v){toast('دخل التوكن الأول','#ffca16');return;}
+  try{sessionStorage.setItem('mw_admin',v);}catch(e){}
+  try{document.getElementById('adminpass').value=v;}catch(e){}
+  admClose();refreshAdminUI();
+  toast('جاري التحقق من التوكن…');
+  loadStats();loadAdminFiles();loadAudit();
+}
+function admOut(){
+  if(!confirm('تخرج من وضع الأدمن؟'))return;
+  try{sessionStorage.removeItem('mw_admin');}catch(e){}
+  try{document.getElementById('adminpass').value='';}catch(e){}
+  admClose();refreshAdminUI();loadStats();
+  var al=document.getElementById('adminlist');
+  if(al)al.innerHTML='<div class="frow"><span class="fn">فعّل الأدمن ودوّر على ملفاتك هنا</span></div>';
+  var au=document.getElementById('auditlist');if(au)au.innerHTML='';
+  toast('خرجت من وضع الأدمن');
+}
+function refreshAdminUI(){
+  var on=!!adminToken();
+  try{document.body.classList.toggle('admin-on',on);}catch(e){}
+  var badge=document.getElementById('onlyMe');
+  if(badge)badge.classList.toggle('on',on);
+  var txt=document.getElementById('onlyMeTxt');
+  if(txt)txt.textContent=on?'ADMIN ✓':'ONLY ME';
 }
 async function adminDel(id){
   if(!confirm('تحذف الملف ده نهائيا؟'))return;
@@ -1182,6 +1272,7 @@ if('IntersectionObserver' in window){
 })();
 /* init route */
 fillOrigins();
+refreshAdminUI();
 showView(((location.hash||'').replace('#/',''))||'home');
 </script>
 </body>
