@@ -1,7 +1,7 @@
 {
   "name": "minyawe-link",
-  "version": "6.4.0",
-  "description": "MINYAWE-LINK V6.4 by ELMINYAWE - multi-upload, passwords, audit, backup, themes",
+  "version": "6.5.0",
+  "description": "MINYAWE-LINK V6.5 by ELMINYAWE - multi-upload, passwords, audit, backup, themes",
   "main": "server.js",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js" },

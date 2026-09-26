@@ -393,7 +393,7 @@ app.get('/api/docs', (req, res) => {
   res.json({
     name: 'MINYAWE-LINK',
     by: 'ELMINYAWE',
-    version: '6.4',
+    version: '6.5',
     base: b,
     auth: 'none',
     limits: { maxMB: MAX_MB, maxExpiryDays: 30, expiryValues: ['1h', '24h', '7d', '30d'], blockedExtensions: BLOCKED },
@@ -409,6 +409,7 @@ app.get('/api/docs', (req, res) => {
       { method: 'GET', path: '/i/:id', desc: 'short link (redirects to file); locked files need ?pw=' },
       { method: 'DELETE', path: '/api/:id?token=DELETE_TOKEN', desc: 'delete file record' },
       { method: 'POST', path: '/api/:id/password (admin)', fields: { password: 'new password, or empty string to remove' }, returns: ['ok', 'locked'] },
+      { method: 'GET', path: '/api/admin/ping?admin=TOKEN', desc: 'admin: verify token (200 = valid, 403 = wrong)' },
       { method: 'GET', path: '/api/admin/files?admin=TOKEN&q=', desc: 'admin: full file list with search (name/slug/id)' },
       { method: 'GET', path: '/api/admin/audit?admin=TOKEN&q=&limit=', desc: 'admin: operation log (upload/delete/expired/pw/backup) with IP+time' },
       { method: 'GET', path: '/api/admin/backup?admin=TOKEN', desc: 'admin: download ZIP (db.json + audit.log + uploads + server.js)' },
@@ -441,6 +442,7 @@ POST ${b}/api/album (multipart: files=<binaries>, expiry=7d)
 => JSON: { id, url: ${b}/a/:id, count, files[] }
 
 ## Admin (header x-admin-token or ?admin=TOKEN)
+- GET ${b}/api/admin/ping — verify token (200 valid / 403 wrong)
 - POST ${b}/api/:id/password {password} — set/change/remove (empty) file password
 - GET ${b}/api/admin/files?q= — full list + search
 - GET ${b}/api/admin/audit?q=&limit= — operation log with IP+time
@@ -797,6 +799,11 @@ app.post('/api/:id/password', async (req, res) => {
   audit('pw-set', req, { id: found.id, key: found.meta.slug || found.id });
   res.json({ ok: true, locked: true });
 });
+// تحقق توكن الأدمن (تستخدمه نافذة الدخول قبل إعلان وضع الأدمن — أي توكن غلط يرجع 403 ولا يُقبل أبدا)
+app.get('/api/admin/ping', (req, res) => {
+  if (!needAdmin(req, res)) return;
+  res.json({ ok: true, admin: true });
+});
 // قائمة الملفات الكاملة + بحث (q يدور في الاسم والرابط والـ id)
 app.get('/api/admin/files', (req, res) => {
   if (!needAdmin(req, res)) return;
@@ -901,7 +908,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log('==========================================');
-  console.log('  MINYAWE-LINK V6.4 by ELMINYAWE is READY');
+  console.log('  MINYAWE-LINK V6.5 by ELMINYAWE is READY');
   console.log(`  Port: ${PORT} | Max: ${MAX_MB}MB | Storage: ${DRIVER.toUpperCase()}`);
   console.log('==========================================');
 });

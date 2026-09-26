@@ -1,6 +1,5 @@
 # MINYAWE-LINK
-
-File vault with a direct-link focus: upload images, audio, video or any file and get **3 branded links** (preview page + direct stream + download) — no account required.
+**v6.5** — File vault with a direct-link focus: upload images, audio, video or any file and get **3 branded links** (preview page + direct stream + download) — no account required.
 
 ## Features
 - **Multi upload** — up to 10 files at once, each with its own progress bar and links
@@ -65,6 +64,7 @@ PORT=3000 DATA_DIR=./data ADMIN_TOKEN=secret npm start
 ## Admin API (header `x-admin-token` or `?admin=TOKEN`)
 | Method | Path | Description |
 |---|---|---|
+| GET | `/api/admin/ping` | Verify admin token (200 = valid, 403 = wrong) |
 | POST | `/api/:id/password` | Set/change password `{password}` — empty string `""` removes it |
 | GET | `/api/admin/files?q=` | Full file list + search (name / slug / id) |
 | GET | `/api/admin/audit?q=&limit=` | Operation log with IP and timestamp |
